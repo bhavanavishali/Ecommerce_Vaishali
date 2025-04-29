@@ -119,6 +119,10 @@ SIMPLE_JWT = {
 GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
 GOOGLE_CLIENT_SECRET = os.getenv('GOOGLE_CLIENT_SECRET')
 
+RAZORPAY_KEY_ID = 'rzp_test_3vUY6ni0f6MZjo'  
+RAZORPAY_KEY_SECRET = '5TJanIZHdQvzf9VExaxstRxf'
+RAZORPAY_WEBHOOK_SECRET = 'mywebhooksecret'
+
 
 TEMPLATES = [
     {
@@ -137,10 +141,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'vaishaliGold.wsgi.application'
-
-
-
-
 
 
 DATABASES = {

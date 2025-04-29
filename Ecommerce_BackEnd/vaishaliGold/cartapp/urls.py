@@ -40,5 +40,10 @@ urlpatterns = [
     path('wishlist/remove/', RemoveFromWishlistView.as_view(), name='remove-from-wishlist'),
 
 
+   # razorpay
    
+    path('orders/razorpay/create/', RazorpayOrderCreateView.as_view(), name='razorpay-order-create'),
+    path('orders/razorpay/verify/', RazorpayPaymentVerificationView.as_view(), name='razorpay-payment-verify'),
+    path('orders/razorpay/retry/', RetryRazorpayPaymentView.as_view(), name='razorpay-payment-retry'),
+
 ]

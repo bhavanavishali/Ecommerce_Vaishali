@@ -158,7 +158,7 @@ class OrderCreateView(APIView):
             order = Order.objects.create(
                 user=request.user,
                 cart=cart,
-                address=address,  # ForeignKey to Address
+                address=address,  
                 total_amount=total,
                 total_discount=total_discount,
                 final_total=final_total,
@@ -539,5 +539,209 @@ class RemoveFromWishlistView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+# ======================RazorPay setting for order=======================
 
 
+import razorpay
+from django.conf import settings
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from django.shortcuts import get_object_or_404
+from .models import Cart, Order, OrderAddress, OrderItem
+from .serializers import OrderSerializer
+from decimal import Decimal
+
+class RazorpayOrderCreateView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        try:
+            
+            cart = get_object_or_404(Cart, user=request.user)
+            if not cart.items.exists():
+                return Response({"error": "Your cart is empty."}, status=400)
+
+            
+            address_id = request.data.get('address_id')
+            if not address_id:
+                return Response({"error": "Address ID is required."}, status=400)
+            
+            address = get_object_or_404(Address, id=address_id, user=request.user)
+
+            total_amount = Decimal(cart.get_final_total())
+            amount_in_paisa = int(total_amount * 100)  # Razorpay expects amount in paisa
+
+            # Initialize Razorpay client
+            client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+
+            # Create Razorpay order
+            razorpay_order = client.order.create({
+                'amount': amount_in_paisa,
+                'currency': 'INR',
+                'payment_capture': 1  
+            })
+            print("razorpay id",razorpay_order)
+
+            # Create Django order
+            order = Order.objects.create(
+                user=request.user,
+                cart=cart,
+                address=address,
+                total_amount=cart.get_total(),
+                total_discount=cart.get_total_discount(),
+                final_total=total_amount,
+                payment_method='card',
+                status='pending',
+                payment_status='pending',
+                order_number=f"ORD{timezone.now().strftime('%Y%m%d%H%M%S')}",
+
+            )
+
+            # Create OrderAddress
+            OrderAddress.objects.create(
+                order=order,
+                name=address.name,
+                house_no=address.house_no,
+                city=address.city,
+                state=address.state,
+                pin_code=address.pin_code,
+                address_type=address.address_type,
+                landmark=address.landmark,
+                mobile_number=address.mobile_number,
+                alternate_number=address.alternate_number
+            )
+
+            # Create order items and update stock
+            for cart_item in cart.items.all():
+                if cart_item.quantity > cart_item.variant.stock:
+                    order.delete()
+                    return Response({
+                        "error": f"Not enough stock for {cart_item.variant.product.name}"
+                    }, status=400)
+
+                subtotal = cart_item.get_subtotal()
+                final_price = cart_item.calculate_final_price()
+                discount = subtotal - final_price
+
+                OrderItem.objects.create(
+                    order=order,
+                    variant=cart_item.variant,
+                    quantity=cart_item.quantity,
+                    price=cart_item.variant.calculate_total_price(),
+                    subtotal=subtotal,
+                    discount=discount,
+                    final_price=final_price
+                )
+
+                cart_item.variant.stock -= cart_item.quantity
+                cart_item.variant.save()
+                
+            order.razorpay_order_id = razorpay_order["id"]
+            order.save()
+
+            cart.clear()
+
+            return Response({
+                'order_id': razorpay_order['id'],
+                'amount': amount_in_paisa,
+                'currency': 'INR',
+                'key': settings.RAZORPAY_KEY_ID,
+                'order': OrderSerializer(order).data
+            }, status=200)
+
+        except Exception as e:
+            return Response({"error": str(e)}, status=500)
+        
+import logging      
+logger = logging.getLogger(__name__)
+
+class RazorpayPaymentVerificationView(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):  
+        try:
+            # Validate request data
+            required_fields = ['razorpay_payment_id', 'razorpay_order_id', 'razorpay_signature']
+            for field in required_fields:
+                if not request.data.get(field):
+                    return Response({"error": f"Missing required field: {field}"}, status=400)
+
+            razorpay_payment_id = request.data.get('razorpay_payment_id')
+            razorpay_order_id = request.data.get('razorpay_order_id')
+            razorpay_signature = request.data.get('razorpay_signature')
+            logger.debug("Request data: %s", request.data)
+
+            # Verify payment signature
+            client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+            client.utility.verify_payment_signature({
+                'razorpay_order_id': razorpay_order_id,
+                'razorpay_payment_id': razorpay_payment_id,
+                'razorpay_signature': razorpay_signature
+            })
+
+            # Update order
+            try:
+                with transaction.atomic():
+                    order = get_object_or_404(Order, razorpay_order_id=razorpay_order_id, user=request.user)
+                    order.razorpay_payment_id = razorpay_payment_id
+                    order.razorpay_signature = razorpay_signature
+                    order.payment_status = 'completed'
+                    order.status = 'processing'
+                    order.save()
+                    logger.info("Order %s updated successfully", order.id)
+            except Exception as e:
+                logger.error("Database error for order %s: %s", razorpay_order_id, str(e))
+                return Response({"error": f"Failed to update order: {str(e)}"}, status=500)
+
+            return Response({
+                'message': 'Payment verified successfully',
+                'order_id': order.id
+            }, status=200)
+
+        except razorpay.errors.SignatureVerificationError as e:
+            logger.error("Signature verification failed: %s", str(e))
+            return Response({"error": "Payment verification failed"}, status=400)
+        except Exception as e:
+            logger.exception("Unexpected error during payment verification: %s", str(e))
+            return Response({"error": f"Internal server error: {str(e)}"}, status=500)
+
+class RetryRazorpayPaymentView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        try:
+            order_id = request.data.get("order_id")
+            if not order_id:
+                return Response({"error": "Order ID is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Fetch order
+            order = Order.objects.get(id=order_id, user=request.user)
+            if order.payment_method != "card" or order.status == "completed":
+                return Response({"error": "Cannot retry payment for this order"}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Create new Razorpay order
+            client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+            razorpay_order = client.order.create({
+                "amount": int(order.total_amount * 100),  # Convert to paise
+                "currency": "INR",
+                "payment_capture": 1,
+            })
+
+            # Update order with new Razorpay order ID
+            order.razorpay_order_id = razorpay_order["id"]
+            order.status = "pending"
+            order.save()
+
+            return Response({
+                "order_id": razorpay_order["id"],
+                "amount": razorpay_order["amount"],
+                "currency": razorpay_order["currency"],
+                "key": settings.RAZORPAY_KEY_ID,
+                "order": {"id": order.id},
+            })
+        except Order.DoesNotExist:
+            return Response({"error": "Order not found"}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

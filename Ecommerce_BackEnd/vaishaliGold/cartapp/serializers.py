@@ -107,7 +107,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = ['id','items', 'user', 'order_address', 'address_id', 'total_amount', 'total_discount', 'final_total', 'created_at','est_delivery', 'status','order_number','payment_method','payment_status','cancel_reason', 'cancelled_at','return_reason','returned_at','approve_status']
+        fields = ['id','items', 'user', 'order_address', 'address_id', 'total_amount', 'total_discount', 'final_total', 'created_at','est_delivery', 'status','order_number','payment_method','payment_status','cancel_reason', 'cancelled_at','return_reason','returned_at','approve_status','razorpay_order_id', 'razorpay_payment_id', 'razorpay_signature']
         read_only_fields = ['total_amount', 'total_discount', 'final_total', 'created_at', 'items', 'order_address']
 
     def get_user(self, obj):

@@ -121,6 +121,10 @@ class Order(models.Model):
     return_reason = models.TextField(blank=True, null=True)
     approve_status = models.BooleanField(default=False)
 
+    razorpay_order_id = models.CharField(max_length=100, null=True, blank=True)
+    razorpay_payment_id = models.CharField(max_length=100, null=True, blank=True)
+    razorpay_signature = models.CharField(max_length=100, null=True, blank=True)
+
     # ========= Cancel order ============
 
     def cancelorder(self):
@@ -210,6 +214,8 @@ class OrderItem(models.Model):
     discount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     final_price = models.DecimalField(max_digits=10, decimal_places=2)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='active')
+
+   
 
     cancelled_at = models.DateTimeField(null=True, blank=True)
     cancel_reason = models.TextField(blank=True, null=True)
