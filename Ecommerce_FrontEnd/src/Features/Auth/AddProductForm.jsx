@@ -1,20 +1,19 @@
 
-// "use client"
 
 // import { useState, useEffect } from "react"
+// import { useNavigate } from "react-router-dom" // Import useNavigate
 // import { Input } from "@/components/ui/input"
 // import { Button } from "@/components/ui/button"
 // import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 // import { Textarea } from "@/components/ui/textarea"
-// import { X, Upload, ZoomIn, ZoomOut, Crop } from "lucide-react"
+// import { X, Upload, ZoomIn, ZoomOut, Crop ,ArrowLeft,} from "lucide-react"
 // import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 // import { Slider } from "@/components/ui/slider"
 // import api from "../../api"
-
-
 // import Cropper from "react-easy-crop"
 
 // const AddProductForm = () => {
+//   const navigate = useNavigate() // Initialize navigate
 //   const [categories, setCategories] = useState([])
 //   const [productData, setProductData] = useState({
 //     name: "",
@@ -27,7 +26,9 @@
 //     size: "",
 //     available: true,
 //     gold_color: "",
-//     offer: "",
+//     product_offer: "",
+//     product_offer_Isactive:true,
+
 //     images: [],
 //     variants: [
 //       {
@@ -35,7 +36,7 @@
 //         stock: "",
 //         gold_price: "",
 //         making_charge: "",
-//         tax: "",
+//         stone_rate:""
 //       },
 //     ],
 //   })
@@ -59,7 +60,7 @@
 //   useEffect(() => {
 //     const fetchCategories = async () => {
 //       try {
-//         const response = await api.get("productapp/user/categories/") //  active actegories(so user/ is used)
+//         const response = await api.get("productapp/user/categories/")
 //         setCategories(response.data)
 //         console.log("Categories loaded:", response.data)
 //       } catch (error) {
@@ -91,9 +92,10 @@
 //         {
 //           gross_weight: "",
 //           stock: "",
+//           stone_rate:"",
 //           gold_price: "",
 //           making_charge: "",
-//           tax: "",
+          
 //         },
 //       ],
 //     }))
@@ -112,7 +114,6 @@
 //     const files = Array.from(e.target.files)
 
 //     if (files.length > 0) {
-//       // Open the editor for the first selected image
 //       const file = files[0]
 //       const imageUrl = URL.createObjectURL(file)
 //       setCurrentImage({
@@ -124,10 +125,7 @@
 //   }
 
 //   const removeImage = (index) => {
-//     // Revoke the object URL to avoid memory leaks
 //     URL.revokeObjectURL(imagePreviews[index])
-
-//     // Remove the image from all states
 //     setImageFiles((prev) => prev.filter((_, i) => i !== index))
 //     setImagePreviews((prev) => prev.filter((_, i) => i !== index))
 //     setProductData((prev) => ({
@@ -159,11 +157,9 @@
 
 //       return new Promise((resolve) => {
 //         image.onload = () => {
-//           // Set canvas dimensions to the cropped size
 //           canvas.width = croppedAreaPixels.width
 //           canvas.height = croppedAreaPixels.height
 
-//           // Draw the cropped image
 //           ctx.drawImage(
 //             image,
 //             croppedAreaPixels.x,
@@ -176,9 +172,7 @@
 //             croppedAreaPixels.height,
 //           )
 
-//           // Convert canvas to blob
 //           canvas.toBlob((blob) => {
-//             // Create a new file from the blob
 //             const croppedFile = new File([blob], currentImage.file.name, {
 //               type: "image/jpeg",
 //               lastModified: new Date().getTime(),
@@ -204,20 +198,14 @@
 
 //     if (croppedImage) {
 //       if (currentImageIndex !== null) {
-//         // Replace existing image
 //         const newImageFiles = [...imageFiles]
 //         const newImagePreviews = [...imagePreviews]
-
-//         // Revoke old preview URL
 //         URL.revokeObjectURL(imagePreviews[currentImageIndex])
-
 //         newImageFiles[currentImageIndex] = croppedImage.file
 //         newImagePreviews[currentImageIndex] = croppedImage.url
-
 //         setImageFiles(newImageFiles)
 //         setImagePreviews(newImagePreviews)
 //       } else {
-//         // Add new image
 //         setImageFiles((prev) => [...prev, croppedImage.file])
 //         setImagePreviews((prev) => [...prev, croppedImage.url])
 //         setProductData((prev) => ({
@@ -227,7 +215,6 @@
 //       }
 //     }
 
-//     // Reset and close modal
 //     setCurrentImage(null)
 //     setCurrentImageIndex(null)
 //     setCrop({ x: 0, y: 0 })
@@ -237,12 +224,10 @@
 //   }
 
 //   const cancelImageEdit = () => {
-//     // If this was a new image and we cancel, we need to revoke the object URL
 //     if (currentImage && currentImageIndex === null) {
 //       URL.revokeObjectURL(currentImage.url)
 //     }
 
-//     // Reset and close modal
 //     setCurrentImage(null)
 //     setCurrentImageIndex(null)
 //     setCrop({ x: 0, y: 0 })
@@ -254,7 +239,6 @@
 //   const handleSubmit = async (e) => {
 //     e.preventDefault()
 
-//     // Basic validation
 //     if (!productData.name || !productData.category || !productData.description) {
 //       setError("Please fill in all required fields")
 //       return
@@ -274,34 +258,30 @@
 //     setSuccess(false)
 
 //     try {
-//       // Create a clean copy of the data with proper types
 //       const formattedData = {
 //         ...productData,
-//         category: Number.parseInt(productData.category), // Ensure category is a number
+//         category: Number.parseInt(productData.category),
 //         variants: productData.variants.map((variant) => ({
 //           gross_weight: Number.parseFloat(variant.gross_weight),
 //           stock: Number.parseInt(variant.stock),
 //           gold_price: Number.parseFloat(variant.gold_price),
 //           making_charge: Number.parseFloat(variant.making_charge),
-//           tax: variant.tax ? Number.parseFloat(variant.tax) : 0,
+//           stone_rate: variant.stone_rate ? Number.parseFloat(variant.stone_rate) : 0,
 //         })),
 //       }
 
 //       console.log("Sending data:", formattedData)
 
-//       // First create the product
 //       const response = await api.post("productapp/products/", formattedData)
-//       console.log("it is my response",response.data)
+//       console.log("Response:", response.data)
 //       const productId = response.data.id
-      
-//       // If there are images, upload them
+
 //       if (imageFiles.length > 0) {
 //         const formData = new FormData()
 //         imageFiles.forEach((file) => {
 //           formData.append("images", file)
 //         })
 
-//         // Assuming your API has an endpoint for uploading product images
 //         await api.post(`productapp/products/${productId}/images/`, formData, {
 //           headers: {
 //             "Content-Type": "multipart/form-data",
@@ -312,7 +292,7 @@
 //       console.log("Success:", response.data)
 //       setSuccess(true)
 
-//       // Reset the form after successful submission
+//       // Reset the form
 //       setProductData({
 //         name: "",
 //         category: "",
@@ -324,7 +304,8 @@
 //         size: "",
 //         available: true,
 //         gold_color: "",
-//         offer: "",
+//         product_offer: "",
+//         product_offer_Isactive:true,
 //         images: [],
 //         variants: [
 //           {
@@ -332,24 +313,23 @@
 //             stock: "",
 //             gold_price: "",
 //             making_charge: "",
-//             tax: "",
+//             stone_rate:"",
 //           },
 //         ],
 //       })
 
-//       // Clear image states
 //       setImageFiles([])
 //       setImagePreviews([])
+
+//       // Redirect to homepage after a brief delay
+//       setTimeout(() => {
+//         navigate('/dashboard') // Redirect using useNavigate
+//       }, 1500) // 1.5-second delay to show success message
 //     } catch (err) {
 //       console.error("Error:", err)
-//       // More detailed error handling
 //       if (err.response) {
-//         // The request was made and the server responded with a status code
-//         // that falls out of the range of 2xx
 //         console.error("Response data:", err.response.data)
 //         console.error("Response status:", err.response.status)
-
-//         // Handle specific error messages from the backend
 //         if (typeof err.response.data === "object") {
 //           const errorMessages = Object.entries(err.response.data)
 //             .map(([key, value]) => `${key}: ${value}`)
@@ -359,10 +339,8 @@
 //           setError(err.response.data || "Server rejected the data")
 //         }
 //       } else if (err.request) {
-//         // The request was made but no response was received
 //         setError("No response from server. Please check your connection.")
 //       } else {
-//         // Something happened in setting up the request that triggered an Error
 //         setError("Error setting up request: " + err.message)
 //       }
 //     } finally {
@@ -373,6 +351,14 @@
 //   return (
 //     <div className="max-w-4xl mx-auto">
 //       <h2 className="text-2xl font-semibold mb-6">Add Product</h2>
+//       <Button
+//             variant="outline"
+//             onClick={() => navigate("/dashboard")}
+//             className="flex items-center gap-2 border-[#7a2828] text-[#7a2828] hover:bg-[#7a2828] hover:text-white"
+//           >
+//             <ArrowLeft className="h-4 w-4" />
+//             Back
+//           </Button>
 
 //       {error && <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">{error}</div>}
 
@@ -390,7 +376,7 @@
 //             onChange={handleChange}
 //             placeholder="Product Name"
 //             className="bg-gray-50"
-//             required
+            
 //           />
 //           <Input
 //             name="bis_hallmark"
@@ -405,7 +391,7 @@
 //           <Select
 //             onValueChange={(val) => setProductData((prev) => ({ ...prev, category: val }))}
 //             value={productData.category}
-//             required
+            
 //           >
 //             <SelectTrigger className="bg-gray-50">
 //               <SelectValue placeholder="Category" />
@@ -479,7 +465,7 @@
 
 //           <Input
 //             name="offer"
-//             value={productData.offer}
+//             value={productData.product_offer}
 //             onChange={handleChange}
 //             placeholder="Product Offer"
 //             className="bg-gray-50"
@@ -505,7 +491,7 @@
 //           onChange={handleChange}
 //           placeholder="Description"
 //           className="bg-gray-50 min-h-[100px]"
-//           required
+          
 //         />
 
 //         <div className="mt-6">
@@ -518,6 +504,7 @@
 //                   src={preview || "/placeholder.svg"}
 //                   alt={`Preview ${index + 1}`}
 //                   className="w-24 h-24 object-cover border rounded-md"
+
 //                 />
 //                 <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
 //                   <button
@@ -567,7 +554,7 @@
 //               onChange={(e) => handleVariantChange(index, e)}
 //               placeholder="Gold Price"
 //               className="bg-gray-50"
-//               required
+              
 //             />
 //             <Input
 //               name="stock"
@@ -576,7 +563,7 @@
 //               onChange={(e) => handleVariantChange(index, e)}
 //               placeholder="Stock"
 //               className="bg-gray-50"
-//               required
+              
 //             />
 //             <Input
 //               name="making_charge"
@@ -585,7 +572,7 @@
 //               onChange={(e) => handleVariantChange(index, e)}
 //               placeholder="Making Charge"
 //               className="bg-gray-50"
-//               required
+              
 //             />
 //             <Button
 //               type="button"
@@ -607,7 +594,6 @@
 //         </Button>
 //       </form>
 
-//       {/* Image Editor Modal */}
 //       <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
 //         <DialogContent className="sm:max-w-[600px] h-[80vh] flex flex-col bg-white">
 //           <DialogHeader>
@@ -655,20 +641,21 @@
 
 // export default AddProductForm
 
+
 import { useState, useEffect } from "react"
-import { useNavigate } from "react-router-dom" // Import useNavigate
+import { useNavigate } from "react-router-dom"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
-import { X, Upload, ZoomIn, ZoomOut, Crop ,ArrowLeft,} from "lucide-react"
+import { X, Upload, ZoomIn, ZoomOut, Crop, ArrowLeft } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Slider } from "@/components/ui/slider"
 import api from "../../api"
 import Cropper from "react-easy-crop"
 
 const AddProductForm = () => {
-  const navigate = useNavigate() // Initialize navigate
+  const navigate = useNavigate()
   const [categories, setCategories] = useState([])
   const [productData, setProductData] = useState({
     name: "",
@@ -681,7 +668,8 @@ const AddProductForm = () => {
     size: "",
     available: true,
     gold_color: "",
-    offer: "",
+    product_offer: "",
+    product_offer_Isactive: true,
     images: [],
     variants: [
       {
@@ -689,7 +677,9 @@ const AddProductForm = () => {
         stock: "",
         gold_price: "",
         making_charge: "",
+        stone_rate: "",
         tax: "",
+        shipping: ""
       },
     ],
   })
@@ -747,7 +737,9 @@ const AddProductForm = () => {
           stock: "",
           gold_price: "",
           making_charge: "",
+          stone_rate: "",
           tax: "",
+          shipping: ""
         },
       ],
     }))
@@ -764,14 +756,10 @@ const AddProductForm = () => {
 
   const handleImageSelect = (e) => {
     const files = Array.from(e.target.files)
-
     if (files.length > 0) {
       const file = files[0]
       const imageUrl = URL.createObjectURL(file)
-      setCurrentImage({
-        file,
-        url: imageUrl,
-      })
+      setCurrentImage({ file, url: imageUrl })
       setIsEditModalOpen(true)
     }
   }
@@ -788,10 +776,7 @@ const AddProductForm = () => {
 
   const editImage = (index) => {
     setCurrentImageIndex(index)
-    setCurrentImage({
-      file: imageFiles[index],
-      url: imagePreviews[index],
-    })
+    setCurrentImage({ file: imageFiles[index], url: imagePreviews[index] })
     setIsEditModalOpen(true)
   }
 
@@ -804,14 +789,12 @@ const AddProductForm = () => {
       const canvas = document.createElement("canvas")
       const ctx = canvas.getContext("2d")
       const image = new Image()
-
       image.src = currentImage.url
 
       return new Promise((resolve) => {
         image.onload = () => {
           canvas.width = croppedAreaPixels.width
           canvas.height = croppedAreaPixels.height
-
           ctx.drawImage(
             image,
             croppedAreaPixels.x,
@@ -821,19 +804,14 @@ const AddProductForm = () => {
             0,
             0,
             croppedAreaPixels.width,
-            croppedAreaPixels.height,
+            croppedAreaPixels.height
           )
-
           canvas.toBlob((blob) => {
             const croppedFile = new File([blob], currentImage.file.name, {
               type: "image/jpeg",
               lastModified: new Date().getTime(),
             })
-
-            resolve({
-              file: croppedFile,
-              url: URL.createObjectURL(blob),
-            })
+            resolve({ file: croppedFile, url: URL.createObjectURL(blob) })
           }, "image/jpeg")
         }
       })
@@ -845,9 +823,7 @@ const AddProductForm = () => {
 
   const saveCroppedImage = async () => {
     if (!croppedAreaPixels) return
-
     const croppedImage = await createCroppedImage()
-
     if (croppedImage) {
       if (currentImageIndex !== null) {
         const newImageFiles = [...imageFiles]
@@ -866,7 +842,6 @@ const AddProductForm = () => {
         }))
       }
     }
-
     setCurrentImage(null)
     setCurrentImageIndex(null)
     setCrop({ x: 0, y: 0 })
@@ -879,7 +854,6 @@ const AddProductForm = () => {
     if (currentImage && currentImageIndex === null) {
       URL.revokeObjectURL(currentImage.url)
     }
-
     setCurrentImage(null)
     setCurrentImageIndex(null)
     setCrop({ x: 0, y: 0 })
@@ -890,15 +864,19 @@ const AddProductForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-
     if (!productData.name || !productData.category || !productData.description) {
       setError("Please fill in all required fields")
       return
     }
-
     if (
       productData.variants.some(
-        (variant) => !variant.gross_weight || !variant.stock || !variant.gold_price || !variant.making_charge,
+        (variant) =>
+          !variant.gross_weight ||
+          !variant.stock ||
+          !variant.gold_price ||
+          !variant.making_charge ||
+          !variant.tax ||
+          !variant.shipping
       )
     ) {
       setError("Please complete all variant details")
@@ -918,12 +896,13 @@ const AddProductForm = () => {
           stock: Number.parseInt(variant.stock),
           gold_price: Number.parseFloat(variant.gold_price),
           making_charge: Number.parseFloat(variant.making_charge),
-          tax: variant.tax ? Number.parseFloat(variant.tax) : 0,
+          stone_rate: variant.stone_rate ? Number.parseFloat(variant.stone_rate) : 0,
+          tax: Number.parseFloat(variant.tax),
+          shipping: Number.parseFloat(variant.shipping)
         })),
       }
 
       console.log("Sending data:", formattedData)
-
       const response = await api.post("productapp/products/", formattedData)
       console.log("Response:", response.data)
       const productId = response.data.id
@@ -933,18 +912,13 @@ const AddProductForm = () => {
         imageFiles.forEach((file) => {
           formData.append("images", file)
         })
-
         await api.post(`productapp/products/${productId}/images/`, formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
+          headers: { "Content-Type": "multipart/form-data" },
         })
       }
 
       console.log("Success:", response.data)
       setSuccess(true)
-
-      // Reset the form
       setProductData({
         name: "",
         category: "",
@@ -956,7 +930,8 @@ const AddProductForm = () => {
         size: "",
         available: true,
         gold_color: "",
-        offer: "",
+        product_offer: "",
+        product_offer_Isactive: true,
         images: [],
         variants: [
           {
@@ -964,18 +939,17 @@ const AddProductForm = () => {
             stock: "",
             gold_price: "",
             making_charge: "",
+            stone_rate: "",
             tax: "",
+            shipping: ""
           },
         ],
       })
-
       setImageFiles([])
       setImagePreviews([])
-
-      // Redirect to homepage after a brief delay
       setTimeout(() => {
-        navigate('/dashboard') // Redirect using useNavigate
-      }, 1500) // 1.5-second delay to show success message
+        navigate('/dashboard')
+      }, 1500)
     } catch (err) {
       console.error("Error:", err)
       if (err.response) {
@@ -1003,15 +977,19 @@ const AddProductForm = () => {
     <div className="max-w-4xl mx-auto">
       <h2 className="text-2xl font-semibold mb-6">Add Product</h2>
       <Button
-            variant="outline"
-            onClick={() => navigate("/dashboard")}
-            className="flex items-center gap-2 border-[#7a2828] text-[#7a2828] hover:bg-[#7a2828] hover:text-white"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back
-          </Button>
+        variant="outline"
+        onClick={() => navigate("/dashboard")}
+        className="flex items-center gap-2 border-[#7a2828] text-[#7a2828] hover:bg-[#7a2828] hover:text-white"
+      >
+        <ArrowLeft className="h-4 w-4" />
+        Back
+      </Button>
 
-      {error && <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">{error}</div>}
+      {error && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+          {error}
+        </div>
+      )}
 
       {success && (
         <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
@@ -1027,7 +1005,7 @@ const AddProductForm = () => {
             onChange={handleChange}
             placeholder="Product Name"
             className="bg-gray-50"
-            
+            required
           />
           <Input
             name="bis_hallmark"
@@ -1035,6 +1013,7 @@ const AddProductForm = () => {
             onChange={handleChange}
             placeholder="BIS Hallmark ID"
             className="bg-gray-50"
+            required
           />
         </div>
 
@@ -1042,7 +1021,7 @@ const AddProductForm = () => {
           <Select
             onValueChange={(val) => setProductData((prev) => ({ ...prev, category: val }))}
             value={productData.category}
-            
+            required
           >
             <SelectTrigger className="bg-gray-50">
               <SelectValue placeholder="Category" />
@@ -1063,7 +1042,6 @@ const AddProductForm = () => {
               )}
             </SelectContent>
           </Select>
-
           <Input
             name="gold_color"
             value={productData.gold_color}
@@ -1113,15 +1091,16 @@ const AddProductForm = () => {
               <SelectItem value="Unisex">Unisex</SelectItem>
             </SelectContent>
           </Select>
-
           <Input
-            name="offer"
-            value={productData.offer}
+            name="product_offer"
+            type="number"
+            value={productData.product_offer}
             onChange={handleChange}
-            placeholder="Product Offer"
+            placeholder="Product Offer (%)"
             className="bg-gray-50"
+            min="0"
+            max="100"
           />
-
           <Select
             onValueChange={(val) => setProductData((prev) => ({ ...prev, available: val === "true" }))}
             value={productData.available ? "true" : "false"}
@@ -1142,12 +1121,11 @@ const AddProductForm = () => {
           onChange={handleChange}
           placeholder="Description"
           className="bg-gray-50 min-h-[100px]"
-          
+          required
         />
 
         <div className="mt-6">
           <h3 className="text-lg font-semibold mb-3">Product Images</h3>
-
           <div className="flex flex-wrap gap-4 mb-4">
             {imagePreviews.map((preview, index) => (
               <div key={index} className="relative group">
@@ -1155,7 +1133,6 @@ const AddProductForm = () => {
                   src={preview || "/placeholder.svg"}
                   alt={`Preview ${index + 1}`}
                   className="w-24 h-24 object-cover border rounded-md"
-
                 />
                 <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
                   <button
@@ -1175,28 +1152,34 @@ const AddProductForm = () => {
                 </div>
               </div>
             ))}
-
             <label className="flex flex-col items-center justify-center w-24 h-24 border-2 border-dashed border-gray-300 rounded-md cursor-pointer hover:bg-gray-50">
               <div className="flex flex-col items-center justify-center pt-5 pb-6">
                 <Upload className="w-8 h-8 text-gray-400" />
                 <p className="text-xs text-gray-500 mt-1">Add Image</p>
               </div>
-              <input type="file" className="hidden" accept="image/*" onChange={handleImageSelect} />
+              <input
+                type="file"
+                className="hidden"
+                accept="image/*"
+                onChange={handleImageSelect}
+              />
             </label>
           </div>
         </div>
 
         <h3 className="text-lg font-semibold">Variants</h3>
         {productData.variants.map((variant, index) => (
-          <div key={index} className="grid grid-cols-5 gap-4 border p-4 rounded-lg">
+          <div key={index} className="grid grid-cols-4 gap-4 border p-4 rounded-lg">
             <Input
               name="gross_weight"
               type="number"
               value={variant.gross_weight}
               onChange={(e) => handleVariantChange(index, e)}
-              placeholder="Gross Weight"
+              placeholder="Gross Weight (g)"
               className="bg-gray-50"
               required
+              min="0"
+              step="0.01"
             />
             <Input
               name="gold_price"
@@ -1205,7 +1188,9 @@ const AddProductForm = () => {
               onChange={(e) => handleVariantChange(index, e)}
               placeholder="Gold Price"
               className="bg-gray-50"
-              
+              required
+              min="0"
+              step="0.01"
             />
             <Input
               name="stock"
@@ -1214,7 +1199,9 @@ const AddProductForm = () => {
               onChange={(e) => handleVariantChange(index, e)}
               placeholder="Stock"
               className="bg-gray-50"
-              
+              required
+              min="0"
+              step="1"
             />
             <Input
               name="making_charge"
@@ -1223,7 +1210,41 @@ const AddProductForm = () => {
               onChange={(e) => handleVariantChange(index, e)}
               placeholder="Making Charge"
               className="bg-gray-50"
-              
+              required
+              min="0"
+              step="0.01"
+            />
+            <Input
+              name="stone_rate"
+              type="number"
+              value={variant.stone_rate}
+              onChange={(e) => handleVariantChange(index, e)}
+              placeholder="Stone Rate"
+              className="bg-gray-50"
+              min="0"
+              step="0.01"
+            />
+            <Input
+              name="tax"
+              type="number"
+              value={variant.tax}
+              onChange={(e) => handleVariantChange(index, e)}
+              placeholder="Tax (%)"
+              className="bg-gray-50"
+              required
+              min="0"
+              step="0.01"
+            />
+            <Input
+              name="shipping"
+              type="number"
+              value={variant.shipping}
+              onChange={(e) => handleVariantChange(index, e)}
+              placeholder="Shipping Cost"
+              className="bg-gray-50"
+              required
+              min="0"
+              step="0.01"
             />
             <Button
               type="button"
@@ -1236,11 +1257,19 @@ const AddProductForm = () => {
           </div>
         ))}
 
-        <Button type="button" onClick={addVariant} className="bg-gray-500 hover:bg-gray-600 text-white">
+        <Button
+          type="button"
+          onClick={addVariant}
+          className="bg-gray-500 hover:bg-gray-600 text-white"
+        >
           + Add Variant
         </Button>
 
-        <Button type="submit" className="w-full bg-[#8c2a2a] hover:bg-[#7a2424] text-white" disabled={isSubmitting}>
+        <Button
+          type="submit"
+          className="w-full bg-[#8c2a2a] hover:bg-[#7a2424] text-white"
+          disabled={isSubmitting}
+        >
           {isSubmitting ? "Adding Product..." : "Add Product"}
         </Button>
       </form>
@@ -1250,7 +1279,6 @@ const AddProductForm = () => {
           <DialogHeader>
             <DialogTitle>Edit Image</DialogTitle>
           </DialogHeader>
-
           <div className="relative flex-grow my-4" style={{ height: "400px" }}>
             {currentImage && (
               <Cropper
@@ -1264,7 +1292,6 @@ const AddProductForm = () => {
               />
             )}
           </div>
-
           <div className="flex items-center gap-2 my-4">
             <ZoomOut className="text-gray-500" />
             <Slider
@@ -1277,7 +1304,6 @@ const AddProductForm = () => {
             />
             <ZoomIn className="text-gray-500" />
           </div>
-
           <DialogFooter>
             <Button variant="outline" onClick={cancelImageEdit}>
               Cancel

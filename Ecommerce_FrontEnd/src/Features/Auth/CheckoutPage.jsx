@@ -98,8 +98,8 @@ export default function CheckoutPage() {
   const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0)
   const totalDiscount = cartItems.reduce((sum, item) => sum + (item.discount || 0), 0)
   const totalTax = cartItems.reduce((sum, item) => sum + (item.tax || 0) * item.quantity, 0)
-  const shipping = subtotal > 50000 ? 0 : 250
-  const total = subtotal + totalTax + shipping - totalDiscount
+  
+  const total = subtotal + totalTax - totalDiscount
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat("en-IN", {
@@ -859,10 +859,10 @@ export default function CheckoutPage() {
                 <span className="text-gray-600">Subtotal</span>
                 <span>{formatPrice(subtotal)}</span>
               </div>
-              <div className="flex justify-between">
+              {/* <div className="flex justify-between">
                 <span className="text-gray-600">Shipping</span>
                 <span>{shipping === 0 ? "Free" : formatPrice(shipping)}</span>
-              </div>
+              </div> */}
               <div className="flex justify-between">
                 <span className="text-gray-600">Tax</span>
                 <span>{formatPrice(totalTax)}</span>
