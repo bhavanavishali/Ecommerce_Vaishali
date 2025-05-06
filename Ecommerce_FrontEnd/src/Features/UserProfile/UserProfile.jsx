@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils"
 import ProfileInfo from './ProfileInfo'
 import MyOrders from "./Myorders"
 import ManageAddresses from "./manage-address"
+
 import WalletPage from "./wallets"
 
 

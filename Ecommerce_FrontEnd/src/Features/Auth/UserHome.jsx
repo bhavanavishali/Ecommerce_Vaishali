@@ -1903,7 +1903,7 @@ function UserHome() {
       </div>
 
       {/* Featured categories section */}
-      <div className="mt-16 mb-8">
+      {/* <div className="mt-16 mb-8">
         <h2 className="text-2xl font-semibold text-center mb-8">Shop By Category</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="relative overflow-hidden rounded-lg shadow-md group cursor-pointer">
@@ -1973,7 +1973,7 @@ function UserHome() {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Testimonials section */}
       <div className="my-16 bg-white rounded-lg shadow-sm p-8">

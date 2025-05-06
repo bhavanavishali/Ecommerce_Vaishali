@@ -1,17 +1,23 @@
-
 from rest_framework import serializers
 from .models import *
 from productsapp.serializers import ProductVariantSerializer
+logger = logging.getLogger(__name__)
+from django.db.models import F
+from django.shortcuts import get_object_or_404
+
 
 class CartItemSerializer(serializers.ModelSerializer):
     variant = ProductVariantSerializer(read_only=True)
     product = serializers.SerializerMethodField()
     subtotal = serializers.SerializerMethodField()
-    final_price=serializers.SerializerMethodField()
-    primary_image=serializers.SerializerMethodField()
+    discount_amount = serializers.SerializerMethodField()
+    tax_amount = serializers.SerializerMethodField()
+    final_price = serializers.SerializerMethodField()
+    primary_image = serializers.SerializerMethodField()
+
     class Meta:
         model = CartItem
-        fields = ['id', 'product','variant', 'quantity', 'subtotal','final_price','primary_image']
+        fields = ['id', 'product', 'variant', 'quantity', 'subtotal', 'discount_amount', 'tax_amount', 'final_price', 'primary_image']
 
     def get_product(self, obj):
         product = obj.variant.product
@@ -28,53 +34,55 @@ class CartItemSerializer(serializers.ModelSerializer):
             "images": images
         }
 
-    def get_subtotal(self, cartitem:CartItem):
-        return cartitem.quantity * cartitem.variant.calculate_total_price()
-    
-    def get_final_price(self, cartitem: CartItem):
-        return cartitem.calculate_final_price()
-    
-    def get_primary_image(self, obj):
-        # Get the primary image for the product
-        primary_image = obj.variant.product.images.filter(is_primary=False).first()
-        return primary_image.image.url if primary_image and primary_image.image else None
-        
+    def get_subtotal(self, obj):
+        return obj.get_subtotal()
 
+    def get_discount_amount(self, obj):
+        return obj.get_discount_amount()
+
+    def get_tax_amount(self, obj):
+        return obj.get_tax_amount()
+
+    def get_final_price(self, obj):
+        return obj.calculate_total_price()
+
+    def get_primary_image(self, obj):
+        primary_image = obj.variant.product.images.filter(is_primary=False).first()
+        if not primary_image:  
+            primary_image = obj.variant.product.images.first()
+        return primary_image.image.url if primary_image and primary_image.image else None
 
 class CartSerializer(serializers.ModelSerializer):
     items = CartItemSerializer(many=True, read_only=True)
-    total = serializers.SerializerMethodField()
-    total_items=serializers.SerializerMethodField()
-    total_discount=serializers.SerializerMethodField()
-    final_total=serializers.SerializerMethodField()
+    total_items = serializers.SerializerMethodField()
+    final_subtotal = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
+    final_discount = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
+    final_tax = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
+    final_total = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
 
     class Meta:
         model = Cart
-        fields = ['id', 'user',  'items', 'total','total_items','total_discount','final_total']
+        fields = ['id', 'user', 'items', 'total_items', 'final_subtotal', 'final_discount', 'final_tax', 'final_total']
 
-    def get_total(self, obj):
-        return sum(item.quantity * item.variant.calculate_total_price() for item in obj.items.all())
-    
-    def get_total_items(self,obj):
+    def get_total_items(self, obj):
         return obj.items.count()
     
-    def get_total_discount(self,obj):
-        total_discount=0
-        for item in obj.items.all():
-            subtotal = item.variant.calculate_total_price() * item.quantity
-            discount_percentage=item.get_discount_percentage()
-            discount_amount=(subtotal * discount_percentage) / 100
-            total_discount+=discount_amount
-        return total_discount
-        
-    def get_final_total(self,obj):
-        return self.get_total(obj) - self.get_total_discount(obj)
 
 class OrderAddressSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderAddress
         fields = ['id', 'name', 'house_no', 'city', 'state', 'pin_code', 'address_type', 'landmark', 'mobile_number', 'alternate_number']
 
+    def validate(self, data):
+        import re
+        if not re.match(r'^\d{6}$', data['pin_code']):
+            raise serializers.ValidationError({"pin_code": "Pin code must be a 6-digit number"})
+        if not re.match(r'^\d{10}$', data['mobile_number']):
+            raise serializers.ValidationError({"mobile_number": "Mobile number must be a 10-digit number"})
+        if data.get('alternate_number') and not re.match(r'^\d{10}$', data['alternate_number']):
+            raise serializers.ValidationError({"alternate_number": "Alternate number must be a 10-digit number"})
+        return data
+    
 
 class OrderItemSerializer(serializers.ModelSerializer):
     
@@ -83,7 +91,7 @@ class OrderItemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OrderItem
-        fields = ['id', 'variant', 'product', 'quantity', 'price', 'subtotal', 'discount', 'final_price','status','cancel_reason','cancelled_at','returned_at','return_reason']
+        fields = ['id', 'variant', 'product', 'quantity', 'price', 'subtotal', 'discount','coupon_discount','tax','final_price', 'status', 'cancel_reason', 'cancelled_at', 'returned_at', 'return_reason']
 
     def get_product(self, obj):
         product = obj.variant.product
@@ -95,20 +103,34 @@ class OrderItemSerializer(serializers.ModelSerializer):
             "gold_color": product.gold_color,
             "images": [image.image.url for image in product.images.all()]
         }
+    def validate(self, data):
+        if data.get('cancel_reason') and not data['cancel_reason'].strip():
+            raise serializers.ValidationError({"cancel_reason": "Cancel reason cannot be empty"})
+        if data.get('return_reason') and not data['return_reason'].strip():
+            raise serializers.ValidationError({"return_reason": "Return reason cannot be empty"})
+        return data
 
+#================== Order serializer for create order================================
 
 class OrderSerializer(serializers.ModelSerializer):
     items = OrderItemSerializer(many=True, read_only=True)
-    user=serializers.SerializerMethodField()
+    user = serializers.SerializerMethodField()
     order_address = OrderAddressSerializer(read_only=True)
-    address_id = serializers.PrimaryKeyRelatedField(
-    queryset=Address.objects.all(), write_only=True
-    )
+    address_id = serializers.PrimaryKeyRelatedField(queryset=Address.objects.all(), write_only=True)
 
     class Meta:
         model = Order
-        fields = ['id','items', 'user', 'order_address', 'address_id', 'total_amount', 'total_discount', 'final_total', 'created_at','est_delivery', 'status','order_number','payment_method','payment_status','cancel_reason', 'cancelled_at','return_reason','returned_at','approve_status','razorpay_order_id', 'razorpay_payment_id', 'razorpay_signature']
-        read_only_fields = ['total_amount', 'total_discount', 'final_total', 'created_at', 'items', 'order_address']
+        fields = [
+            'id', 'items', 'user', 'order_address', 'address_id', 'total_amount', 'total_tax',
+            'total_discount', 'final_total', 'coupon_discount', 'created_at', 'est_delivery', 'status',
+            'order_number', 'payment_method', 'payment_status', 'cancel_reason',
+            'cancelled_at', 'return_reason', 'returned_at', 'approve_status',
+            'razorpay_order_id', 'razorpay_payment_id', 'razorpay_signature'
+        ]
+        read_only_fields = [
+            'total_amount', 'total_tax', 'total_discount',  'coupon_discount','final_total', 'created_at',
+            'items', 'order_address', 'order_number', 'est_delivery'
+        ]
 
     def get_user(self, obj):
         return {
@@ -120,81 +142,162 @@ class OrderSerializer(serializers.ModelSerializer):
         }
 
     def validate_address_id(self, value):
-       
         if value.user != self.context['request'].user:
             raise serializers.ValidationError("Selected address does not belong to you.")
         return value
-    
-    def validate_payment_methos(self,value):
-        allowed_methods=['cod', 'card', 'wallet']
+
+    def validate_payment_method(self, value):
+        allowed_methods = ['cod', 'card', 'wallet']
         if value not in allowed_methods:
             raise serializers.ValidationError("Invalid payment method.")
         return value
-
     
+    def validate_coupon_code(self, value):
+        if not value:
+            return None
+        coupon = get_object_or_404(Coupon, coupon_code=value)
+        if not coupon.is_valid():
+            raise serializers.ValidationError("Coupon is not valid or has expired.")
+        cart = Cart.objects.filter(user=self.context['request'].user).first()
+        if not cart or not cart.items.exists():
+            raise serializers.ValidationError("Cart is empty.")
+        total_amount = cart.get_final_subtotal()
+        if total_amount < coupon.min_amount:
+            raise serializers.ValidationError(f"Order total must be at least {coupon.min_amount} to use this coupon.")
+        return coupon
 
     def create(self, validated_data):
         user = self.context['request'].user
-        address = validated_data.pop('address_id')  
-        payment_method = validated_data.get('payment_method', 'cod') 
+        address = validated_data.pop('address_id')
+        payment_method = validated_data.get('payment_method', 'cod')
+        coupon = validated_data.pop('coupon_code', None)
 
-    
-        cart, created = Cart.objects.get_or_create(user=user)
-
-        if created or not cart.items.exists():
+        cart = Cart.objects.filter(user=user).first()
+        if not cart or not cart.items.exists():
             raise serializers.ValidationError("No valid cart items found for this user.")
 
- 
-        total_amount = cart.get_total()
-        total_discount = cart.get_total_discount()
-        final_total = cart.get_final_total()
+        try:
+            with transaction.atomic():
+                
+                variants = ProductVariant.objects.select_for_update().filter(
+                    id__in=[cart_item.variant.id for cart_item in cart.items.all()]
+                )
+                variant_map = {v.id: v for v in variants}
 
+                # Validate stock availability
+                for cart_item in cart.items.all():
+                    variant = variant_map.get(cart_item.variant.id)
+                    if not variant:
+                        raise serializers.ValidationError(
+                            f"Variant {cart_item.variant.product.name} is no longer available."
+                        )
+                    if not variant.available or not variant.is_active:
+                        raise serializers.ValidationError(
+                            f"Variant {variant.product.name} is not available."
+                        )
+                    if variant.stock < cart_item.quantity:
+                        raise serializers.ValidationError(
+                            f"Insufficient stock for {variant.product.name}. "
+                            f"Available: {variant.stock}, Requested: {cart_item.quantity}"
+                        )
 
-       
-        order = Order.objects.create(
-            user=user,
-            total_amount=total_amount,
-            total_discount=total_discount,
-            final_total=final_total,
-            status='pending',
-            payment_method=payment_method,
-        )
+              
+                total_amount = cart.get_final_subtotal()
+                total_discount = cart.get_final_discount()
+                total_tax = cart.get_final_tax()
+                final_total = cart.get_final_total()
+                coupon_discount = Decimal('0.00')
 
-        # for the selected address 
-        OrderAddress.objects.create(
-            order=order,
-            name=address.name,
-            house_no=address.house_no,
-            city=address.city,
-            state=address.state,
-            pin_code=address.pin_code,
-            address_type=address.address_type,
-            landmark=address.landmark,
-            mobile_number=address.mobile_number,
-            alternate_number=address.alternate_number
-        )
+                if coupon:
+                    if coupon.coupon_type == 'flat':
+                        coupon_discount = coupon.discount
+                    else:  # percentage
+                        coupon_discount = (coupon.discount / 100) * total_amount
+                    if coupon_discount > total_amount:
+                        coupon_discount = total_amount
+                    coupon.used_count += 1
+                    coupon.save()
 
-        # Create order items from cart items
-        for cart_item in cart.items.all():
-            OrderItem.objects.create(
-                order=order,
-                variant=cart_item.variant,
-                quantity=cart_item.quantity,
-                price=cart_item.variant.calculate_total_price(),
-                subtotal=cart_item.get_subtotal(),
-                discount=(cart_item.get_subtotal() - cart_item.calculate_final_price()),
-                final_price=cart_item.calculate_final_price()
-            )
-        cart.clear()
-      
-        return order
-    
-# ==================================Order Cancellation ====================
+                final_total = total_amount - total_discount - coupon_discount + total_tax
+
+                # Create the order
+                order = Order.objects.create(
+                    user=user,
+                    cart=cart,
+                    total_amount=total_amount,
+                    total_discount=total_discount,
+                    coupon_discount=coupon_discount,
+                    total_tax=total_tax,
+                    final_total=final_total,
+                    status='pending',
+                    payment_method=payment_method,
+                    coupon=coupon
+                )
+
+                # Create order address
+                OrderAddress.objects.create(
+                    order=order,
+                    name=address.name,
+                    house_no=address.house_no,
+                    city=address.city,
+                    state=address.state,
+                    pin_code=address.pin_code,
+                    address_type=address.address_type,
+                    landmark=address.landmark,
+                    mobile_number=address.mobile_number,
+                    alternate_number=address.alternate_number
+                )
+
+                # Create order items and reduce stock
+               
+
+                for cart_item in cart.items.all():
+                    variant = variant_map[cart_item.variant.id]
+                    subtotal = cart_item.get_subtotal()
+                    item_discount = cart_item.get_discount_amount()
+                    tax = cart_item.get_tax_amount()
+                    item_coupon_discount = Decimal('0.00')
+                    if coupon and total_amount > 0:
+                        proportion = subtotal / total_amount
+                        item_coupon_discount = coupon_discount * proportion
+                    final_price = subtotal - item_discount - item_coupon_discount + tax
+
+                    # Create OrderItem
+                    OrderItem.objects.create(
+                        order=order,
+                        variant=variant,
+                        quantity=cart_item.quantity,
+                        price=cart_item.variant.total_price,
+                        subtotal=subtotal,
+                        discount=item_discount,
+                        coupon_discount=item_coupon_discount,
+                        tax=tax,
+                        final_price=final_price
+                    )
+
+                   
+                    ProductVariant.objects.filter(id=variant.id).update(
+                        stock=F('stock') - cart_item.quantity
+                    )
+                    variant.refresh_from_db()
+                    if variant.stock < 0:
+                        raise serializers.ValidationError(
+                            f"Stock for {variant.product.name} cannot go negative."
+                        )
+
+                cart.clear()
+                logger.info(f"Order {order.order_number} created successfully for user {user.username}")
+
+                return order
+        except Exception as e:
+            logger.error(f"Error creating order for user {user.username}: {str(e)}")
+            raise serializers.ValidationError(f"Failed to create order: {str(e)}")
+        
+# ==================================  Order Cancellation ====================
 
 
 
 class OrderCancelSerializer(serializers.ModelSerializer):
-
     cancel_reason = serializers.CharField(max_length=255, required=True)
 
     class Meta:
@@ -203,26 +306,15 @@ class OrderCancelSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         order = self.instance
-        
         if order.status == 'cancelled':
             raise serializers.ValidationError("Order is already cancelled.")
-       
-        if order.payment_method != 'cod':
-            raise serializers.ValidationError("Only Cash on Delivery orders can be cancelled.")
-        
-        if order.payment_status != 'pending':
-            raise serializers.ValidationError("Cannot cancel order with completed payment.")
-        
-        if order.status in ['shipped', 'delivered','return_requested','returned','return_denied']:
+        if order.status in ['shipped', 'delivered', 'return_requested', 'returned', 'return_denied']:
             raise serializers.ValidationError("Cannot cancel shipped or delivered orders.")
         return data
 
     def update(self, instance, validated_data):
-        
-        instance.cancel_reason = validated_data['cancel_reason']
-        instance.cancelled_at = timezone.now()
-        instance.save()
-        instance.cancelorder()  
+        cancel_reason = validated_data['cancel_reason']
+        instance.cancelorder(cancel_reason)  # Pass cancel_reason to cancelorder
         return instance
     
 
@@ -239,25 +331,13 @@ class OrderItemCancelSerializer(serializers.ModelSerializer):
     def validate(self, data):
         item = self.instance
         order = item.order
-
-        
         if item.status != 'active':
             raise serializers.ValidationError("Item is already cancelled or returned.")
-
-        
         if order.status in ['shipped', 'delivered', 'cancelled', 'return_requested', 'returned', 'return_denied']:
-            raise serializers.ValidationError("Cannot cancel items after status shipped.")
-
-        
-        if order.payment_method != 'cod':
-            raise serializers.ValidationError("Only Cash on Delivery order items can be cancelled.")
-        if order.payment_status != 'pending':
-            raise serializers.ValidationError("Cannot cancel items in an order with completed payment.")
-
+            raise serializers.ValidationError("Cannot cancel items in shipped or delivered orders.")
         return data
 
     def update(self, instance, validated_data):
-       
         instance.cancel_item(validated_data['cancel_reason'])
         return instance
     
@@ -275,21 +355,23 @@ class OrderReturnSerializer(serializers.ModelSerializer):
         order = self.instance
         if order.status != 'delivered':
             raise serializers.ValidationError("Only delivered orders can be returned.")
-        if order.items.filter(status='return_requested').exists():
-            raise serializers.ValidationError("Order already has pending return requests for items.")
+        if any(item.status != 'active' for item in order.items.all()):
+            raise serializers.ValidationError("All items must be active to request a return for the entire order.")
         return data
 
     def update(self, instance, validated_data):
         instance.request_return(validated_data['return_reason'])
         return instance
-    
+
+
 
 class AdminOrderReturnApprovalSerializer(serializers.ModelSerializer):
-    approve = serializers.BooleanField(required=True,write_only=True)
+    approve = serializers.BooleanField(required=True, write_only=True)
+    wallet_transaction = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Order
-        fields = ['id', 'approve']
+        fields = ['id', 'approve', 'wallet_transaction']
 
     def validate(self, data):
         order = self.instance
@@ -303,6 +385,21 @@ class AdminOrderReturnApprovalSerializer(serializers.ModelSerializer):
         else:
             instance.deny_return()
         return instance
+
+    def get_wallet_transaction(self, obj):
+        if obj.status == 'returned' and obj.approve_status:
+            transaction = WalletTransaction.objects.filter(
+                wallet__user=obj.user,
+                order_number=obj.order_number,
+                transaction_type='credit'
+            ).order_by('-created_at').first()
+            if transaction:
+                return {
+                    'transaction_id': transaction.id,
+                    'amount': transaction.amount,
+                    'created_at': transaction.created_at
+                }
+        return None
     
 #============== Order item returned========================
 
@@ -315,22 +412,26 @@ class OrderItemReturnSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         item = self.instance
-        if item.order.status != 'delivered':
+        order = item.order
+        if order.status != 'delivered':
             raise serializers.ValidationError("Only items in delivered orders can be returned.")
         if item.status != 'active':
-            raise serializers.ValidationError("Item is already cancelled, returned, or has a pending return request.")
+            raise serializers.ValidationError("Only active items can be returned.")
         return data
 
     def update(self, instance, validated_data):
         instance.request_item_return(validated_data['return_reason'])
         return instance
     
+
+
 class AdminOrderItemReturnApprovalSerializer(serializers.ModelSerializer):
-    approve = serializers.BooleanField(required=True,write_only=True)
+    approve = serializers.BooleanField(required=True, write_only=True)
+    wallet_transaction = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = OrderItem
-        fields = ['id', 'approve']
+        fields = ['id', 'approve', 'wallet_transaction']
 
     def validate(self, data):
         item = self.instance
@@ -344,7 +445,21 @@ class AdminOrderItemReturnApprovalSerializer(serializers.ModelSerializer):
         else:
             instance.deny_item_return()
         return instance
-    
+
+    def get_wallet_transaction(self, obj):
+        if obj.status == 'returned':
+            transaction = WalletTransaction.objects.filter(
+                wallet__user=obj.order.user,
+                order_number=obj.order.order_number,
+                transaction_type='credit'
+            ).order_by('-created_at').first()
+            if transaction:
+                return {
+                    'transaction_id': transaction.id,
+                    'amount': transaction.amount,
+                    'created_at': transaction.created_at
+                }
+        return None
 
 # =============== Wallet views=====================================
 
@@ -357,12 +472,10 @@ class WalletSerializer(serializers.ModelSerializer):
 class WalletTransactionSerializer(serializers.ModelSerializer):
     class Meta:
         model = WalletTransaction
-        fields = ['wallet', 'amount', 'transaction_type', 'description', 'created_at','order_number',
-                #   'transation_id'
-                  ]
-        read_only_fields = ['wallet', 'amount', 'transaction_type', 'description', 'created_at',
-                            # 'transation_id'
-                            ]
+        fields = ['wallet', 'amount', 'transaction_type', 'description', 'created_at', 'order_number', 'transaction_id']
+        read_only_fields = ['wallet', 'amount', 'transaction_type', 'description', 'created_at']
+
+
 #======================== wishlist =========================================
 
 class WishlistItemSerializer(serializers.ModelSerializer):
@@ -405,3 +518,41 @@ class WishlistSerializer(serializers.ModelSerializer):
 
     def get_total_items(self, obj):
         return obj.items.count()
+    
+class CouponSerializer(serializers.ModelSerializer):
+    remaining_uses = serializers.SerializerMethodField()
+    status = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Coupon
+        fields = ['id', 'coupon_name', 'coupon_code', 'discount', 'valid_from', 'valid_to',
+                  'is_active', 'max_uses', 'used_count', 'min_amount', 'remaining_uses',
+                  'status', 'created_at', 'updated_at', 'min_offer_amount', 'coupon_type']
+        read_only_fields = ['used_count', 'created_at', 'updated_at']
+
+    def get_remaining_uses(self, obj):
+        if obj.max_uses == 0:
+            return "Unlimited"
+        return obj.max_uses - obj.used_count
+
+    def get_status(self, obj):
+        now = timezone.now().date()
+        if not obj.is_active:
+            return "Inactive"
+        elif now < obj.valid_from:
+            return "Pending"
+        elif now > obj.valid_to:
+            return "Expired"
+        elif obj.max_uses > 0 and obj.used_count >= obj.max_uses:
+            return "Fully Used"
+        else:
+            return "Active"
+
+    def validate(self, data):
+        if data.get('valid_from') and data.get('valid_to'):
+            if data['valid_from'] > data['valid_to']:
+                raise serializers.ValidationError("End date must be after start date")
+        if data.get('discount'):
+            if data['discount'] <= 0:
+                raise serializers.ValidationError("Discount must be greater than 0")
+        return data

@@ -1127,7 +1127,7 @@ const ViewOrderDetails = () => {
                           {item.product.name}
                         </h3>
                         <span className="font-semibold text-[#7a2828] group-hover:scale-110 transition-transform duration-200">
-                          ₹{item.subtotal}
+                          ₹{item.final_price}
                         </span>
                       </div>
                       <p className="text-sm text-gray-600 mt-2 line-clamp-2 group-hover:text-gray-800 transition-colors duration-200">
@@ -1136,7 +1136,7 @@ const ViewOrderDetails = () => {
                       <div className="flex flex-wrap justify-between mt-3 text-sm text-gray-600 items-center gap-2">
                         <div className="flex flex-wrap items-center gap-3">
                           <span className="bg-gray-100 px-2 py-1 rounded-md group-hover:bg-white transition-colors duration-200">
-                            Price: ₹{item.price}
+                            Price: ₹{item.final_price}
                           </span>
                           <span className="text-[#d9b3b3]">•</span>
                           <span className="bg-gray-100 px-2 py-1 rounded-md group-hover:bg-white transition-colors duration-200">
@@ -1426,9 +1426,10 @@ const ViewOrderDetails = () => {
                       <span className="text-red-600">− ₹{order.total_discount}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Shipping Charges</span>
-                      <span className="font-semibold">₹50.00</span>
+                      <span className="text-gray-600">Product returned</span>
+                      <span className="text-red-600">− ₹{order.total_discount}</span>
                     </div>
+                   
                     <Separator className="my-4 bg-gradient-to-r from-[#e5d1d1] to-[#f0e6c9] h-0.5 rounded-full" />
                     <div className="flex justify-between">
                       <span className="font-semibold text-[#7a2828]">Grand Total</span>

@@ -1,19 +1,19 @@
 
 
 // import { useState, useEffect } from "react"
-// import { useNavigate } from "react-router-dom" // Import useNavigate
+// import { useNavigate } from "react-router-dom"
 // import { Input } from "@/components/ui/input"
 // import { Button } from "@/components/ui/button"
 // import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 // import { Textarea } from "@/components/ui/textarea"
-// import { X, Upload, ZoomIn, ZoomOut, Crop ,ArrowLeft,} from "lucide-react"
+// import { X, Upload, ZoomIn, ZoomOut, Crop, ArrowLeft } from "lucide-react"
 // import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 // import { Slider } from "@/components/ui/slider"
 // import api from "../../api"
 // import Cropper from "react-easy-crop"
 
 // const AddProductForm = () => {
-//   const navigate = useNavigate() // Initialize navigate
+//   const navigate = useNavigate()
 //   const [categories, setCategories] = useState([])
 //   const [productData, setProductData] = useState({
 //     name: "",
@@ -27,8 +27,7 @@
 //     available: true,
 //     gold_color: "",
 //     product_offer: "",
-//     product_offer_Isactive:true,
-
+//     product_offer_Isactive: true,
 //     images: [],
 //     variants: [
 //       {
@@ -36,7 +35,9 @@
 //         stock: "",
 //         gold_price: "",
 //         making_charge: "",
-//         stone_rate:""
+//         stone_rate: "",
+//         tax: "",
+//         shipping: ""
 //       },
 //     ],
 //   })
@@ -92,10 +93,11 @@
 //         {
 //           gross_weight: "",
 //           stock: "",
-//           stone_rate:"",
 //           gold_price: "",
 //           making_charge: "",
-          
+//           stone_rate: "",
+//           tax: "",
+//           shipping: ""
 //         },
 //       ],
 //     }))
@@ -112,14 +114,10 @@
 
 //   const handleImageSelect = (e) => {
 //     const files = Array.from(e.target.files)
-
 //     if (files.length > 0) {
 //       const file = files[0]
 //       const imageUrl = URL.createObjectURL(file)
-//       setCurrentImage({
-//         file,
-//         url: imageUrl,
-//       })
+//       setCurrentImage({ file, url: imageUrl })
 //       setIsEditModalOpen(true)
 //     }
 //   }
@@ -136,10 +134,7 @@
 
 //   const editImage = (index) => {
 //     setCurrentImageIndex(index)
-//     setCurrentImage({
-//       file: imageFiles[index],
-//       url: imagePreviews[index],
-//     })
+//     setCurrentImage({ file: imageFiles[index], url: imagePreviews[index] })
 //     setIsEditModalOpen(true)
 //   }
 
@@ -152,14 +147,12 @@
 //       const canvas = document.createElement("canvas")
 //       const ctx = canvas.getContext("2d")
 //       const image = new Image()
-
 //       image.src = currentImage.url
 
 //       return new Promise((resolve) => {
 //         image.onload = () => {
 //           canvas.width = croppedAreaPixels.width
 //           canvas.height = croppedAreaPixels.height
-
 //           ctx.drawImage(
 //             image,
 //             croppedAreaPixels.x,
@@ -169,19 +162,14 @@
 //             0,
 //             0,
 //             croppedAreaPixels.width,
-//             croppedAreaPixels.height,
+//             croppedAreaPixels.height
 //           )
-
 //           canvas.toBlob((blob) => {
 //             const croppedFile = new File([blob], currentImage.file.name, {
 //               type: "image/jpeg",
 //               lastModified: new Date().getTime(),
 //             })
-
-//             resolve({
-//               file: croppedFile,
-//               url: URL.createObjectURL(blob),
-//             })
+//             resolve({ file: croppedFile, url: URL.createObjectURL(blob) })
 //           }, "image/jpeg")
 //         }
 //       })
@@ -193,9 +181,7 @@
 
 //   const saveCroppedImage = async () => {
 //     if (!croppedAreaPixels) return
-
 //     const croppedImage = await createCroppedImage()
-
 //     if (croppedImage) {
 //       if (currentImageIndex !== null) {
 //         const newImageFiles = [...imageFiles]
@@ -214,7 +200,6 @@
 //         }))
 //       }
 //     }
-
 //     setCurrentImage(null)
 //     setCurrentImageIndex(null)
 //     setCrop({ x: 0, y: 0 })
@@ -227,7 +212,6 @@
 //     if (currentImage && currentImageIndex === null) {
 //       URL.revokeObjectURL(currentImage.url)
 //     }
-
 //     setCurrentImage(null)
 //     setCurrentImageIndex(null)
 //     setCrop({ x: 0, y: 0 })
@@ -238,15 +222,19 @@
 
 //   const handleSubmit = async (e) => {
 //     e.preventDefault()
-
 //     if (!productData.name || !productData.category || !productData.description) {
 //       setError("Please fill in all required fields")
 //       return
 //     }
-
 //     if (
 //       productData.variants.some(
-//         (variant) => !variant.gross_weight || !variant.stock || !variant.gold_price || !variant.making_charge,
+//         (variant) =>
+//           !variant.gross_weight ||
+//           !variant.stock ||
+//           !variant.gold_price ||
+//           !variant.making_charge ||
+//           !variant.tax ||
+//           !variant.shipping
 //       )
 //     ) {
 //       setError("Please complete all variant details")
@@ -267,11 +255,12 @@
 //           gold_price: Number.parseFloat(variant.gold_price),
 //           making_charge: Number.parseFloat(variant.making_charge),
 //           stone_rate: variant.stone_rate ? Number.parseFloat(variant.stone_rate) : 0,
+//           tax: Number.parseFloat(variant.tax),
+//           shipping: Number.parseFloat(variant.shipping)
 //         })),
 //       }
 
 //       console.log("Sending data:", formattedData)
-
 //       const response = await api.post("productapp/products/", formattedData)
 //       console.log("Response:", response.data)
 //       const productId = response.data.id
@@ -281,18 +270,13 @@
 //         imageFiles.forEach((file) => {
 //           formData.append("images", file)
 //         })
-
 //         await api.post(`productapp/products/${productId}/images/`, formData, {
-//           headers: {
-//             "Content-Type": "multipart/form-data",
-//           },
+//           headers: { "Content-Type": "multipart/form-data" },
 //         })
 //       }
 
 //       console.log("Success:", response.data)
 //       setSuccess(true)
-
-//       // Reset the form
 //       setProductData({
 //         name: "",
 //         category: "",
@@ -305,7 +289,7 @@
 //         available: true,
 //         gold_color: "",
 //         product_offer: "",
-//         product_offer_Isactive:true,
+//         product_offer_Isactive: true,
 //         images: [],
 //         variants: [
 //           {
@@ -313,18 +297,17 @@
 //             stock: "",
 //             gold_price: "",
 //             making_charge: "",
-//             stone_rate:"",
+//             stone_rate: "",
+//             tax: "",
+//             shipping: ""
 //           },
 //         ],
 //       })
-
 //       setImageFiles([])
 //       setImagePreviews([])
-
-//       // Redirect to homepage after a brief delay
 //       setTimeout(() => {
-//         navigate('/dashboard') // Redirect using useNavigate
-//       }, 1500) // 1.5-second delay to show success message
+//         navigate('/dashboard')
+//       }, 1500)
 //     } catch (err) {
 //       console.error("Error:", err)
 //       if (err.response) {
@@ -352,15 +335,19 @@
 //     <div className="max-w-4xl mx-auto">
 //       <h2 className="text-2xl font-semibold mb-6">Add Product</h2>
 //       <Button
-//             variant="outline"
-//             onClick={() => navigate("/dashboard")}
-//             className="flex items-center gap-2 border-[#7a2828] text-[#7a2828] hover:bg-[#7a2828] hover:text-white"
-//           >
-//             <ArrowLeft className="h-4 w-4" />
-//             Back
-//           </Button>
+//         variant="outline"
+//         onClick={() => navigate("/dashboard")}
+//         className="flex items-center gap-2 border-[#7a2828] text-[#7a2828] hover:bg-[#7a2828] hover:text-white"
+//       >
+//         <ArrowLeft className="h-4 w-4" />
+//         Back
+//       </Button>
 
-//       {error && <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">{error}</div>}
+//       {error && (
+//         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+//           {error}
+//         </div>
+//       )}
 
 //       {success && (
 //         <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
@@ -376,7 +363,7 @@
 //             onChange={handleChange}
 //             placeholder="Product Name"
 //             className="bg-gray-50"
-            
+//             required
 //           />
 //           <Input
 //             name="bis_hallmark"
@@ -384,6 +371,7 @@
 //             onChange={handleChange}
 //             placeholder="BIS Hallmark ID"
 //             className="bg-gray-50"
+//             required
 //           />
 //         </div>
 
@@ -391,7 +379,7 @@
 //           <Select
 //             onValueChange={(val) => setProductData((prev) => ({ ...prev, category: val }))}
 //             value={productData.category}
-            
+//             required
 //           >
 //             <SelectTrigger className="bg-gray-50">
 //               <SelectValue placeholder="Category" />
@@ -412,7 +400,6 @@
 //               )}
 //             </SelectContent>
 //           </Select>
-
 //           <Input
 //             name="gold_color"
 //             value={productData.gold_color}
@@ -462,15 +449,16 @@
 //               <SelectItem value="Unisex">Unisex</SelectItem>
 //             </SelectContent>
 //           </Select>
-
 //           <Input
-//             name="offer"
+//             name="product_offer"
+//             type="number"
 //             value={productData.product_offer}
 //             onChange={handleChange}
-//             placeholder="Product Offer"
+//             placeholder="Product Offer (%)"
 //             className="bg-gray-50"
+//             min="0"
+//             max="100"
 //           />
-
 //           <Select
 //             onValueChange={(val) => setProductData((prev) => ({ ...prev, available: val === "true" }))}
 //             value={productData.available ? "true" : "false"}
@@ -491,12 +479,11 @@
 //           onChange={handleChange}
 //           placeholder="Description"
 //           className="bg-gray-50 min-h-[100px]"
-          
+//           required
 //         />
 
 //         <div className="mt-6">
 //           <h3 className="text-lg font-semibold mb-3">Product Images</h3>
-
 //           <div className="flex flex-wrap gap-4 mb-4">
 //             {imagePreviews.map((preview, index) => (
 //               <div key={index} className="relative group">
@@ -504,7 +491,6 @@
 //                   src={preview || "/placeholder.svg"}
 //                   alt={`Preview ${index + 1}`}
 //                   className="w-24 h-24 object-cover border rounded-md"
-
 //                 />
 //                 <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
 //                   <button
@@ -524,28 +510,34 @@
 //                 </div>
 //               </div>
 //             ))}
-
 //             <label className="flex flex-col items-center justify-center w-24 h-24 border-2 border-dashed border-gray-300 rounded-md cursor-pointer hover:bg-gray-50">
 //               <div className="flex flex-col items-center justify-center pt-5 pb-6">
 //                 <Upload className="w-8 h-8 text-gray-400" />
 //                 <p className="text-xs text-gray-500 mt-1">Add Image</p>
 //               </div>
-//               <input type="file" className="hidden" accept="image/*" onChange={handleImageSelect} />
+//               <input
+//                 type="file"
+//                 className="hidden"
+//                 accept="image/*"
+//                 onChange={handleImageSelect}
+//               />
 //             </label>
 //           </div>
 //         </div>
 
 //         <h3 className="text-lg font-semibold">Variants</h3>
 //         {productData.variants.map((variant, index) => (
-//           <div key={index} className="grid grid-cols-5 gap-4 border p-4 rounded-lg">
+//           <div key={index} className="grid grid-cols-4 gap-4 border p-4 rounded-lg">
 //             <Input
 //               name="gross_weight"
 //               type="number"
 //               value={variant.gross_weight}
 //               onChange={(e) => handleVariantChange(index, e)}
-//               placeholder="Gross Weight"
+//               placeholder="Gross Weight (g)"
 //               className="bg-gray-50"
 //               required
+//               min="0"
+//               step="0.01"
 //             />
 //             <Input
 //               name="gold_price"
@@ -554,7 +546,9 @@
 //               onChange={(e) => handleVariantChange(index, e)}
 //               placeholder="Gold Price"
 //               className="bg-gray-50"
-              
+//               required
+//               min="0"
+//               step="0.01"
 //             />
 //             <Input
 //               name="stock"
@@ -563,7 +557,9 @@
 //               onChange={(e) => handleVariantChange(index, e)}
 //               placeholder="Stock"
 //               className="bg-gray-50"
-              
+//               required
+//               min="0"
+//               step="1"
 //             />
 //             <Input
 //               name="making_charge"
@@ -572,7 +568,41 @@
 //               onChange={(e) => handleVariantChange(index, e)}
 //               placeholder="Making Charge"
 //               className="bg-gray-50"
-              
+//               required
+//               min="0"
+//               step="0.01"
+//             />
+//             <Input
+//               name="stone_rate"
+//               type="number"
+//               value={variant.stone_rate}
+//               onChange={(e) => handleVariantChange(index, e)}
+//               placeholder="Stone Rate"
+//               className="bg-gray-50"
+//               min="0"
+//               step="0.01"
+//             />
+//             <Input
+//               name="tax"
+//               type="number"
+//               value={variant.tax}
+//               onChange={(e) => handleVariantChange(index, e)}
+//               placeholder="Tax (%)"
+//               className="bg-gray-50"
+//               required
+//               min="0"
+//               step="0.01"
+//             />
+//             <Input
+//               name="shipping"
+//               type="number"
+//               value={variant.shipping}
+//               onChange={(e) => handleVariantChange(index, e)}
+//               placeholder="Shipping Cost"
+//               className="bg-gray-50"
+//               required
+//               min="0"
+//               step="0.01"
 //             />
 //             <Button
 //               type="button"
@@ -585,11 +615,19 @@
 //           </div>
 //         ))}
 
-//         <Button type="button" onClick={addVariant} className="bg-gray-500 hover:bg-gray-600 text-white">
+//         <Button
+//           type="button"
+//           onClick={addVariant}
+//           className="bg-gray-500 hover:bg-gray-600 text-white"
+//         >
 //           + Add Variant
 //         </Button>
 
-//         <Button type="submit" className="w-full bg-[#8c2a2a] hover:bg-[#7a2424] text-white" disabled={isSubmitting}>
+//         <Button
+//           type="submit"
+//           className="w-full bg-[#8c2a2a] hover:bg-[#7a2424] text-white"
+//           disabled={isSubmitting}
+//         >
 //           {isSubmitting ? "Adding Product..." : "Add Product"}
 //         </Button>
 //       </form>
@@ -599,7 +637,6 @@
 //           <DialogHeader>
 //             <DialogTitle>Edit Image</DialogTitle>
 //           </DialogHeader>
-
 //           <div className="relative flex-grow my-4" style={{ height: "400px" }}>
 //             {currentImage && (
 //               <Cropper
@@ -613,7 +650,6 @@
 //               />
 //             )}
 //           </div>
-
 //           <div className="flex items-center gap-2 my-4">
 //             <ZoomOut className="text-gray-500" />
 //             <Slider
@@ -626,7 +662,6 @@
 //             />
 //             <ZoomIn className="text-gray-500" />
 //           </div>
-
 //           <DialogFooter>
 //             <Button variant="outline" onClick={cancelImageEdit}>
 //               Cancel
@@ -641,22 +676,21 @@
 
 // export default AddProductForm
 
-
-import { useState, useEffect } from "react"
-import { useNavigate } from "react-router-dom"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Textarea } from "@/components/ui/textarea"
-import { X, Upload, ZoomIn, ZoomOut, Crop, ArrowLeft } from "lucide-react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
-import { Slider } from "@/components/ui/slider"
-import api from "../../api"
-import Cropper from "react-easy-crop"
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { X, Upload, ZoomIn, ZoomOut, Crop, ArrowLeft } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Slider } from "@/components/ui/slider";
+import api from "../../api";
+import Cropper from "react-easy-crop";
 
 const AddProductForm = () => {
-  const navigate = useNavigate()
-  const [categories, setCategories] = useState([])
+  const navigate = useNavigate();
+  const [categories, setCategories] = useState([]);
   const [productData, setProductData] = useState({
     name: "",
     category: "",
@@ -667,8 +701,8 @@ const AddProductForm = () => {
     bis_hallmark: "",
     size: "",
     available: true,
-    gold_color: "",
-    product_offer: "",
+    gold_color: "yellow",
+    discount: "",
     product_offer_Isactive: true,
     images: [],
     variants: [
@@ -678,54 +712,48 @@ const AddProductForm = () => {
         gold_price: "",
         making_charge: "",
         stone_rate: "",
-        tax: "",
-        shipping: ""
+        tax: "1",
       },
     ],
-  })
+  });
 
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [error, setError] = useState(null)
-  const [success, setSuccess] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(false);
+  const [imageFiles, setImageFiles] = useState([]);
+  const [imagePreviews, setImagePreviews] = useState([]);
 
-  const [imageFiles, setImageFiles] = useState([])
-  const [imagePreviews, setImagePreviews] = useState([])
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [currentImage, setCurrentImage] = useState(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState(null);
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
 
-  // Image editing state
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
-  const [currentImage, setCurrentImage] = useState(null)
-  const [currentImageIndex, setCurrentImageIndex] = useState(null)
-  const [crop, setCrop] = useState({ x: 0, y: 0 })
-  const [zoom, setZoom] = useState(1)
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null)
-
-  // Fetch categories on component mount
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await api.get("productapp/user/categories/")
-        setCategories(response.data)
-        console.log("Categories loaded:", response.data)
+        const response = await api.get("productapp/user/categories/");
+        setCategories(response.data);
       } catch (error) {
-        console.error("Error fetching categories:", error)
-        setError("Failed to load categories. Please refresh the page.")
+        console.error("Error fetching categories:", error);
+        setError("Failed to load categories. Please refresh the page.");
       }
-    }
-
-    fetchCategories()
-  }, [])
+    };
+    fetchCategories();
+  }, []);
 
   const handleChange = (e) => {
-    const { name, value } = e.target
-    setProductData((prev) => ({ ...prev, [name]: value }))
-  }
+    const { name, value } = e.target;
+    setProductData((prev) => ({ ...prev, [name]: value }));
+  };
 
   const handleVariantChange = (index, e) => {
-    const { name, value } = e.target
-    const updatedVariants = [...productData.variants]
-    updatedVariants[index][name] = value
-    setProductData((prev) => ({ ...prev, variants: updatedVariants }))
-  }
+    const { name, value } = e.target;
+    const updatedVariants = [...productData.variants];
+    updatedVariants[index][name] = value;
+    setProductData((prev) => ({ ...prev, variants: updatedVariants }));
+  };
 
   const addVariant = () => {
     setProductData((prev) => ({
@@ -738,63 +766,61 @@ const AddProductForm = () => {
           gold_price: "",
           making_charge: "",
           stone_rate: "",
-          tax: "",
-          shipping: ""
+          tax: "1",
         },
       ],
-    }))
-  }
+    }));
+  };
 
   const removeVariant = (index) => {
     if (productData.variants.length > 1) {
       setProductData((prev) => ({
         ...prev,
         variants: prev.variants.filter((_, i) => i !== index),
-      }))
+      }));
     }
-  }
+  };
 
   const handleImageSelect = (e) => {
-    const files = Array.from(e.target.files)
-    if (files.length > 0) {
-      const file = files[0]
-      const imageUrl = URL.createObjectURL(file)
-      setCurrentImage({ file, url: imageUrl })
-      setIsEditModalOpen(true)
-    }
-  }
+    const files = Array.from(e.target.files);
+    files.forEach((file) => {
+      const imageUrl = URL.createObjectURL(file);
+      setImageFiles((prev) => [...prev, file]);
+      setImagePreviews((prev) => [...prev, imageUrl]);
+    });
+  };
 
   const removeImage = (index) => {
-    URL.revokeObjectURL(imagePreviews[index])
-    setImageFiles((prev) => prev.filter((_, i) => i !== index))
-    setImagePreviews((prev) => prev.filter((_, i) => i !== index))
+    URL.revokeObjectURL(imagePreviews[index]);
+    setImageFiles((prev) => prev.filter((_, i) => i !== index));
+    setImagePreviews((prev) => prev.filter((_, i) => i !== index));
     setProductData((prev) => ({
       ...prev,
       images: prev.images.filter((_, i) => i !== index),
-    }))
-  }
+    }));
+  };
 
   const editImage = (index) => {
-    setCurrentImageIndex(index)
-    setCurrentImage({ file: imageFiles[index], url: imagePreviews[index] })
-    setIsEditModalOpen(true)
-  }
+    setCurrentImageIndex(index);
+    setCurrentImage({ file: imageFiles[index], url: imagePreviews[index] });
+    setIsEditModalOpen(true);
+  };
 
   const onCropComplete = (croppedArea, croppedAreaPixels) => {
-    setCroppedAreaPixels(croppedAreaPixels)
-  }
+    setCroppedAreaPixels(croppedAreaPixels);
+  };
 
   const createCroppedImage = async () => {
     try {
-      const canvas = document.createElement("canvas")
-      const ctx = canvas.getContext("2d")
-      const image = new Image()
-      image.src = currentImage.url
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      const image = new Image();
+      image.src = currentImage.url;
 
       return new Promise((resolve) => {
         image.onload = () => {
-          canvas.width = croppedAreaPixels.width
-          canvas.height = croppedAreaPixels.height
+          canvas.width = croppedAreaPixels.width;
+          canvas.height = croppedAreaPixels.height;
           ctx.drawImage(
             image,
             croppedAreaPixels.x,
@@ -805,68 +831,73 @@ const AddProductForm = () => {
             0,
             croppedAreaPixels.width,
             croppedAreaPixels.height
-          )
+          );
           canvas.toBlob((blob) => {
             const croppedFile = new File([blob], currentImage.file.name, {
               type: "image/jpeg",
               lastModified: new Date().getTime(),
-            })
-            resolve({ file: croppedFile, url: URL.createObjectURL(blob) })
-          }, "image/jpeg")
-        }
-      })
+            });
+            resolve({ file: croppedFile, url: URL.createObjectURL(blob) });
+          }, "image/jpeg");
+        };
+      });
     } catch (e) {
-      console.error("Error creating cropped image:", e)
-      return null
+      console.error("Error creating cropped image:", e);
+      return null;
     }
-  }
+  };
 
   const saveCroppedImage = async () => {
-    if (!croppedAreaPixels) return
-    const croppedImage = await createCroppedImage()
+    if (!croppedAreaPixels) return;
+    const croppedImage = await createCroppedImage();
     if (croppedImage) {
       if (currentImageIndex !== null) {
-        const newImageFiles = [...imageFiles]
-        const newImagePreviews = [...imagePreviews]
-        URL.revokeObjectURL(imagePreviews[currentImageIndex])
-        newImageFiles[currentImageIndex] = croppedImage.file
-        newImagePreviews[currentImageIndex] = croppedImage.url
-        setImageFiles(newImageFiles)
-        setImagePreviews(newImagePreviews)
+        const newImageFiles = [...imageFiles];
+        const newImagePreviews = [...imagePreviews];
+        URL.revokeObjectURL(imagePreviews[currentImageIndex]);
+        newImageFiles[currentImageIndex] = croppedImage.file;
+        newImagePreviews[currentImageIndex] = croppedImage.url;
+        setImageFiles(newImageFiles);
+        setImagePreviews(newImagePreviews);
       } else {
-        setImageFiles((prev) => [...prev, croppedImage.file])
-        setImagePreviews((prev) => [...prev, croppedImage.url])
-        setProductData((prev) => ({
-          ...prev,
-          images: [...prev.images, croppedImage.file.name],
-        }))
+        setImageFiles((prev) => [...prev, croppedImage.file]);
+        setImagePreviews((prev) => [...prev, croppedImage.url]);
       }
     }
-    setCurrentImage(null)
-    setCurrentImageIndex(null)
-    setCrop({ x: 0, y: 0 })
-    setZoom(1)
-    setCroppedAreaPixels(null)
-    setIsEditModalOpen(false)
-  }
+    setCurrentImage(null);
+    setCurrentImageIndex(null);
+    setCrop({ x: 0, y: 0 });
+    setZoom(1);
+    setCroppedAreaPixels(null);
+    setIsEditModalOpen(false);
+  };
 
   const cancelImageEdit = () => {
     if (currentImage && currentImageIndex === null) {
-      URL.revokeObjectURL(currentImage.url)
+      URL.revokeObjectURL(currentImage.url);
     }
-    setCurrentImage(null)
-    setCurrentImageIndex(null)
-    setCrop({ x: 0, y: 0 })
-    setZoom(1)
-    setCroppedAreaPixels(null)
-    setIsEditModalOpen(false)
-  }
+    setCurrentImage(null);
+    setCurrentImageIndex(null);
+    setCrop({ x: 0, y: 0 });
+    setZoom(1);
+    setCroppedAreaPixels(null);
+    setIsEditModalOpen(false);
+  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    if (!productData.name || !productData.category || !productData.description) {
-      setError("Please fill in all required fields")
-      return
+    e.preventDefault();
+    if (
+      !productData.name ||
+      !productData.category ||
+      !productData.bis_hallmark ||
+      !productData.gender ||
+      !productData.occasion ||
+      !productData.size
+    ) {
+      setError(
+        "Please fill in all required fields (Name, Category, BIS Hallmark, Gender, Occasion, Size)"
+      );
+      return;
     }
     if (
       productData.variants.some(
@@ -874,51 +905,55 @@ const AddProductForm = () => {
           !variant.gross_weight ||
           !variant.stock ||
           !variant.gold_price ||
-          !variant.making_charge ||
-          !variant.tax ||
-          !variant.shipping
+          !variant.tax
       )
     ) {
-      setError("Please complete all variant details")
-      return
+      setError(
+        "Please complete all required variant details (Gross Weight, Stock, Gold Price, Tax)"
+      );
+      return;
     }
 
-    setIsSubmitting(true)
-    setError(null)
-    setSuccess(false)
+    setIsSubmitting(true);
+    setError(null);
+    setSuccess(false);
 
     try {
       const formattedData = {
         ...productData,
         category: Number.parseInt(productData.category),
+        discount: productData.discount
+          ? Number.parseFloat(productData.discount)
+          : 0,
+        images: undefined,
         variants: productData.variants.map((variant) => ({
           gross_weight: Number.parseFloat(variant.gross_weight),
           stock: Number.parseInt(variant.stock),
           gold_price: Number.parseFloat(variant.gold_price),
-          making_charge: Number.parseFloat(variant.making_charge),
-          stone_rate: variant.stone_rate ? Number.parseFloat(variant.stone_rate) : 0,
-          tax: Number.parseFloat(variant.tax),
-          shipping: Number.parseFloat(variant.shipping)
+          making_charge: variant.making_charge
+            ? Number.parseFloat(variant.making_charge)
+            : 0,
+          stone_rate: variant.stone_rate
+            ? Number.parseFloat(variant.stone_rate)
+            : 0,
+          tax: Number.parseInt(variant.tax),
         })),
-      }
+      };
 
-      console.log("Sending data:", formattedData)
-      const response = await api.post("productapp/products/", formattedData)
-      console.log("Response:", response.data)
-      const productId = response.data.id
+      const response = await api.post("productapp/products/", formattedData);
+      const productId = response.data.id;
 
       if (imageFiles.length > 0) {
-        const formData = new FormData()
+        const formData = new FormData();
         imageFiles.forEach((file) => {
-          formData.append("images", file)
-        })
+          formData.append("images", file);
+        });
         await api.post(`productapp/products/${productId}/images/`, formData, {
           headers: { "Content-Type": "multipart/form-data" },
-        })
+        });
       }
 
-      console.log("Success:", response.data)
-      setSuccess(true)
+      setSuccess(true);
       setProductData({
         name: "",
         category: "",
@@ -929,8 +964,8 @@ const AddProductForm = () => {
         bis_hallmark: "",
         size: "",
         available: true,
-        gold_color: "",
-        product_offer: "",
+        gold_color: "yellow",
+        discount: "",
         product_offer_Isactive: true,
         images: [],
         variants: [
@@ -940,50 +975,48 @@ const AddProductForm = () => {
             gold_price: "",
             making_charge: "",
             stone_rate: "",
-            tax: "",
-            shipping: ""
+            tax: "1",
           },
         ],
-      })
-      setImageFiles([])
-      setImagePreviews([])
+      });
+      setImageFiles([]);
+      setImagePreviews([]);
       setTimeout(() => {
-        navigate('/dashboard')
-      }, 1500)
+        navigate("/dashboard");
+      }, 1500);
     } catch (err) {
-      console.error("Error:", err)
+      console.error("Error:", err);
       if (err.response) {
-        console.error("Response data:", err.response.data)
-        console.error("Response status:", err.response.status)
-        if (typeof err.response.data === "object") {
-          const errorMessages = Object.entries(err.response.data)
-            .map(([key, value]) => `${key}: ${value}`)
-            .join(", ")
-          setError(`Validation error: ${errorMessages}`)
-        } else {
-          setError(err.response.data || "Server rejected the data")
-        }
+        const errorMessages =
+          typeof err.response.data === "object"
+            ? Object.entries(err.response.data)
+                .map(([key, value]) => `${key}: ${value}`)
+                .join(", ")
+            : err.response.data || "Server rejected the data";
+        setError(`Validation error: ${errorMessages}`);
       } else if (err.request) {
-        setError("No response from server. Please check your connection.")
+        setError("No response from server. Please check your connection.");
       } else {
-        setError("Error setting up request: " + err.message)
+        setError("Error setting up request: " + err.message);
       }
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <h2 className="text-2xl font-semibold mb-6">Add Product</h2>
-      <Button
-        variant="outline"
-        onClick={() => navigate("/dashboard")}
-        className="flex items-center gap-2 border-[#7a2828] text-[#7a2828] hover:bg-[#7a2828] hover:text-white"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        Back
-      </Button>
+    <div className="max-w-4xl mx-auto p-6">
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-2xl font-semibold">Add Product</h2>
+        <Button
+          variant="outline"
+          onClick={() => navigate("/dashboard")}
+          className="flex items-center gap-2 border-[#7a2828] text-[#7a2828] hover:bg-[#7a2828] hover:text-white"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back
+        </Button>
+      </div>
 
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
@@ -999,130 +1032,179 @@ const AddProductForm = () => {
 
       <form className="space-y-6" onSubmit={handleSubmit}>
         <div className="grid grid-cols-2 gap-6">
-          <Input
-            name="name"
-            value={productData.name}
-            onChange={handleChange}
-            placeholder="Product Name"
-            className="bg-gray-50"
-            required
-          />
-          <Input
-            name="bis_hallmark"
-            value={productData.bis_hallmark}
-            onChange={handleChange}
-            placeholder="BIS Hallmark ID"
-            className="bg-gray-50"
-            required
-          />
+          <div>
+            <label className="block text-sm font-medium mb-1">
+              Product Name *
+            </label>
+            <Input
+              name="name"
+              value={productData.name}
+              onChange={handleChange}
+              placeholder="Enter product name"
+              className="bg-gray-50"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">
+              BIS Hallmark ID *
+            </label>
+            <Input
+              name="bis_hallmark"
+              value={productData.bis_hallmark}
+              onChange={handleChange}
+              placeholder="Enter BIS hallmark ID"
+              className="bg-gray-50"
+              required
+            />
+          </div>
         </div>
 
         <div className="grid grid-cols-2 gap-6">
-          <Select
-            onValueChange={(val) => setProductData((prev) => ({ ...prev, category: val }))}
-            value={productData.category}
-            required
-          >
-            <SelectTrigger className="bg-gray-50">
-              <SelectValue placeholder="Category" />
-            </SelectTrigger>
-            <SelectContent className="bg-white">
-              {categories.length > 0 ? (
-                categories.map((category) => (
-                  <SelectItem key={category.id} value={category.id.toString()}>
-                    {category.name}
-                  </SelectItem>
-                ))
-              ) : (
-                <>
-                  <SelectItem value="1">Rings</SelectItem>
-                  <SelectItem value="2">Necklaces</SelectItem>
-                  <SelectItem value="3">Bracelets</SelectItem>
-                </>
-              )}
-            </SelectContent>
-          </Select>
-          <Input
-            name="gold_color"
-            value={productData.gold_color}
-            onChange={handleChange}
-            placeholder="Gold Color"
-            className="bg-gray-50"
-          />
+          <div>
+            <label className="block text-sm font-medium mb-1">Category *</label>
+            <Select
+              onValueChange={(val) =>
+                setProductData((prev) => ({ ...prev, category: val }))
+              }
+              value={productData.category}
+              required
+            >
+              <SelectTrigger className="bg-gray-50">
+                <SelectValue placeholder="Select category" />
+              </SelectTrigger>
+              <SelectContent className="bg-white">
+                {categories.length > 0 ? (
+                  categories.map((category) => (
+                    <SelectItem
+                      key={category.id}
+                      value={category.id.toString()}
+                    >
+                      {category.name}
+                    </SelectItem>
+                  ))
+                ) : (
+                  <SelectItem value="0">No categories available</SelectItem>
+                )}
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">Gold Color</label>
+            <Input
+              name="gold_color"
+              value={productData.gold_color}
+              onChange={handleChange}
+              placeholder="e.g., Yellow"
+              className="bg-gray-50"
+            />
+          </div>
         </div>
 
         <div className="grid grid-cols-2 gap-6">
-          <Input
-            name="size"
-            value={productData.size}
-            onChange={handleChange}
-            placeholder="Size"
-            className="bg-gray-50"
-          />
-          <Select
-            onValueChange={(val) => setProductData((prev) => ({ ...prev, occasion: val }))}
-            value={productData.occasion}
-          >
-            <SelectTrigger className="bg-gray-50">
-              <SelectValue placeholder="Occasion" />
-            </SelectTrigger>
-            <SelectContent className="bg-white">
-              <SelectItem value="Wedding">Wedding</SelectItem>
-              <SelectItem value="Anniversary">Anniversary</SelectItem>
-              <SelectItem value="Birthday">Birthday</SelectItem>
-              <SelectItem value="Festival">Festival</SelectItem>
-              <SelectItem value="Casual">Casual</SelectItem>
-              <SelectItem value="Other">Other</SelectItem>
-            </SelectContent>
-          </Select>
+          <div>
+            <label className="block text-sm font-medium mb-1">Size *</label>
+            <Input
+              name="size"
+              value={productData.size}
+              onChange={handleChange}
+              placeholder="e.g., Small, Medium, 7"
+              className="bg-gray-50"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">
+              Occasion *
+            </label>
+            <Select
+              onValueChange={(val) =>
+                setProductData((prev) => ({ ...prev, occasion: val }))
+              }
+              value={productData.occasion}
+              required
+            >
+              <SelectTrigger className="bg-gray-50">
+                <SelectValue placeholder="Select occasion" />
+              </SelectTrigger>
+              <SelectContent className="bg-white">
+                <SelectItem value="Wedding">Wedding</SelectItem>
+                <SelectItem value="Anniversary">Anniversary</SelectItem>
+                <SelectItem value="Birthday">Birthday</SelectItem>
+                <SelectItem value="Festival">Festival</SelectItem>
+                <SelectItem value="Casual">Casual</SelectItem>
+                <SelectItem value="Other">Other</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
         <div className="grid grid-cols-3 gap-6">
-          <Select
-            onValueChange={(val) => setProductData((prev) => ({ ...prev, gender: val }))}
-            value={productData.gender}
-          >
-            <SelectTrigger className="bg-gray-50">
-              <SelectValue placeholder="Gender" />
-            </SelectTrigger>
-            <SelectContent className="bg-white">
-              <SelectItem value="Male">Male</SelectItem>
-              <SelectItem value="Female">Female</SelectItem>
-              <SelectItem value="Unisex">Unisex</SelectItem>
-            </SelectContent>
-          </Select>
-          <Input
-            name="product_offer"
-            type="number"
-            value={productData.product_offer}
-            onChange={handleChange}
-            placeholder="Product Offer (%)"
-            className="bg-gray-50"
-            min="0"
-            max="100"
-          />
-          <Select
-            onValueChange={(val) => setProductData((prev) => ({ ...prev, available: val === "true" }))}
-            value={productData.available ? "true" : "false"}
-          >
-            <SelectTrigger className="bg-gray-50">
-              <SelectValue placeholder="Availability" />
-            </SelectTrigger>
-            <SelectContent className="bg-white">
-              <SelectItem value="true">In Stock</SelectItem>
-              <SelectItem value="false">Out of Stock</SelectItem>
-            </SelectContent>
-          </Select>
+          <div>
+            <label className="block text-sm font-medium mb-1">Gender *</label>
+            <Select
+              onValueChange={(val) =>
+                setProductData((prev) => ({ ...prev, gender: val }))
+              }
+              value={productData.gender}
+              required
+            >
+              <SelectTrigger className="bg-gray-50">
+                <SelectValue placeholder="Select gender" />
+              </SelectTrigger>
+              <SelectContent className="bg-white">
+                <SelectItem value="Male">Male</SelectItem>
+                <SelectItem value="Female">Female</SelectItem>
+                <SelectItem value="Unisex">Unisex</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">Discount (%)</label>
+            <Input
+              name="discount"
+              type="number"
+              value={productData.discount}
+              onChange={handleChange}
+              placeholder="e.g., 10"
+              className="bg-gray-50"
+              min="0"
+              max="100"
+              step="0.01"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">Availability</label>
+            <Select
+              onValueChange={(val) =>
+                setProductData((prev) => ({
+                  ...prev,
+                  available: val === "true",
+                }))
+              }
+              value={productData.available ? "true" : "false"}
+            >
+              <SelectTrigger className="bg-gray-50">
+                <SelectValue placeholder="Select availability" />
+              </SelectTrigger>
+              <SelectContent className="bg-white">
+                <SelectItem value="true">In Stock</SelectItem>
+                <SelectItem value="false">Out of Stock</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
-        <Textarea
-          name="description"
-          value={productData.description}
-          onChange={handleChange}
-          placeholder="Description"
-          className="bg-gray-50 min-h-[100px]"
-          required
-        />
+        <div>
+          <label className="block text-sm font-medium mb-1">Description</label>
+          <Textarea
+            name="description"
+            value={productData.description}
+            onChange={handleChange}
+            placeholder="Enter product description"
+            className="bg-gray-50 min-h-[100px]"
+          />
+        </div>
 
         <div className="mt-6">
           <h3 className="text-lg font-semibold mb-3">Product Images</h3>
@@ -1162,108 +1244,131 @@ const AddProductForm = () => {
                 className="hidden"
                 accept="image/*"
                 onChange={handleImageSelect}
+                multiple
               />
             </label>
           </div>
         </div>
 
-        <h3 className="text-lg font-semibold">Variants</h3>
-        {productData.variants.map((variant, index) => (
-          <div key={index} className="grid grid-cols-4 gap-4 border p-4 rounded-lg">
-            <Input
-              name="gross_weight"
-              type="number"
-              value={variant.gross_weight}
-              onChange={(e) => handleVariantChange(index, e)}
-              placeholder="Gross Weight (g)"
-              className="bg-gray-50"
-              required
-              min="0"
-              step="0.01"
-            />
-            <Input
-              name="gold_price"
-              type="number"
-              value={variant.gold_price}
-              onChange={(e) => handleVariantChange(index, e)}
-              placeholder="Gold Price"
-              className="bg-gray-50"
-              required
-              min="0"
-              step="0.01"
-            />
-            <Input
-              name="stock"
-              type="number"
-              value={variant.stock}
-              onChange={(e) => handleVariantChange(index, e)}
-              placeholder="Stock"
-              className="bg-gray-50"
-              required
-              min="0"
-              step="1"
-            />
-            <Input
-              name="making_charge"
-              type="number"
-              value={variant.making_charge}
-              onChange={(e) => handleVariantChange(index, e)}
-              placeholder="Making Charge"
-              className="bg-gray-50"
-              required
-              min="0"
-              step="0.01"
-            />
-            <Input
-              name="stone_rate"
-              type="number"
-              value={variant.stone_rate}
-              onChange={(e) => handleVariantChange(index, e)}
-              placeholder="Stone Rate"
-              className="bg-gray-50"
-              min="0"
-              step="0.01"
-            />
-            <Input
-              name="tax"
-              type="number"
-              value={variant.tax}
-              onChange={(e) => handleVariantChange(index, e)}
-              placeholder="Tax (%)"
-              className="bg-gray-50"
-              required
-              min="0"
-              step="0.01"
-            />
-            <Input
-              name="shipping"
-              type="number"
-              value={variant.shipping}
-              onChange={(e) => handleVariantChange(index, e)}
-              placeholder="Shipping Cost"
-              className="bg-gray-50"
-              required
-              min="0"
-              step="0.01"
-            />
-            <Button
-              type="button"
-              onClick={() => removeVariant(index)}
-              className="bg-red-900 hover:bg-red-600 text-white"
-              disabled={productData.variants.length <= 1}
+        <div>
+          <h3 className="text-lg font-semibold mb-3">Variants</h3>
+          {productData.variants.map((variant, index) => (
+            <div
+              key={index}
+              className="grid grid-cols-5 gap-4 border p-4 rounded-lg mb-4"
             >
-              Remove
-            </Button>
-          </div>
-        ))}
-
-        <Button
-          type="button"
-          onClick={addVariant}
-          className="bg-gray-500 hover:bg-gray-600 text-white"
-        >
-          + Add Variant
-        </Button>
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Gross Weight (g) *
+                </label>
+                <Input
+                  name="gross_weight"
+                  type="number"
+                  value={variant.gross_weight}
+                  onChange={(e) => handleVariantChange(index, e)}
+                  placeholder="e.g., 10.50"
+                  className="bg-gray-50"
+                  required
+                  min="0"
+                  step="0.01"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Gold Price *
+                </label>
+                <Input
+                  name="gold_price"
+                  type="number"
+                  value={variant.gold_price}
+                  onChange={(e) => handleVariantChange(index, e)}
+                  placeholder="e.g., 5000"
+                  className="bg-gray-50"
+                  required
+                  min="0"
+                  step="0.01"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Stock *
+                </label>
+                <Input
+                  name="stock"
+                  type="number"
+                  value={variant.stock}
+                  onChange={(e) => handleVariantChange(index, e)}
+                  placeholder="e.g., 10"
+                  className="bg-gray-50"
+                  required
+                  min="0"
+                  step="1"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Making Charge
+                </label>
+                <Input
+                  name="making_charge"
+                  type="number"
+                  value={variant.making_charge}
+                  onChange={(e) => handleVariantChange(index, e)}
+                  placeholder="e.g., 1000"
+                  className="bg-gray-50"
+                  min="0"
+                  step="0.01"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Stone Rate
+                </label>
+                <Input
+                  name="stone_rate"
+                  type="number"
+                  value={variant.stone_rate}
+                  onChange={(e) => handleVariantChange(index, e)}
+                  placeholder="e.g., 500"
+                  className="bg-gray-50"
+                  min="0"
+                  step="0.01"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Tax ID *
+                </label>
+                <Input
+                  name="tax"
+                  type="number"
+                  value={variant.tax}
+                  onChange={(e) => handleVariantChange(index, e)}
+                  placeholder="e.g., 1"
+                  className="bg-gray-50"
+                  required
+                  min="1"
+                  step="1"
+                />
+              </div>
+              <Button
+                type="button"
+                onClick={() => removeVariant(index)}
+                className="bg-red-900 hover:bg-red-600 text-white mt-6"
+                disabled={productData.variants.length <= 1}
+              >
+                Remove
+              </Button>
+            </div>
+          ))}
+          <Button
+            type="button"
+            onClick={addVariant}
+            className="bg-gray-500 hover:bg-gray-600 text-white"
+          >
+            + Add Variant
+          </Button>
+        </div>
 
         <Button
           type="submit"
@@ -1279,7 +1384,10 @@ const AddProductForm = () => {
           <DialogHeader>
             <DialogTitle>Edit Image</DialogTitle>
           </DialogHeader>
-          <div className="relative flex-grow my-4" style={{ height: "400px" }}>
+          <div
+            className="relative flex-grow my-4"
+            style={{ height: "400px" }}
+          >
             {currentImage && (
               <Cropper
                 image={currentImage.url}
@@ -1313,8 +1421,7 @@ const AddProductForm = () => {
         </DialogContent>
       </Dialog>
     </div>
-  )
-}
+  );
+};
 
-export default AddProductForm
-
+export default AddProductForm;

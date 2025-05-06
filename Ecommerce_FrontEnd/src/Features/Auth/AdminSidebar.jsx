@@ -302,6 +302,7 @@ import ProductTable from "./ProductTable"
 import CategoryTable from "./CategoryTable"
 import UserTable from "./UserTable"
 import OrderTable from "./OrderTable"
+import CouponManagement from "./CouponAddTable"
 import Logo from "/logo 1.png"
 import api from '../../api'
 import {
@@ -330,13 +331,14 @@ const Sidebar = ({ activeItem, setActiveItem }) => {
     { id: "category", label: "Category", icon: Tag },
     { id: "customers", label: "Customers", icon: Users },
     { id: "orders", label: "Orders", icon: ShoppingCart },
-    { id: "reviews", label: "Reviews", icon: Star },
-    { id: "enquiry", label: "Enquiry", icon: MessageCircle },
-    { id: "offers", label: "Offers", icon: Gift },
     { id: "coupons", label: "Coupons", icon: Ticket },
-    { id: "notifications", label: "Notifications", icon: Bell },
-    { id: "taxConfig", label: "Tax Config", icon: Settings },
-    { id: "bannerManagement", label: "Banner management",  icon: ImageIcon },
+    // { id: "reviews", label: "Reviews", icon: Star },
+    // { id: "enquiry", label: "Enquiry", icon: MessageCircle },
+    // { id: "offers", label: "Offers", icon: Gift },
+   
+    // { id: "notifications", label: "Notifications", icon: Bell },
+    // { id: "taxConfig", label: "Tax Config", icon: Settings },
+    // { id: "bannerManagement", label: "Banner management",  icon: ImageIcon },
   ]
 
   return (
@@ -401,6 +403,8 @@ function Dashboard() {
         return <UserTable />
       case "orders":
         return <OrderTable />
+      case "coupons":
+        return <CouponManagement/>
       default:
         return <div>Select a menu item</div>
     }

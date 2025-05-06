@@ -1,3 +1,5 @@
+
+
 "use client";
 
 import { useEffect } from "react";
@@ -5,30 +7,41 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useCart } from "@/Context/CartContext";
 import { useNavigate } from "react-router-dom";
-import Swal from "sweetalert2"; // Import SweetAlert2
+import Swal from "sweetalert2";
 
 export default function ShoppingCart() {
   const { cart, fetchCart, updateQuantity, removeFromCart, loading, error } = useCart();
   const navigate = useNavigate();
-  console.log("i want cartitem",cart)
+  console.log("Cart Data:", cart);
 
-  const BASE_URL = "http://127.0.0.1:8000"
+  const BASE_URL = "http://127.0.0.1:8000";
+
   useEffect(() => {
     if (!cart) {
       fetchCart();
     }
   }, [cart, fetchCart]);
 
-  if (loading) return <div>Loading cart...</div>;
-  if (error) return <div>Error: {error}</div>;
-  if (!cart) return <div>Initializing cart...</div>;
+  if (loading) return <div className="text-center py-10">Loading cart...</div>;
+  if (error) return <div className="text-center py-10 text-red-600">Error: {error}</div>;
+  if (!cart || cart.items.length === 0) {
+    return (
+      <div className="text-center py-10">
+        <h2 className="text-xl font-semibold mb-4">Your Cart is Empty</h2>
+        <Button
+          className="bg-[#8c2a2a] hover:bg-[#7a2424] text-white"
+          onClick={() => navigate("/products")}
+        >
+          Shop Now
+        </Button>
+      </div>
+    );
+  }
 
   const totalItems = cart.total_items || 0;
 
-  // Function to handle quantity increase with stock check
   const handleIncreaseQuantity = (itemId, currentQuantity, stock) => {
-    console.log("Current Quantity:", currentQuantity, "Stock:", stock); 
-    if (currentQuantity + 1 > stock) {
+    if (currentQuantity >= stock) {
       Swal.fire({
         icon: "warning",
         title: "Out of Stock!",
@@ -43,25 +56,26 @@ export default function ShoppingCart() {
 
   return (
     <div className="container mx-auto px-4 py-6 max-w-6xl">
-      <h1 className="text-xl font-semibold mb-1">Shopping Cart</h1>
-      <div className="flex justify-between mb-4">
-        <p className="text-sm">Total ({totalItems} items)</p>
-        <p className="text-sm font-medium">₹ {cart.final_total.toLocaleString()}</p>
+      <h1 className="text-2xl font-semibold mb-4">Shopping Cart</h1>
+      <div className="flex justify-between mb-6">
+        <p className="text-base">Total ({totalItems} {totalItems === 1 ? "item" : "items"})</p>
+        <p className="text-base font-medium">₹ {cart.final_total.toLocaleString("en-IN")}</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Left side - Products */}
         <div className="md:col-span-2 space-y-4">
           {cart.items.map((item) => (
-            <Card key={item.id} className="overflow-hidden border rounded-md">
+            <Card key={item.id} className="overflow-hidden border rounded-md shadow-sm">
               <CardContent className="p-4">
                 <div className="flex flex-col sm:flex-row gap-4">
                   {/* Product Image */}
                   <div className="w-full sm:w-32 h-32 flex-shrink-0">
                     <img
-                      src={`${BASE_URL}${item.primary_image}`}
+                      src={item.primary_image ? `${BASE_URL}${item.primary_image}` : "/placeholder-image.png"}
                       alt={item.product.name}
-                      className="w-full h-full object-contain"
+                      className="w-full h-full object-contain rounded"
+                      onError={(e) => (e.target.src = "/placeholder-image.png")}
                     />
                   </div>
 
@@ -69,43 +83,56 @@ export default function ShoppingCart() {
                   <div className="flex-grow">
                     <div className="flex flex-col sm:flex-row justify-between">
                       <div className="flex-grow">
-                        <h3 className="font-medium">{item.product.name}</h3>
-                        <p className="text-sm text-gray-500 mb-2">Weight: {item.variant.gross_weight}g</p>
+                        <h3 className="font-medium text-lg">{item.product.name}</h3>
+                        <p className="text-sm text-gray-500 mb-2">
+                          Weight: {item.variant.gross_weight}g | Gold Color: {item.product.gold_color}
+                        </p>
+                        <p className="text-sm text-gray-500 mb-2">
+                          Category: {item.product.category || "N/A"}
+                        </p>
 
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="text-sm">Quantity: </span>
-                          <div className="flex items-center">
+                        <div className="flex items-center gap-2 mb-4">
+                          <span className="text-sm">Quantity:</span>
+                          <div className="flex items-center border rounded">
                             <Button
                               variant="outline"
                               size="icon"
-                              className="h-7 w-7 rounded-r-none border-r-0"
+                              className="h-8 w-8 rounded-r-none border-r-0"
                               onClick={() => updateQuantity(item.id, item.quantity - 1)}
                               disabled={loading || item.quantity <= 1}
                             >
-                              <span className="text-sm font-bold">-</span>
+                              <span className="text-base">-</span>
                             </Button>
-                            <div className="h-7 px-3 flex items-center justify-center border border-input">
+                            <div className="h-8 w-12 flex items-center justify-center border-t border-b">
                               {item.quantity}
                             </div>
                             <Button
                               variant="outline"
                               size="icon"
-                              className="h-7 w-7 rounded-l-none border-l-0"
+                              className="h-8 w-8 rounded-l-none border-l-0"
                               onClick={() => handleIncreaseQuantity(item.id, item.quantity, item.variant.stock)}
-                              disabled={loading}
+                              disabled={loading || item.quantity >= item.variant.stock}
                             >
-                              <span className="text-sm font-bold">+</span>
+                              <span className="text-base">+</span>
                             </Button>
                           </div>
+                        </div>
+
+                        <div className="text-sm text-gray-600">
+                          <p>Subtotal: ₹ {item.variant.base_price.toLocaleString("en-IN")}</p>
+                          <p>Discount: ₹ {item.variant.discount_amount.toLocaleString("en-IN")}</p>
+                          <p>Tax: ₹ {item.variant.tax_amount.toLocaleString("en-IN")}</p>
                         </div>
                       </div>
 
                       <div className="mt-4 sm:mt-0 flex flex-col items-end justify-between">
-                        <span className="text-green-600 font-medium">₹ {item.final_price.toLocaleString()}</span>
+                        <span className="text-green-600 font-medium text-lg">
+                          ₹ {item.variant.total_price.toLocaleString("en-IN")}
+                        </span>
                         <Button
                           variant="outline"
                           size="sm"
-                          className="bg-red-600 text-white border border-red-600 hover:bg-rose-50 hover:text-rose-700 hover:border-rose-200 mt-4"
+                          className="bg-red-600 text-white border border-red-600 hover:bg-red-700 hover:text-white mt-4"
                           onClick={() => removeFromCart(item.id)}
                           disabled={loading}
                         >
@@ -122,28 +149,35 @@ export default function ShoppingCart() {
 
         {/* Right side - Order Summary */}
         <div className="space-y-4">
-          <Card className="border rounded-md">
+          <Card className="border rounded-md shadow-sm">
             <CardContent className="p-6">
-              <h3 className="font-medium mb-4">Order Summary</h3>
-              <div className="space-y-2">
+              <h3 className="font-medium text-lg mb-4">Order Summary</h3>
+              <div className="space-y-3">
                 <div className="flex justify-between">
-                  <span>Subtotal :</span>
-                  <span className="font-medium">₹ {cart.total.toLocaleString()}</span>
+                  <span>Subtotal:</span>
+                  <span className="font-medium">₹ {cart.final_subtotal.toLocaleString("en-IN")}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Discount :</span>
-                  <span className="font-medium">₹ {cart.total_discount.toLocaleString()}</span>
+                  <span>Discount:</span>
+                  <span className="font-medium text-green-600">
+                    -₹ {cart.final_discount.toLocaleString("en-IN")}
+                  </span>
                 </div>
-                <div className="flex justify-between font-medium">
-                  <span>TOTAL :</span>
-                  <span>₹ {cart.final_total.toLocaleString()}</span>
+                <div className="flex justify-between">
+                  <span>Tax:</span>
+                  <span className="font-medium">₹ {cart.final_tax.toLocaleString("en-IN")}</span>
                 </div>
-                <p className="text-xs text-right text-gray-500">(Inclusive of all taxes)</p>
+                <div className="flex justify-between font-medium text-lg border-t pt-3">
+                  <span>Total:</span>
+                  <span>₹ {cart.final_total.toLocaleString("en-IN")}</span>
+                </div>
+                <p className="text-xs text-right text-gray-500 mt-2">(Inclusive of all taxes)</p>
                 <Button
                   className="w-full mt-4 bg-[#8c2a2a] hover:bg-[#7a2424] text-white"
                   onClick={() => navigate("/checkoutpage")}
+                  disabled={loading || cart.items.length === 0}
                 >
-                  PLACE ORDER
+                  Place Order
                 </Button>
               </div>
             </CardContent>

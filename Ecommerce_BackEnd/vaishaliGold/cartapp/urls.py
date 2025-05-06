@@ -46,4 +46,8 @@ urlpatterns = [
     path('orders/razorpay/verify/', RazorpayPaymentVerificationView.as_view(), name='razorpay-payment-verify'),
     path('orders/razorpay/retry/', RetryRazorpayPaymentView.as_view(), name='razorpay-payment-retry'),
 
+    # coupon 
+
+    path('apply-coupon/', CouponApplyView.as_view(), name='apply-offer'),
+
 ]

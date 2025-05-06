@@ -1606,11 +1606,7 @@ const ProductDetails = () => {
                     <div className="flex justify-between items-center">
                       <span className="text-sm font-medium">Subtotal</span>
                       <span>
-                        {formatPrice(
-                          selectedVariant.gold_price * selectedVariant.gross_weight +
-                            selectedVariant.making_charge +
-                            selectedVariant.stone_rate
-                        )}
+                        {formatPrice(selectedVariant.base_price)}
                       </span>
                     </div>
                     {selectedVariant.applied_offer.offer_percentage > 0 && (
@@ -1621,33 +1617,17 @@ const ProductDetails = () => {
                             {selectedVariant.applied_offer.offer_type})
                           </span>
                           <span className="text-red-600">
-                            -{" "}
-                            {formatPrice(
-                              ((selectedVariant.gold_price * selectedVariant.gross_weight +
-                                selectedVariant.making_charge +
-                                selectedVariant.stone_rate) *
-                                selectedVariant.applied_offer.offer_percentage) /
-                                100
-                            )}
+                            -{selectedVariant.discount_amount}
+                            
                           </span>
                         </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm font-medium">Discounted Price</span>
-                          <span>
-                            {formatPrice(
-                              (selectedVariant.gold_price * selectedVariant.gross_weight +
-                                selectedVariant.making_charge +
-                                selectedVariant.stone_rate) *
-                                (1 - selectedVariant.applied_offer.offer_percentage / 100)
-                            )}
-                          </span>
-                        </div>
+                        
                       </>
                     )}
                     <div className="flex justify-between items-center">
                       <span className="text-sm font-medium">Tax ({selectedVariant.tax}%)</span>
                       <span className="text-green-600">
-                        + {formatPrice(selectedVariant.total_price * (selectedVariant.tax / 100))}
+                        + {formatPrice(selectedVariant.tax_amount)}
                       </span>
                     </div>
                     {Number.parseFloat(selectedVariant.shipping) > 0 && (
@@ -1737,6 +1717,7 @@ const ProductDetails = () => {
               <Button
                 variant="outline"
                 size="lg"
+                
                 className={`border-[#7a2828] text-[#7a2828] hover:bg-[#7a2828]/10 transition-all duration-300 ${
                   isWishlisted ? "bg-[#7a2828]/10" : ""
                 }`}
@@ -1934,7 +1915,7 @@ const ProductDetails = () => {
         </div>
 
         {/* You May Also Like Section */}
-        <div className="mt-16 mb-8">
+        {/* <div className="mt-16 mb-8">
           <h2 className="text-2xl font-semibold mb-6">You May Also Like</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[1, 2, 3, 4].map((item) => (
@@ -1967,7 +1948,7 @@ const ProductDetails = () => {
               </div>
             ))}
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   )

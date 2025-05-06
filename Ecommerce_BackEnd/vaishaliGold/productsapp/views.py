@@ -111,7 +111,7 @@ class UserProductList(APIView):
         serializer = ProductSerializer(product, many=True)
         return Response(serializer.data)
 
- # demo 
+
     
 class ProductListCreateView(APIView):
     def get(self, request):
