@@ -50,4 +50,7 @@ urlpatterns = [
 
     path('apply-coupon/', CouponApplyView.as_view(), name='apply-offer'),
 
+    # Salesreport
+
+    path('sales-report/', SalesReportView.as_view(), name='sales-report'),
 ]

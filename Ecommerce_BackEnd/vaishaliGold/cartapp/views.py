@@ -9,7 +9,7 @@ from rest_framework.permissions import IsAuthenticated,IsAdminUser
 from productsapp.models import ProductVariant
 from django.shortcuts import get_object_or_404
 from rest_framework import status, permissions
-
+from datetime import datetime
 
 # ==========================  Cart related views   ============================
 
@@ -307,27 +307,7 @@ class OrderReturnRequestView(APIView):
             }, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-# class AdminOrderReturnApprovalView(APIView):
 
-#     permission_classes = [IsAdminUser]
-
-#     def patch(self, request, id):
-#         try:
-#             order = Order.objects.get(id=id)
-#         except Order.DoesNotExist:
-#             return Response({
-#                 "error": "Order not found"
-#             }, status=status.HTTP_404_NOT_FOUND)
-
-#         serializer = AdminOrderReturnApprovalSerializer(order, data=request.data, partial=True)
-#         if serializer.is_valid():
-#             serializer.save()
-#             action = "approved" if request.data.get("approve") else "denied"
-#             return Response({
-#                 "message": f"Order return request {action} successfully",
-#                 "data": serializer.data
-#             }, status=status.HTTP_200_OK)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class AdminOrderReturnApprovalView(APIView):
@@ -382,27 +362,7 @@ class OrderItemReturnRequestView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-# class AdminOrderItemReturnApprovalView(APIView):
-#     permission_classes = [IsAdminUser]
 
-#     def patch(self, request, id):
-        
-#         try:
-#             order_item = OrderItem.objects.get(id=id)
-#         except OrderItem.DoesNotExist:
-#             return Response({
-#                 "error": "Order item not found"
-#             }, status=status.HTTP_404_NOT_FOUND)
-
-#         serializer = AdminOrderItemReturnApprovalSerializer(order_item, data=request.data, partial=True)
-#         if serializer.is_valid():
-#             serializer.save()
-#             action = "approved" if request.data.get("approve") else "denied"
-#             return Response({
-#                 "message": f"Order item return request {action} successfully",
-#                 "data": serializer.data
-#             }, status=status.HTTP_200_OK)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class AdminOrderItemReturnApprovalView(APIView):
@@ -477,33 +437,6 @@ class OrderUpdateView(APIView):
         
 #================ Wallet ========================
 
-# class WalletView(APIView):
-#     permission_classes = [IsAuthenticated]
-
-#     def get(self, request):
-#         try:
-#             wallet, _ = Wallet.objects.get_or_create(user=request.user)
-#         except Exception as e:
-#             return Response({"error": f"Failed to retrieve wallet: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-#         serializer = WalletSerializer(wallet)
-#         return Response({
-#             "message": "Wallet balance retrieved successfully",
-#             "data": serializer.data
-#         }, status=status.HTTP_200_OK)
-
-
-
-# class WalletTransactionHistoryView(APIView):
-#     permission_classes = [IsAuthenticated]
-
-#     def get(self, request):
-#         wallet, _ = Wallet.objects.get_or_create(user=request.user)
-#         transactions = wallet.transactions.all().order_by('-created_at')
-#         serializer = WalletTransactionSerializer(transactions, many=True)
-#         return Response({
-#             "message": "Wallet transaction history retrieved successfully",
-#             "data": serializer.data
-#         }, status=status.HTTP_200_OK)
 
 class WalletView(APIView):
     permission_classes = [IsAuthenticated]
@@ -757,94 +690,6 @@ class RazorpayOrderCreateView(APIView):
             logger.exception("Error creating Razorpay order: %s", str(e))
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-# class RazorpayOrderCreateView(APIView):
-#     permission_classes = [IsAuthenticated]
-
-#     def post(self, request):
-#         try:
-#             cart = get_object_or_404(Cart, user=request.user)
-#             if not cart.items.exists():
-#                 return Response({"error": "Your cart is empty."}, status=status.HTTP_400_BAD_REQUEST)
-
-#             address_id = request.data.get('address_id')
-#             if not address_id or not str(address_id).isdigit():
-#                 return Response({"error": "Valid address_id is required."}, 
-#                                status=status.HTTP_400_BAD_REQUEST)
-            
-#             address = get_object_or_404(Address, id=address_id, user=request.user)
-
-#             total_amount = Decimal(cart.get_final_total())
-#             if total_amount <= 0:
-#                 return Response({"error": "Order amount must be positive"}, 
-#                                status=status.HTTP_400_BAD_REQUEST)
-#             amount_in_paisa = int(total_amount * 100)
-
-#             client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
-#             razorpay_order = client.order.create({
-#                 'amount': amount_in_paisa,
-#                 'currency': 'INR',
-#                 'payment_capture': 1
-#             })
-
-#             order = Order.objects.create(
-#                 user=request.user,
-#                 cart=cart,
-#                 address=address,
-#                 total_amount=cart.get_final_subtotal(),
-#                 total_discount=cart.get_final_discount(),
-#                 total_tax=cart.get_final_tax(),
-#                 final_total=total_amount,
-#                 payment_method='card',
-#                 status='pending',
-#                 payment_status='pending',
-#                 order_number=f"ORD{timezone.now().strftime('%Y%m%d%H%M%S')}",
-#             )
-
-#             create_order_address(order, address)
-
-#             for cart_item in cart.items.all():
-#                 if cart_item.quantity > cart_item.variant.stock:
-#                     order.delete()
-#                     return Response(
-#                         {"error": f"Not enough stock for {cart_item.variant.product.name}"},
-#                         status=status.HTTP_400_BAD_REQUEST
-#                     )
-
-#                 subtotal = cart_item.get_subtotal()
-#                 final_price = cart_item.calculate_total_price()
-#                 discount = cart_item.get_discount_amount()
-#                 tax=cart_item.get_tax_amount()
-
-#                 OrderItem.objects.create(
-#                     order=order,
-#                     variant=cart_item.variant,
-#                     quantity=cart_item.quantity,
-#                     price=cart_item.variant.total_price,
-#                     subtotal=subtotal,
-#                     discount=discount,
-#                     tax=tax,
-#                     final_price=final_price
-#                 )
-
-#                 cart_item.variant.stock -= cart_item.quantity
-#                 cart_item.variant.save()
-
-#             order.razorpay_order_id = razorpay_order["id"]
-#             order.save()
-
-#             cart.clear()
-
-#             return Response({
-#                 'order_id': razorpay_order['id'],
-#                 'amount': amount_in_paisa,
-#                 'currency': 'INR',
-#                 'key': settings.RAZORPAY_KEY_ID,
-#                 'order': OrderSerializer(order).data
-#             }, status=status.HTTP_200_OK)
-
-#         except Exception as e:
-#             logger.exception("Error creating Razorpay order: %s", str(e))
-#             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class RazorpayPaymentVerificationView(APIView):
     permission_classes = [IsAuthenticated]
@@ -940,3 +785,100 @@ class RetryRazorpayPaymentView(APIView):
         except Exception as e:
             logger.exception("Error retrying Razorpay payment: %s", str(e))
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+#========================= Sales Report=======================================
+
+
+class SalesReportView(APIView):
+    permission_classes = [IsAdminUser]
+
+    def get(self, request):
+        try:
+            # Get filter parameters
+            filter_type = request.query_params.get('filter_type', 'custom')
+            from_date = request.query_params.get('from_date')
+            to_date = request.query_params.get('to_date')
+
+            # Initialize date range
+            today = timezone.now().date()
+            if filter_type == 'today':
+                from_date = to_date = today
+            elif filter_type == 'yesterday':
+                from_date = to_date = today - timezone.timedelta(days=1)
+            elif filter_type == 'thisWeek':
+                from_date = today - timezone.timedelta(days=today.weekday())
+                to_date = today
+            elif filter_type == 'lastWeek':
+                from_date = today - timezone.timedelta(days=today.weekday() + 7)
+                to_date = today - timezone.timedelta(days=today.weekday() + 1)
+            elif filter_type == 'thisMonth':
+                from_date = today.replace(day=1)
+                to_date = today
+            elif filter_type == 'lastMonth':
+                from_date = today.replace(day=1) - timezone.timedelta(days=1)
+                from_date = from_date.replace(day=1)
+                to_date = today.replace(day=1) - timezone.timedelta(days=1)
+
+            # Parse custom dates if provided
+            try:
+                if from_date:
+                    from_date = datetime.strptime(from_date, '%Y-%m-%d').date()
+                if to_date:
+                    to_date = datetime.strptime(to_date, '%Y-%m-%d').date()
+            except ValueError:
+                return Response(
+                    {"error": "Invalid date format. Use YYYY-MM-DD"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            # Ensure to_date is not before from_date
+            if from_date and to_date and to_date < from_date:
+                return Response(
+                    {"error": "To date cannot be before from date"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            # Query orders
+            queryset = Order.objects.all()
+            if from_date:
+                queryset = queryset.filter(created_at__date__gte=from_date)
+            if to_date:
+                queryset = queryset.filter(created_at__date__lte=to_date)
+
+            # Serialize data
+            serializer = SalesReportSerializer(queryset, many=True)
+
+            # Calculate summary with robust type handling
+            total_sales = Decimal('0.00')
+            total_discount = Decimal('0.00')
+            total_refund = Decimal('0.00')
+
+            for order in serializer.data:
+                try:
+                    total_amount = Decimal(str(order['totalAmount'])) if order['totalAmount'] is not None else Decimal('0.00')
+                    item_discount = Decimal(str(order['itemDiscount'])) if order['itemDiscount'] is not None else Decimal('0.00')
+                    coupon_discount = Decimal(str(order['couponDiscount'])) if order['couponDiscount'] is not None else Decimal('0.00')
+                    refund_amount = Decimal(str(order['refundAmount'])) if order['refundAmount'] is not None else Decimal('0.00')
+
+                    total_sales += total_amount
+                    total_discount += (item_discount + coupon_discount)
+                    total_refund += refund_amount
+                except (InvalidOperation, TypeError, ValueError) as e:
+                    logger.error(f"Invalid data in order {order['orderId']}: totalAmount={order['totalAmount']}, itemDiscount={order['itemDiscount']}, couponDiscount={order['couponDiscount']}, refundAmount={order['refundAmount']}, error={str(e)}")
+                    continue
+
+            return Response({
+                'salesData': serializer.data,
+                'summary': {
+                    'totalSales': float(total_sales),  # Convert to float for JSON serialization
+                    'totalDiscount': float(total_discount),
+                    'totalRefund': float(total_refund)
+                }
+            }, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            logger.error(f"Error generating sales report: {str(e)}", exc_info=True)
+            return Response(
+                {"error": f"Failed to generate sales report: {str(e)}"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )

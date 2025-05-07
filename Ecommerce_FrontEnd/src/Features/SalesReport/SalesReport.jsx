@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+
+
+import React, { useState, useEffect } from "react";
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -24,6 +26,10 @@ import {
 } from "@/components/ui/table";
 import { DownloadIcon, FileTextIcon, CalendarIcon, ArrowUpDown, RefreshCw } from 'lucide-react';
 import { format } from "date-fns";
+import api from '../../api'
+import { saveAs } from 'file-saver';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 const SalesReport = () => {
   const [dateRange, setDateRange] = useState({
@@ -31,51 +37,39 @@ const SalesReport = () => {
     to: new Date("2025-05-05"),
   });
   const [filterType, setFilterType] = useState("custom");
+  const [salesData, setSalesData] = useState([]);
+  const [summary, setSummary] = useState({
+    totalSales: 0,
+    totalDiscount: 0,
+    totalRefund: 0
+  });
+  const [loading, setLoading] = useState(false);
 
-  // Sample data for the table
-  const salesData = [
-    {
-      orderId: "775NZPEYJD",
-      date: "2025-04-01 21:47",
-      orderMrp: 1165.00,
-      itemDiscount: 77.00,
-      orderSubtotal: 1088.00,
-      couponDiscount: 45.00,
-      shippingCharge: 50.00,
-      totalAmount: 1063.00,
-      refundAmount: 0.00,
-      paymentMethod: "Razorpay",
-    },
-    {
-      orderId: "775NZPEYJE",
-      date: "2025-04-02 13:22",
-      orderMrp: 2250.00,
-      itemDiscount: 125.00,
-      orderSubtotal: 2125.00,
-      couponDiscount: 100.00,
-      shippingCharge: 0.00,
-      totalAmount: 2025.00,
-      refundAmount: 2025.00,
-      paymentMethod: "Credit Card",
-    },
-    {
-      orderId: "775NZPEYJF",
-      date: "2025-04-15 09:33",
-      orderMrp: 3450.00,
-      itemDiscount: 0.00,
-      orderSubtotal: 3450.00,
-      couponDiscount: 0.00,
-      shippingCharge: 75.00,
-      totalAmount: 3525.00,
-      refundAmount: 1069.00,
-      paymentMethod: "UPI",
-    },
-  ];
+  const fetchSalesData = async () => {
+    setLoading(true);
+    try {
+      const response = await api.get('cartapp/sales-report/', {
+        params: {
+          filter_type: filterType,
+          from_date: dateRange.from ? format(dateRange.from, 'yyyy-MM-dd') : undefined,
+          to_date: dateRange.to ? format(dateRange.to, 'yyyy-MM-dd') : undefined,
+        },
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}` // Adjust based on your auth method
+        }
+      });
+      setSalesData(response.data.salesData);
+      setSummary(response.data.summary);
+    } catch (error) {
+      console.error('Error fetching sales data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  // Summary calculations
-  const totalSales = 29653.00;
-  const totalDiscount = 405.00;
-  const totalRefund = 3094.00;
+  useEffect(() => {
+    fetchSalesData();
+  }, []);
 
   const handleFilterTypeChange = (value) => {
     setFilterType(value);
@@ -90,18 +84,59 @@ const SalesReport = () => {
   };
 
   const handleApplyFilter = () => {
-    // Logic to apply filters would go here
-    console.log("Applying filters:", { filterType, dateRange });
+    fetchSalesData();
   };
 
   const handleDownloadCSV = () => {
-    // Logic to download CSV would go here
-    console.log("Downloading CSV");
+    const headers = [
+      'Order ID', 'Date', 'Order MRP', 'Item Discount', 'Order Subtotal',
+      'Coupon Discount', 'Shipping Charge', 'Total Amount', 'Refund Amount', 'Payment Method'
+    ];
+    const rows = salesData.map(row => [
+      row.orderId,
+      row.date,
+      row.orderMrp.toFixed(2),
+      row.itemDiscount.toFixed(2),
+      row.orderSubtotal.toFixed(2),
+      row.couponDiscount.toFixed(2),
+      row.shippingCharge.toFixed(2),
+      row.totalAmount.toFixed(2),
+      row.refundAmount.toFixed(2),
+      row.paymentMethod
+    ]);
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.join(','))
+    ].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    saveAs(blob, 'sales_report.csv');
   };
 
   const handleDownloadPDF = () => {
-    // Logic to download PDF would go here
-    console.log("Downloading PDF");
+    const doc = new jsPDF();
+    doc.text('Sales Report', 14, 20);
+    doc.autoTable({
+      startY: 30,
+      head: [[
+        'Order ID', 'Date', 'Order MRP', 'Item Discount', 'Order Subtotal',
+        'Coupon Discount', 'Shipping', 'Total Amount', 'Refund Amount', 'Payment Method'
+      ]],
+      body: salesData.map(row => [
+        row.orderId,
+        row.date,
+        `₹ ${row.orderMrp.toFixed(2)}`,
+        `₹ ${row.itemDiscount.toFixed(2)}`,
+        `₹ ${row.orderSubtotal.toFixed(2)}`,
+        `₹ ${row.couponDiscount.toFixed(2)}`,
+        `₹ ${row.shippingCharge.toFixed(2)}`,
+        `₹ ${row.totalAmount.toFixed(2)}`,
+        `₹ ${row.refundAmount.toFixed(2)}`,
+        row.paymentMethod
+      ]),
+      theme: 'grid',
+      styles: { fontSize: 8 },
+    });
+    doc.save('sales_report.pdf');
   };
 
   return (
@@ -170,8 +205,9 @@ const SalesReport = () => {
         <Button 
           className="bg-[#7a2828] hover:bg-[#7a2828] text-white" 
           onClick={handleApplyFilter}
+          disabled={loading}
         >
-          Apply Filter
+          {loading ? 'Loading...' : 'Apply Filter'}
         </Button>
       </div>
 
@@ -181,7 +217,7 @@ const SalesReport = () => {
           <CardContent className="p-6">
             <div className="flex flex-col">
               <span className="text-sm font-medium text-gray-500 mb-2">Total Sales</span>
-              <span className="text-3xl font-bold">₹ {totalSales.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
+              <span className="text-3xl font-bold">₹ {summary.totalSales.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
             </div>
           </CardContent>
         </Card>
@@ -190,7 +226,7 @@ const SalesReport = () => {
           <CardContent className="p-6">
             <div className="flex flex-col">
               <span className="text-sm font-medium text-gray-500 mb-2">Total Discount</span>
-              <span className="text-3xl font-bold">₹ {totalDiscount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
+              <span className="text-3xl font-bold">₹ {summary.totalDiscount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
             </div>
           </CardContent>
         </Card>
@@ -199,7 +235,7 @@ const SalesReport = () => {
           <CardContent className="p-6">
             <div className="flex flex-col">
               <span className="text-sm font-medium text-gray-500 mb-2">Total Refund</span>
-              <span className="text-3xl font-bold">₹ {totalRefund.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
+              <span className="text-3xl font-bold">₹ {summary.totalRefund.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
             </div>
           </CardContent>
         </Card>
@@ -211,6 +247,7 @@ const SalesReport = () => {
           variant="outline" 
           className="bg-[#7a2828] hover:bg-[#7a2828] text-white flex items-center gap-2"
           onClick={handleDownloadCSV}
+          disabled={loading || !salesData.length}
         >
           <DownloadIcon className="h-4 w-4" />
           Download CSV
@@ -219,6 +256,7 @@ const SalesReport = () => {
           variant="outline" 
           className="bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-2"
           onClick={handleDownloadPDF}
+          disabled={loading || !salesData.length}
         >
           <FileTextIcon className="h-4 w-4" />
           Download PDF
@@ -226,6 +264,8 @@ const SalesReport = () => {
         <Button 
           variant="outline" 
           className="ml-auto text-gray-600 hover:text-gray-900 flex items-center gap-2"
+          onClick={fetchSalesData}
+          disabled={loading}
         >
           <RefreshCw className="h-4 w-4" />
           Refresh
@@ -267,9 +307,11 @@ const SalesReport = () => {
                 <TableCell>₹ {row.orderMrp.toFixed(2)}</TableCell>
                 <TableCell>₹ {row.itemDiscount.toFixed(2)}</TableCell>
                 <TableCell>₹ {row.orderSubtotal.toFixed(2)}</TableCell>
-                <TableCell>₹ {row.couponDiscount.toFixed(2)}</TableCell>
-                <TableCell>₹ {row.shippingCharge.toFixed(2)}</TableCell>
-                <TableCell className="font-semibold">₹ {row.totalAmount.toFixed(2)}</TableCell>
+                <TableCell>₹ {Number(row.couponDiscount).toFixed(2)}</TableCell>
+                <TableCell>₹ {Number(row.shippingCharge).toFixed(2)}</TableCell>
+
+                
+                <TableCell className="font-semibold">₹  {Number(row.shippingCharge).toFixed(2)}</TableCell>
                 <TableCell className={row.refundAmount > 0 ? "text-amber-600 font-medium" : ""}>
                   ₹ {row.refundAmount.toFixed(2)}
                 </TableCell>
@@ -280,11 +322,11 @@ const SalesReport = () => {
         </Table>
       </div>
 
-      {/* Pagination */}
+      {/* Pagination (Placeholder, implement server-side pagination if needed) */}
       <div className="flex items-center justify-between mt-4">
         <div className="text-sm text-gray-500">
-          Showing <span className="font-medium">1</span> to <span className="font-medium">3</span> of{" "}
-          <span className="font-medium">15</span> results
+          Showing <span className="font-medium">1</span> to <span className="font-medium">{salesData.length}</span> of{" "}
+          <span className="font-medium">{salesData.length}</span> results
         </div>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" disabled>
