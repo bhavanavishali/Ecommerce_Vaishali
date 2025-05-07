@@ -634,7 +634,7 @@ class RazorpayOrderCreateView(APIView):
                 final_total=final_total,
                 payment_method='card',
                 status='pending',
-                payment_status='completed',
+              
                 coupon=coupon
             )
 
@@ -666,8 +666,8 @@ class RazorpayOrderCreateView(APIView):
                     discount=item_discount,
                     coupon_discount=item_coupon_discount,
                     tax=tax,
-                    final_price=final_price,
-                    payment_status='completed'
+                    final_price=final_price
+                    
                 )
 
                 cart_item.variant.stock -= cart_item.quantity
@@ -724,6 +724,10 @@ class RazorpayPaymentVerificationView(APIView):
                     order.razorpay_signature = razorpay_signature
                     order.payment_status = 'completed'
                     order.status = 'processing'
+                    if hasattr(order, 'items') and order.items.exists():  # Check if items relation exists
+                        order.items.update(payment_status='complete')  # Bulk update
+                    else:
+                        logger.warning("No items found for order %s", order.id)
                     order.save()
                     logger.info("Order %s updated successfully", order.id)
             except Exception as e:

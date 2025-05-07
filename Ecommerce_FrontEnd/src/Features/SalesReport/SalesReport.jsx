@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect } from "react";
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent } from "@/components/ui/card";
@@ -55,7 +53,7 @@ const SalesReport = () => {
           to_date: dateRange.to ? format(dateRange.to, 'yyyy-MM-dd') : undefined,
         },
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}` // Adjust based on your auth method
+          Authorization: `Bearer ${localStorage.getItem('token')}` 
         }
       });
       setSalesData(response.data.salesData);

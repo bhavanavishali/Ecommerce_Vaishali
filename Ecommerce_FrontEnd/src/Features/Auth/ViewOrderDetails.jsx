@@ -2126,7 +2126,7 @@ const ViewOrderDetails = () => {
                 )}
               </div>
               <div className="flex flex-wrap items-center gap-4">
-                <Badge
+                {/* <Badge
                   variant="outline"
                   className={`${order.payment_status === "pending"
                     ? "bg-amber-100 text-amber-800 border-amber-200 hover:bg-amber-200"
@@ -2137,8 +2137,8 @@ const ViewOrderDetails = () => {
                     className={`h-2.5 w-2.5 rounded-full ${order.payment_status === "pending" ? "bg-amber-500" : "bg-emerald-500"
                       } animate-pulse`}
                   ></span>
-                  {order.payment_status === "pending" ? "Payment Pending" : "Payment Successful"}
-                </Badge>
+                  {order.payment_status === "pending" ? "Payment Pending" : "Waiting"}
+                </Badge> */}
                 <Badge
                   variant="outline"
                   className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold transition-all duration-300 transform hover:scale-105 shadow-sm
