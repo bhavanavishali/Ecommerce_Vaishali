@@ -303,6 +303,7 @@ import CategoryTable from "./CategoryTable"
 import UserTable from "./UserTable"
 import OrderTable from "./OrderTable"
 import CouponManagement from "./CouponAddTable"
+import SalesReport from "../SalesReport/SalesReport"
 import Logo from "/logo 1.png"
 import api from '../../api'
 import {
@@ -321,6 +322,7 @@ import {
   LogOut,
   Search,
   Upload,
+  FileText 
 } from "lucide-react"
 
 // Sidebar Component
@@ -332,7 +334,8 @@ const Sidebar = ({ activeItem, setActiveItem }) => {
     { id: "customers", label: "Customers", icon: Users },
     { id: "orders", label: "Orders", icon: ShoppingCart },
     { id: "coupons", label: "Coupons", icon: Ticket },
-    // { id: "reviews", label: "Reviews", icon: Star },
+    { id: "salesReport", label: "SalesReport", icon: FileText },
+    // { id: "salesReport", label: "Reviews", icon: Star },
     // { id: "enquiry", label: "Enquiry", icon: MessageCircle },
     // { id: "offers", label: "Offers", icon: Gift },
    
@@ -405,6 +408,8 @@ function Dashboard() {
         return <OrderTable />
       case "coupons":
         return <CouponManagement/>
+      case "salesReport":
+          return <SalesReport/>
       default:
         return <div>Select a menu item</div>
     }

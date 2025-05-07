@@ -232,6 +232,7 @@ class OrderSerializer(serializers.ModelSerializer):
                     status='pending',
                     payment_method=payment_method,
                     coupon=coupon
+                    
                 )
 
                 # Create order address
@@ -272,7 +273,8 @@ class OrderSerializer(serializers.ModelSerializer):
                         discount=item_discount,
                         coupon_discount=item_coupon_discount,
                         tax=tax,
-                        final_price=final_price
+                        final_price=final_price,
+                        payment_status='pending'
                     )
 
                    
@@ -355,8 +357,8 @@ class OrderReturnSerializer(serializers.ModelSerializer):
         order = self.instance
         if order.status != 'delivered':
             raise serializers.ValidationError("Only delivered orders can be returned.")
-        if any(item.status != 'active' for item in order.items.all()):
-            raise serializers.ValidationError("All items must be active to request a return for the entire order.")
+        # if any(item.status != 'delivered' for item in order.items.all()):
+        #     raise serializers.ValidationError("All items must be active to request a return for the entire order.")
         return data
 
     def update(self, instance, validated_data):
@@ -415,8 +417,8 @@ class OrderItemReturnSerializer(serializers.ModelSerializer):
         order = item.order
         if order.status != 'delivered':
             raise serializers.ValidationError("Only items in delivered orders can be returned.")
-        if item.status != 'active':
-            raise serializers.ValidationError("Only active items can be returned.")
+        # if item.status != 'delivered':
+        #     raise serializers.ValidationError("Only active items can be returned.")
         return data
 
     def update(self, instance, validated_data):

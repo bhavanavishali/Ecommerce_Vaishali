@@ -25,12 +25,13 @@ import Myorders from './Features/UserProfile/Myorders';
 import ForgotPassword from './Features/Auth/ForgotPassword';
 import ResetPassword from './Features/Auth/ResetPassword';
 import UserOrderDetailsPage from './Features/Auth/UserOrderDetailsPage';
-import OrderList from './Features/Auth/OrderTable';
+
 import OrderTable from './Features/Auth/OrderTable';
 import OrderHandlePage from './Features/Auth/OrderHandlePage';
 import ViewOrderDetails from './Features/Auth/ViewOrderDetails';
 import Wishlist from './Features/Auth/Wishlist';
-import Invoice from './Features/Auth/Invoice'
+import Invoice from './Features/Auth/Invoice';
+
 
 
 function App() {
@@ -80,7 +81,6 @@ function App() {
       
       <Route path='/admin/orderhandlepage/:id' element={<OrderHandlePage/>}/>
       
-     
       
 
     </Routes>

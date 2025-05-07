@@ -205,8 +205,8 @@ class Order(models.Model):
                 raise ValueError("Only delivered orders can be returned")
             self.status = 'return_requested'
             self.return_reason = return_reason
-            # Set all active items to return_requested
-            for item in self.items.filter(status='active'):
+            
+            for item in self.items.filter(status='delivered'):
                 item.status = 'return_requested'
                 item.return_reason = return_reason
                 item.save()
@@ -222,11 +222,12 @@ class Order(models.Model):
             self.payment_status = 'refunded' if self.payment_status == 'completed' else 'cancelled'
             for item in self.items.filter(status='return_requested'):
                 item.approve_item_return()
-            self.recalculate_totals()
-            # Credit wallet with final_total
-            logger.info(f"Processing wallet credit for user {self.user}, amount: {self.final_total}")
-            wallet, _ = Wallet.objects.get_or_create(user=self.user)
-            wallet.add_funds(self.final_total, order_number=self.order_number)
+            
+            final_total = sum(item.final_price for item in self.items.filter(status='delivered'))
+            if final_total > 0:
+                logger.info(f"Processing wallet credit for user {self.user}, amount: {final_total}")
+                wallet, _ = Wallet.objects.get_or_create(user=self.user)
+                wallet.add_funds(final_total, order_number=self.order_number)
             print("successfull refunderd")
             self.save()
 
@@ -268,8 +269,17 @@ class OrderItem(models.Model):
         ('active', 'Active'),
         ('cancelled', 'Cancelled'),
         ('returned', 'Returned'),
+        ('delivered', 'Delivered'),
         ('return_requested', 'Return Requested'),
     )
+    ITEM_PAYMENT_STATUS_CHOICES = (
+            ('pending', 'Pending'),
+            ('completed', 'Completed'),
+            ('failed', 'Failed'),
+            ('refunded', 'Refunded'),
+            ('cancelled', 'Cancelled'), 
+            ('partially_refunded', 'Partially Refunded'),
+        )
 
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
     variant = models.ForeignKey(ProductVariant, on_delete=models.CASCADE)
@@ -281,7 +291,7 @@ class OrderItem(models.Model):
     tax= models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     final_price = models.DecimalField(max_digits=10, decimal_places=2)
     status = models.CharField(max_length=20, choices=ORDER_ITEM_STATUS_CHOICES, default='active')
-
+    payment_status=models.CharField(max_length=50, choices=ITEM_PAYMENT_STATUS_CHOICES, default='pending')
     cancelled_at = models.DateTimeField(null=True, blank=True)
     cancel_reason = models.TextField(blank=True, null=True)
     returned_at = models.DateTimeField(null=True, blank=True)
@@ -337,8 +347,6 @@ class OrderItem(models.Model):
                 order.payment_status = 'refunded' if order.payment_status == 'completed' else 'cancelled'
                 order.cancelled_at = timezone.now()
                 order.cancel_reason = cancel_reason
-            else:
-                order.recalculate_totals()
             
             order.save()
 
@@ -347,8 +355,8 @@ class OrderItem(models.Model):
         with transaction.atomic():
             if self.order.status != 'delivered':
                 raise ValueError("Only items in delivered orders can be returned")
-            if self.status != 'active':
-                raise ValueError("Only active items can be returned")
+            if self.status != 'delivered':
+                raise ValueError("Only delivered items can be returned")
             self.status = 'return_requested'
             self.return_reason = return_reason
             self.save()
@@ -364,22 +372,27 @@ class OrderItem(models.Model):
             if self.status != 'return_requested':
                 raise ValueError("Only return requested items can be approved")
             self.status = 'returned'
+            if self.order.payment_method in['card','wallet']:
+                self.payment_status='refunded'
+            else:
+                self.payment_status='faild'
+
             self.returned_at = timezone.now()
             self.variant.stock += self.quantity
             self.variant.save()
-            refund_amount = self.subtotal - self.coupon_discount
+            refund_amount = self.final_price - self.coupon_discount
             logger.info(f"Processing wallet credit for user {self.order.user}, amount: {refund_amount}")
             wallet, _ = Wallet.objects.get_or_create(user=self.order.user)
             wallet.add_funds(refund_amount, order_number=self.order.order_number)
             self.save()
-            self.order.recalculate_totals()
+            # self.order.recalculate_totals()
             self.order.save()
 
     def deny_item_return(self):
         with transaction.atomic():
             if self.status != 'return_requested':
                 raise ValueError("Only return requested items can be denied")
-            self.status = 'active'
+            self.status = 'delivered'
             self.return_reason = None
             self.save()
             if not self.order.items.filter(status='return_requested').exists():

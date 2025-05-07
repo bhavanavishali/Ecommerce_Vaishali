@@ -444,8 +444,8 @@ class OrderListView(APIView):
 
 
 class OrderUpdateView(APIView):
-
     permission_classes = [IsAdminUser]
+
     def patch(self, request, id, *args, **kwargs):
         try:
             order = Order.objects.get(id=id)
@@ -455,7 +455,17 @@ class OrderUpdateView(APIView):
                     {"error": "Invalid status"},
                     status=status.HTTP_400_BAD_REQUEST
                 )
+            
+            # Update order status
             order.status = order_status
+            
+            # If the order status is 'delivered', update all active OrderItems to 'delivered'
+            if order_status == 'delivered':
+                with transaction.atomic():
+                    for item in order.items.filter(status='active'):
+                        item.status = 'delivered'
+                        item.save()
+
             order.save()
             serializer = OrderSerializer(order)
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -691,7 +701,7 @@ class RazorpayOrderCreateView(APIView):
                 final_total=final_total,
                 payment_method='card',
                 status='pending',
-                payment_status='pending',
+                payment_status='completed',
                 coupon=coupon
             )
 
@@ -723,7 +733,8 @@ class RazorpayOrderCreateView(APIView):
                     discount=item_discount,
                     coupon_discount=item_coupon_discount,
                     tax=tax,
-                    final_price=final_price
+                    final_price=final_price,
+                    payment_status='completed'
                 )
 
                 cart_item.variant.stock -= cart_item.quantity
@@ -913,6 +924,7 @@ class RetryRazorpayPaymentView(APIView):
 
             order.razorpay_order_id = razorpay_order["id"]
             order.status = "pending"
+
             order.save()
 
             return Response({
