@@ -458,11 +458,9 @@ class Wallet(models.Model):
             
 
             self.balance = Decimal(str(self.balance)) + amount
-            
             self.save()
-            # Generate unique transaction_id
             transaction_id = generate_transaction_id()
-            # Ensure transaction_id is unique by retrying if necessary
+
             max_attempts = 5
             attempt = 0
             while attempt < max_attempts:
@@ -484,7 +482,33 @@ class Wallet(models.Model):
                         raise ValueError("Failed to generate a unique transaction ID after multiple attempts")
             else:
                 raise ValueError("Failed to generate a unique transaction ID")
-
+    def deduct_funds(self, amount, order_number=None):
+        with transaction.atomic():
+            if self.balance < amount:
+                raise ValueError("Insufficient wallet balance")
+            self.balance = Decimal(str(self.balance)) - amount
+            self.save()
+            transaction_id = generate_transaction_id()
+            max_attempts = 5
+            attempt = 0
+            while attempt < max_attempts:
+                try:
+                    WalletTransaction.objects.create(
+                        wallet=self,
+                        transaction_id=transaction_id,
+                        amount=amount,
+                        transaction_type='debit',
+                        order_number=order_number,
+                        description=f"Payment for order {order_number}" if order_number else "Manual debit"
+                    )
+                    break
+                except IntegrityError:
+                    attempt += 1
+                    transaction_id = generate_transaction_id()
+                    if attempt == max_attempts:
+                        raise ValueError("Failed to generate a unique transaction ID after multiple attempts")
+            else:
+                raise ValueError("Failed to generate a unique transaction ID")
     def __str__(self):
         return f"Wallet of {self.user.username} - Balance: {self.balance}"
 

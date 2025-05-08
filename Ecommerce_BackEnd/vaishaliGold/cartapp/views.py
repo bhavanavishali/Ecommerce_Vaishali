@@ -174,13 +174,13 @@ class OrderCreateView(APIView):
         try:
             order = serializer.save()
             logger.info(f"Order {order.order_number} created successfully for user {request.user.username}")
-            return Response(
-                {
-                    "message": "Order created successfully",
-                    "order": OrderSerializer(order, context={'request': request}).data
-                },
-                status=status.HTTP_201_CREATED
-            )
+            response_data = {
+                "message": "Order created successfully",
+                "order": OrderSerializer(order, context={'request': request}).data
+            }
+            if order.payment_method == 'wallet':
+                response_data["wallet_balance"] = Wallet.objects.get(user=request.user).balance
+            return Response(response_data, status=status.HTTP_201_CREATED)
 
         except Exception as e:
             logger.error(f"Error in OrderCreateView for user {request.user.username}: {str(e)}")
@@ -188,7 +188,6 @@ class OrderCreateView(APIView):
                 {"error": "An error occurred while processing your order.", "details": str(e)},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
-
 class CurrentOrderListView(APIView):
 
     def get(self, request,id):

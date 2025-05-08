@@ -211,14 +211,20 @@ class OrderSerializer(serializers.ModelSerializer):
                 if coupon:
                     if coupon.coupon_type == 'flat':
                         coupon_discount = coupon.discount
-                    else:  # percentage
+                    else:  
                         coupon_discount = (coupon.discount / 100) * total_amount
                     if coupon_discount > total_amount:
                         coupon_discount = total_amount
                     coupon.used_count += 1
                     coupon.save()
 
+                
                 final_total = total_amount - total_discount - coupon_discount + total_tax
+                payment_status = 'pending'
+                if payment_method == 'wallet':
+                    wallet, _ = Wallet.objects.get_or_create(user=user)
+                    wallet.deduct_funds(final_total, order_number=None)  # Order number will be set later
+                    payment_status = 'completed'
 
                 # Create the order
                 order = Order.objects.create(
@@ -231,6 +237,7 @@ class OrderSerializer(serializers.ModelSerializer):
                     final_total=final_total,
                     status='pending',
                     payment_method=payment_method,
+                    payment_status=payment_status,
                     coupon=coupon
                     
                 )
@@ -274,7 +281,7 @@ class OrderSerializer(serializers.ModelSerializer):
                         coupon_discount=item_coupon_discount,
                         tax=tax,
                         final_price=final_price,
-                        payment_status='pending'
+                        payment_status=payment_status
                     )
 
                    
@@ -286,7 +293,14 @@ class OrderSerializer(serializers.ModelSerializer):
                         raise serializers.ValidationError(
                             f"Stock for {variant.product.name} cannot go negative."
                         )
-
+                # Update wallet transaction with order number
+                if payment_method == 'wallet':
+                    WalletTransaction.objects.filter(
+                        wallet__user=user,
+                        order_number=None,
+                        transaction_type='debit',
+                        created_at__gte=order.created_at
+                    ).update(order_number=order.order_number, description=f"Payment for order {order.order_number}")
                 cart.clear()
                 logger.info(f"Order {order.order_number} created successfully for user {user.username}")
 
