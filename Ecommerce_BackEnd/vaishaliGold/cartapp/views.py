@@ -119,6 +119,7 @@ class RemoveFromCartView(APIView):
     
 #======================== Coupon apply==================================
 
+
 class CouponApplyView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -128,34 +129,36 @@ class CouponApplyView(APIView):
             return Response({'error': 'Coupon code is required'}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            coupon = Coupon.objects.get(coupon_code=code)
-            if not coupon.is_valid():
-                return Response({'error': 'Coupon is not valid or has expired'}, status=status.HTTP_400_BAD_REQUEST)
-
             cart = get_object_or_404(Cart, user=request.user)
-            if not cart.items.exists():
-                return Response({'error': 'Cart is empty'}, status=status.HTTP_400_BAD_REQUEST)
-
-            total_amount = cart.get_final_subtotal()
-            if total_amount < coupon.min_amount:
-                return Response(
-                    {'error': f'Order total must be at least {coupon.min_amount} to use this coupon'},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-
-            discount = coupon.discount if coupon.coupon_type == 'flat' else (coupon.discount / 100) * total_amount
-            if discount > total_amount:
-                discount = total_amount
-
+            discount = cart.apply_coupon(code)
+            serializer = CartSerializer(cart)
+            coupon = cart.coupon
             return Response({
                 'message': 'Coupon applied successfully',
-                'coupon': CouponSerializer(coupon).data,
-                'discount': float(discount)
+                'coupon': CouponSerializer(coupon).data if coupon else None,
+                'discount': float(discount),
+                'cart': serializer.data
             }, status=status.HTTP_200_OK)
+        except ValidationError as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({'error': 'An unexpected error occurred'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        except Coupon.DoesNotExist:
-            return Response({'error': 'Invalid coupon code'}, status=status.HTTP_404_NOT_FOUND)
+class RemoveCouponView(APIView):
+    permission_classes = [IsAuthenticated]
 
+    def post(self, request):
+        try:
+            cart = get_object_or_404(Cart, user=request.user)
+            cart.remove_coupon()
+            serializer = CartSerializer(cart)
+            return Response({
+                'message': 'Coupon removed successfully',
+                'cart': serializer.data
+            }, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
 #  ==========================  Order Related Views   ===============================
 
 
@@ -790,6 +793,10 @@ class RetryRazorpayPaymentView(APIView):
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 #========================= Sales Report=======================================
+from django.db.models import Sum, Value, DecimalField
+from django.db.models.functions import Coalesce
+from decimal import Decimal
+
 
 
 class SalesReportView(APIView):
@@ -798,7 +805,7 @@ class SalesReportView(APIView):
     def get(self, request):
         try:
             # Get filter parameters
-            filter_type = request.query_params.get('filter_type', 'custom')
+            filter_type = request.query_params.get('filter_type', 'thisYear')
             from_date = request.query_params.get('from_date')
             to_date = request.query_params.get('to_date')
 
@@ -806,40 +813,46 @@ class SalesReportView(APIView):
             today = timezone.now().date()
             if filter_type == 'today':
                 from_date = to_date = today
-            elif filter_type == 'yesterday':
-                from_date = to_date = today - timezone.timedelta(days=1)
             elif filter_type == 'thisWeek':
                 from_date = today - timezone.timedelta(days=today.weekday())
                 to_date = today
-            elif filter_type == 'lastWeek':
-                from_date = today - timezone.timedelta(days=today.weekday() + 7)
-                to_date = today - timezone.timedelta(days=today.weekday() + 1)
             elif filter_type == 'thisMonth':
                 from_date = today.replace(day=1)
                 to_date = today
-            elif filter_type == 'lastMonth':
-                from_date = today.replace(day=1) - timezone.timedelta(days=1)
-                from_date = from_date.replace(day=1)
-                to_date = today.replace(day=1) - timezone.timedelta(days=1)
-
-            # Parse custom dates if provided
-            try:
-                if from_date:
-                    from_date = datetime.strptime(from_date, '%Y-%m-%d').date()
-                if to_date:
-                    to_date = datetime.strptime(to_date, '%Y-%m-%d').date()
-            except ValueError:
+            elif filter_type == 'thisYear':
+                from_date = today.replace(month=1, day=1)
+                to_date = today
+            elif filter_type == 'custom':
+                if not (from_date and to_date):
+                    return Response(
+                        {"error": "Both from_date and to_date are required for custom filter"},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+            else:
                 return Response(
-                    {"error": "Invalid date format. Use YYYY-MM-DD"},
+                    {"error": f"Invalid filter_type: {filter_type}"},
                     status=status.HTTP_400_BAD_REQUEST
                 )
 
-            # Ensure to_date is not before from_date
-            if from_date and to_date and to_date < from_date:
-                return Response(
-                    {"error": "To date cannot be before from date"},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
+           
+            if filter_type == 'custom':
+                try:
+                    if from_date and not isinstance(from_date, datetime.date):
+                        from_date = datetime.strptime(from_date, '%Y-%m-%d').date()
+                    if to_date and not isinstance(to_date, datetime.date):
+                        to_date = datetime.strptime(to_date, '%Y-%m-%d').date()
+                except ValueError:
+                    return Response(
+                        {"error": "Invalid date format. Use YYYY-MM-DD"},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+
+                # Ensure to_date is not before from_date
+                if from_date and to_date and to_date < from_date:
+                    return Response(
+                        {"error": "To date cannot be before from date"},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
 
             # Query orders
             queryset = Order.objects.all()
@@ -848,34 +861,21 @@ class SalesReportView(APIView):
             if to_date:
                 queryset = queryset.filter(created_at__date__lte=to_date)
 
+            # Calculate summary using database aggregations
+            summary = queryset.aggregate(
+                total_sales=Coalesce(Sum('total_amount'), Value(0.00, output_field=DecimalField())),
+                total_discount=Coalesce(Sum('total_discount'), Value(0.00, output_field=DecimalField())),
+                coupon_discount=Coalesce(Sum('coupon_discount'), Value(0.00, output_field=DecimalField())),
+            )
+
             # Serialize data
             serializer = SalesReportSerializer(queryset, many=True)
-
-            # Calculate summary with robust type handling
-            total_sales = Decimal('0.00')
-            total_discount = Decimal('0.00')
-            total_refund = Decimal('0.00')
-
-            for order in serializer.data:
-                try:
-                    total_amount = Decimal(str(order['totalAmount'])) if order['totalAmount'] is not None else Decimal('0.00')
-                    item_discount = Decimal(str(order['itemDiscount'])) if order['itemDiscount'] is not None else Decimal('0.00')
-                    coupon_discount = Decimal(str(order['couponDiscount'])) if order['couponDiscount'] is not None else Decimal('0.00')
-                    refund_amount = Decimal(str(order['refundAmount'])) if order['refundAmount'] is not None else Decimal('0.00')
-
-                    total_sales += total_amount
-                    total_discount += (item_discount + coupon_discount)
-                    total_refund += refund_amount
-                except (InvalidOperation, TypeError, ValueError) as e:
-                    logger.error(f"Invalid data in order {order['orderId']}: totalAmount={order['totalAmount']}, itemDiscount={order['itemDiscount']}, couponDiscount={order['couponDiscount']}, refundAmount={order['refundAmount']}, error={str(e)}")
-                    continue
 
             return Response({
                 'salesData': serializer.data,
                 'summary': {
-                    'totalSales': float(total_sales),  # Convert to float for JSON serialization
-                    'totalDiscount': float(total_discount),
-                    'totalRefund': float(total_refund)
+                    'totalSales': float(summary['total_sales']),
+                    'totalDiscount': float(summary['total_discount']),
                 }
             }, status=status.HTTP_200_OK)
 

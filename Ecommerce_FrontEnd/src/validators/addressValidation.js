@@ -60,6 +60,7 @@ const addressSchema = Joi.object({
   alternate_number: Joi.string().pattern(/^[0-9]{10}$/).optional().messages({
     "string.base": "Alternate number must be a string",
     "string.pattern.base": "Alternate number must be exactly 10 digits",
+    "any.required": "Mobile number is required",
   }),
 });
 

@@ -39,6 +39,8 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+    
+    
 from decimal import Decimal
 class ProductVariant(models.Model):
     product = models.ForeignKey('Product', on_delete=models.CASCADE, related_name="variants")
@@ -62,6 +64,7 @@ class ProductVariant(models.Model):
 
     def get_total_price_before_discount(self):
         return (Decimal(self.gold_price) * Decimal(self.gross_weight)) + Decimal(self.stone_rate) + Decimal(self.making_charge)
+    
 
     def calculate_base_price(self):
         self.base_price = self.get_total_price_before_discount()

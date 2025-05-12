@@ -49,7 +49,7 @@ urlpatterns = [
     # coupon 
 
     path('apply-coupon/', CouponApplyView.as_view(), name='apply-offer'),
-
+    path('remove-coupon/',RemoveCouponView.as_view(),name='remove-coupon'),
     # Salesreport
 
     path('sales-report/', SalesReportView.as_view(), name='sales-report'),

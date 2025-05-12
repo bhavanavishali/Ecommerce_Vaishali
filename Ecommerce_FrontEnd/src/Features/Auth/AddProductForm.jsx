@@ -1335,7 +1335,7 @@ const AddProductForm = () => {
                   step="0.01"
                 />
               </div>
-              <div>
+              {/* <div>
                 <label className="block text-sm font-medium mb-1">
                   Tax ID *
                 </label>
@@ -1350,7 +1350,7 @@ const AddProductForm = () => {
                   min="1"
                   step="1"
                 />
-              </div>
+              </div> */}
               <Button
                 type="button"
                 onClick={() => removeVariant(index)}

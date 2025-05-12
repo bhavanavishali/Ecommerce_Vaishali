@@ -42,3 +42,16 @@ class CouponDetailView(APIView):
         coupon = get_object_or_404(Coupon, pk=pk)
         coupon.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+    
+class CouponView(APIView):
+       permission_classes = [IsAuthenticated]
+
+       def get(self, request):
+           try:
+               coupons = Coupon.objects.filter(user=request.user, is_active=True)
+               serializer = CouponSerializer(coupons, many=True)
+               logger.info(f"Fetched {coupons.count()} coupons for user {request.user.email}")
+               return Response(serializer.data, status=status.HTTP_200_OK)
+           except Exception as e:
+               logger.error(f"Error fetching coupons for {request.user.email}: {str(e)}")
+               return Response({"error": "Failed to fetch coupons"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

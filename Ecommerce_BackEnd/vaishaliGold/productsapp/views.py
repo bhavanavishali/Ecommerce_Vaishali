@@ -3,10 +3,10 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import get_object_or_404
 from .models import Category ,Product,ProductVariant,ProductImage
-from .serializers import CategorySerializer,ProductImageSerializer,ProductVariantSerializer,ProductSerializer
+from .serializers import CategorySerializer,ProductImageSerializer,ProductVariantSerializer,ProductSerializer,TaxSerializer
 import json
 from rest_framework.permissions import AllowAny, IsAuthenticated
-
+from cartapp.models import *
 
 #Admin side
 
@@ -95,7 +95,7 @@ class ProductFilter(APIView):
         serializer = ProductSerializer(products, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-#user side for display categories and products
+
 
 class UserCategoryList(APIView):
     def get(self, request):
@@ -246,3 +246,8 @@ class ProductImageDetailView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
     
 
+class TaxListView(APIView):
+    def get(self, request):
+        taxes = Tax.objects.all()
+        serializer = TaxSerializer(taxes, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

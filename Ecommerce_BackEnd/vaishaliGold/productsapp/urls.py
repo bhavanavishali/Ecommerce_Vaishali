@@ -29,6 +29,7 @@ urlpatterns = [
     #  delete a specific image
     path('product-images/<int:id>/', ProductImageDetailView.as_view(),name='product-image-detail'),
 
+    path('taxes/', TaxListView.as_view(), name='tax-list'),
 ]
 
 

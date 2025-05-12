@@ -22,8 +22,11 @@ from django.http import JsonResponse
 
 from django.middleware.csrf import get_token
 from django.views.decorators.csrf import ensure_csrf_cookie
+from django.db import transaction
 
 logger = logging.getLogger(__name__)
+from .models import *
+from offer.models import *
 
 from django.core.mail import send_mail
 from datetime import timedelta
@@ -39,24 +42,28 @@ User = get_user_model()
 
 class SignupView(APIView):
     permission_classes = [AllowAny]
-    authentication_classes=[]
+    authentication_classes = []
 
     def post(self, request):
-        print(request.data)
-
         logger.info(f"Received signup request: {request.data}")
-        serializer = UserSerializer(data=request.data)
-        print("Request data:", request.data)
-        
+        referral_token = request.data.get('referral_token')
+        referral_code = request.data.get('referral_code')
+        serializer_data = request.data.copy()
+
+        if referral_token:
+            try:
+                referrer = User.objects.get(referral_code=referral_token)
+                serializer_data['referral_code'] = referral_token
+            except User.DoesNotExist:
+                return Response({'error': 'Invalid referral token'}, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = UserSerializer(data=serializer_data)
         if serializer.is_valid():
             user = serializer.save()
             UserProfile.objects.create(user=user)
-            # refresh = RefreshToken.for_user(user)
             return Response({
                 'user': UserSerializer(user).data
-                
             }, status=status.HTTP_201_CREATED)
-        print("suess")
         logger.error(f"Validation errors: {serializer.errors}")
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -176,9 +183,9 @@ class AdminLogoutView(APIView):
         response.delete_cookie('access_token')  
         return response
 
-    
 class VerifyOTPView(APIView):
     permission_classes = [AllowAny]
+
     def post(self, request):
         email = request.data.get('email')
         otp = request.data.get('otp')
@@ -188,15 +195,71 @@ class VerifyOTPView(APIView):
             stored_data = cache.get(cache_key)
             if stored_data and stored_data['otp_code'] == otp and not stored_data['is_verified']:
                 user.is_active = True
+                user.is_email_verified = True
                 user.save()
                 stored_data['is_verified'] = True
-                cache.set(cache_key, stored_data, timeout=120)  
-                cache.delete(cache_key)  
+                cache.set(cache_key, stored_data, timeout=120)
+                cache.delete(cache_key)
+
+                # Check for referral and reward referrer
+                referral = Referral.objects.filter(referred_user=user).first()
+                if referral and not referral.rewarded:
+                    with transaction.atomic():
+                        # Create coupon for referrer
+                        coupon_code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
+                        while Coupon.objects.filter(coupon_code=coupon_code).exists():
+                            coupon_code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
+                        referrer_coupon = Coupon.objects.create(
+                            coupon_name=f"Referral Reward for {referral.referrer.email}",
+                            coupon_code=coupon_code,
+                            discount=10.00,
+                            valid_from=timezone.now().date(),
+                            valid_to=(timezone.now() + timedelta(days=30)).date(),
+                            is_active=True,
+                            max_uses=1,
+                            min_amount=50.00,
+                            coupon_type='flat',
+                            user=referral.referrer
+                        )
+                        # Create coupon for referred user
+                        welcome_coupon_code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
+                        while Coupon.objects.filter(coupon_code=welcome_coupon_code).exists():
+                            welcome_coupon_code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
+                        referred_coupon = Coupon.objects.create(
+                            coupon_name=f"Welcome Coupon for {user.email}",
+                            coupon_code=welcome_coupon_code,
+                            discount=5.00,
+                            valid_from=timezone.now().date(),
+                            valid_to=(timezone.now() + timedelta(days=30)).date(),
+                            is_active=True,
+                            max_uses=1,
+                            min_amount=50.00,
+                            coupon_type='flat',
+                            user=user
+                        )
+                        referral.referrer_coupon = referrer_coupon
+                        referral.referred_coupon = referred_coupon
+                        referral.rewarded = True
+                        referral.save()
+                        logger.info(f"Referral coupon {coupon_code} created for {referral.referrer.email}")
+                        logger.info(f"Welcome coupon {welcome_coupon_code} created for {user.email}")
                 return Response({'message': 'Account verified successfully'}, status=status.HTTP_200_OK)
             else:
                 return Response({'error': 'Invalid or expired OTP'}, status=status.HTTP_400_BAD_REQUEST)
         except User.DoesNotExist:
             return Response({'error': 'User not found'}, status=status.HTTP_400_BAD_REQUEST)
+        
+class ReferralLinkView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        referral_link = f"{settings.CORS_ALLOWED_ORIGINS}/signup?referral_token={user.referral_code}"
+        print("dddd",referral_link)
+        return Response({
+            'referral_code': user.referral_code,
+            'referral_link': referral_link
+        }, status=status.HTTP_200_OK)
         
 class ResendOTPView(APIView):
     permission_classes = [AllowAny]
@@ -699,3 +762,4 @@ class TokenRefreshFromCookieView(APIView):
                 {"detail": f"Error processing token: {str(e)}"},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
     )
+        

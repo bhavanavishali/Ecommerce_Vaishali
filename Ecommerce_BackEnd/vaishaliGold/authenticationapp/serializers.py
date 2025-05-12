@@ -1,7 +1,7 @@
 
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from .models import UserProfile,Address
+from .models import *
 import re
 
 User = get_user_model()
@@ -50,15 +50,31 @@ class UserProfileSerializer(serializers.ModelSerializer):
     
 class UserSerializer(serializers.ModelSerializer):
     profile_picture = serializers.ImageField(source='users.profile_picture', read_only=True)
-
+    referral_code = serializers.CharField(max_length=8, required=False, allow_blank=True)
+    
     class Meta:
         model = User
-        fields = ('id', 'first_name', 'last_name', 'username', 'email', 'phone_number', 'password', 'is_active', 'profile_picture')
+        fields = ('id', 'first_name', 'last_name', 'username', 'email', 'phone_number', 'password', 'is_active', 'profile_picture','referral_code')
         extra_kwargs = {'password': {'write_only': True}}
 
+        def validate_referral_code(self, value):
+            if value:
+                try:
+                    User.objects.get(referral_code=value)
+                except User.DoesNotExist:
+                    raise serializers.ValidationError("Invalid referral code.")
+            return value
+
     def create(self, validated_data):
-        user = User.objects.create_user(**validated_data)
-        print(f"User created: {user.email}")  # Debug
+        password = validated_data.pop('password')
+        referral_code = validated_data.pop('referral_code', None)
+        user = User.objects.create_user(**validated_data, password=password)
+        if referral_code:
+            try:
+                referrer = User.objects.get(referral_code=referral_code)
+                Referral.objects.create(referrer=referrer, referred_user=user)
+            except User.DoesNotExist:
+                pass  # Ignore invalid referral codes silently
         return user
     
     def update(self, instance, validated_data):
@@ -100,25 +116,7 @@ class AddressSerializer(serializers.ModelSerializer):
                 if existing_default.exists():
                     existing_default.update(isDefault=False)
             return value
-        
 
- #for ypu password reset
-
- 
-# class PasswordResetRequestSerializer(serializers.Serializer):
-#     email = serializers.EmailField()
-
-#     def validate_email(self, value):
-#         try:
-#             user = User.objects.get(email=value)
-#         except User.DoesNotExist:
-#             raise serializers.ValidationError("No user with this email exists.")
-#         return value
-
-# class PasswordResetConfirmSerializer(serializers.Serializer):
-#     new_password = serializers.CharField(write_only=True)
-#     token = serializers.CharField()
-#     uidb64 = serializers.CharField()
 
     
 class PasswordResetRequestSerializer(serializers.Serializer):

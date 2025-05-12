@@ -29,12 +29,14 @@ class Cart(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='cart')
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)
-    
+    coupon = models.ForeignKey(Coupon, on_delete=models.SET_NULL, null=True, blank=True, related_name='carts')
     final_subtotal = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     final_discount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     final_tax = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     final_total = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
-
+    final_coupon_discount=models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    shipping=models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    
     def get_final_subtotal(self):
         """Calculate the subtotal from all cart items."""
         return sum(item.get_subtotal() for item in self.items.all())
@@ -46,28 +48,86 @@ class Cart(models.Model):
     def get_final_tax(self):
         """Calculate the total tax from all cart items."""
         return sum(item.get_tax_amount() for item in self.items.all())
-
-    def get_final_total(self):
-        """Calculate the final total including subtotal, discount, and tax."""
+    
+    def update_shipping(self):
         subtotal = self.get_final_subtotal()
         discount = self.get_final_discount()
-        value=subtotal-discount
         tax = self.get_final_tax()
-        return value+ tax
+        total = subtotal - discount + tax
+        if total < 1000:
+            self.shipping = Decimal('100.00')
+        else:
+            self.shipping = Decimal('0.00')
+        
+
+    def get_final_total(self):
+        """Calculate the final total including subtotal, discount, tax, and coupon discount."""
+        subtotal = self.get_final_subtotal()
+        discount = self.get_final_discount()
+        tax = self.get_final_tax()
+        coupon_discount = self.final_coupon_discount
+        total=subtotal-discount+tax
+        if total < 1000:
+            return (total + 100 - coupon_discount).quantize(Decimal('0.01'))
+        return (subtotal - discount + tax - coupon_discount).quantize(Decimal('0.01'))
 
     def update_totals(self):
         """Update the stored totals in the Cart model."""
         self.final_subtotal = self.get_final_subtotal()
         self.final_discount = self.get_final_discount()
         self.final_tax = self.get_final_tax()
+        self.update_shipping() 
         self.final_total = self.get_final_total()
         self.save()
+
+    def apply_coupon(self, coupon_code):
+        """Apply a coupon to the cart."""
+        if not self.items.exists():
+            raise ValidationError("Cart is empty")
+        
+        try:
+            coupon = Coupon.objects.get(coupon_code=coupon_code)
+            if not coupon.is_valid():
+                raise ValidationError("Coupon is not valid or has expired")
+            
+            total_amount = self.get_final_subtotal()
+            if total_amount < coupon.min_amount:
+                raise ValidationError(
+                    f"Order total must be at least {coupon.min_amount} to use this coupon"
+                )
+
+            self.coupon = coupon
+            # Calculate coupon discount
+            discount = (
+                coupon.discount
+                if coupon.coupon_type == 'flat'
+                else (coupon.discount / Decimal('100')) * total_amount
+            )
+            if discount > total_amount:
+                discount = total_amount
+            self.final_coupon_discount = discount
+            self.update_totals()
+            return discount
+        except Coupon.DoesNotExist:
+            self.coupon = None
+            self.final_coupon_discount = Decimal('0.00')
+            self.update_totals()
+            raise ValidationError("Invalid coupon code")
+
+    def remove_coupon(self):
+        """Remove the coupon from the cart."""
+        self.coupon = None
+        self.final_coupon_discount = Decimal('0.00')
+        self.update_totals()
 
     def __str__(self):
         return f"cart for {self.user.username}"
 
     def clear(self):
+        """Clear all items from the cart and update totals."""
         self.items.all().delete()
+        self.coupon = None
+        self.final_coupon_discount = Decimal('0.00')
         self.update_totals()
 
 class CartItem(models.Model):
@@ -383,7 +443,7 @@ class OrderItem(models.Model):
             refund_amount = self.final_price - self.coupon_discount
             logger.info(f"Processing wallet credit for user {self.order.user}, amount: {refund_amount}")
             wallet, _ = Wallet.objects.get_or_create(user=self.order.user)
-            wallet.add_funds(refund_amount, order_number=self.order.order_number)
+            wallet.add_funds(self.final_price, order_number=self.order.order_number)
             self.save()
             # self.order.recalculate_totals()
             self.order.save()

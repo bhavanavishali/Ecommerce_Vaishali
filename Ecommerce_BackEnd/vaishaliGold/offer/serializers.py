@@ -10,7 +10,7 @@ class CouponSerializer(serializers.ModelSerializer):
         model = Coupon
         fields = ['id', 'coupon_name', 'coupon_code', 'discount', 'valid_from', 'valid_to', 
                  'is_active', 'max_uses', 'used_count', 'min_amount', 'remaining_uses', 
-                 'status', 'created_at', 'updated_at','min_offer_amount','coupon_type']
+                 'status', 'created_at', 'updated_at','min_offer_amount','coupon_type','user']
         read_only_fields = ['used_count', 'created_at', 'updated_at']
 
     def get_remaining_uses(self, obj):

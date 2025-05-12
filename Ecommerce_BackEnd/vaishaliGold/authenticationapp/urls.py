@@ -42,4 +42,9 @@ urlpatterns = [
 
     path('address/',AddressCreateView.as_view(),name='address-create'),
     path('address/<int:id>/',AddressDetailsView.as_view(),name='address-details'),
+
+    # Referal link
+
+    path('referral-link/', ReferralLinkView.as_view(), name='referral-link'),
+
 ]

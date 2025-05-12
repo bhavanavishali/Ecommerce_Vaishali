@@ -21,7 +21,7 @@ class Coupon(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     min_offer_amount=models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     coupon_type= models.CharField(max_length=20, choices=COUPON_TYPE, default='flat')
-
+    user = models.ForeignKey('authenticationapp.User', on_delete=models.CASCADE, null=True, blank=True)
 
     def is_valid(self):
         now = timezone.now().date()   

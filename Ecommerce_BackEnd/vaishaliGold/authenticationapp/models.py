@@ -6,11 +6,15 @@ from django.core.validators import RegexValidator
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.utils import timezone
+import uuid
+import random
+import string
 
 class MyAccountManager(BaseUserManager):  
-    def create_user(self, first_name, last_name, username, email, phone_number, password=None):  
+    def create_user(self, first_name, last_name, username, email, phone_number, password=None,referral_code=None):  
         if not email:
             raise ValueError('User must have an email address')  
+        if not username:
             raise ValueError('User must have a username')  
         user = self.model(
             email=self.normalize_email(email),  
@@ -18,6 +22,7 @@ class MyAccountManager(BaseUserManager):
             first_name=first_name,
             last_name=last_name,
             phone_number=phone_number,
+            referral_code=self._generate_referral_code() if not referral_code else referral_code,
         )
         user.set_password(password)  
         user.is_active = False  
@@ -39,6 +44,14 @@ class MyAccountManager(BaseUserManager):
         user.is_superadmin = True 
         user.save(using=self._db)  
         return user  
+    def _generate_referral_code(self):
+        """Generate a unique 8-character referral code."""
+        characters = string.ascii_uppercase + string.digits
+        code = ''.join(random.choices(characters, k=8))
+        while User.objects.filter(referral_code=code).exists():
+            code = ''.join(random.choices(characters, k=8))
+        return code
+
 
 
 class User(AbstractBaseUser):  
@@ -57,6 +70,7 @@ class User(AbstractBaseUser):
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=False) 
     is_superadmin = models.BooleanField(default=False)
+    referral_code = models.CharField(max_length=8,blank=True)
 
     USERNAME_FIELD = 'email'  
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name']  
@@ -112,4 +126,17 @@ class Address (models.Model):
 
     def __str__(self):
         return f"{self.name}'s {self.address_type} address"
-    
+
+class Referral(models.Model):
+    referrer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='referrals_made')
+    referred_user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='referral')
+    referrer_coupon = models.ForeignKey('offer.Coupon', on_delete=models.SET_NULL, null=True, blank=True, related_name='referrer_coupons')
+    referred_coupon = models.ForeignKey('offer.Coupon', on_delete=models.SET_NULL, null=True, blank=True, related_name='referred_coupons')
+    created_at = models.DateTimeField(default=timezone.now)
+    rewarded = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.referrer.email} referred {self.referred_user.email}"
+
+    class Meta:
+        unique_together = ('referrer', 'referred_user')

@@ -59,10 +59,11 @@ class CartSerializer(serializers.ModelSerializer):
     final_discount = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
     final_tax = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
     final_total = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
-
+    final_coupon_discount=serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
+   
     class Meta:
         model = Cart
-        fields = ['id', 'user', 'items', 'total_items', 'final_subtotal', 'final_discount', 'final_tax', 'final_total']
+        fields = ['id', 'user', 'items', 'total_items', 'final_subtotal', 'final_discount', 'final_tax', 'final_total','coupon','final_coupon_discount']
 
     def get_total_items(self, obj):
         return obj.items.count()
@@ -581,69 +582,102 @@ from decimal import Decimal, InvalidOperation
 
 logger = logging.getLogger(__name__)
 
+# class SalesReportSerializer(serializers.ModelSerializer):
+#     orderId = serializers.CharField(source='order_number')
+#     date = serializers.SerializerMethodField()
+#     orderMrp = serializers.SerializerMethodField()
+#     itemDiscount = serializers.SerializerMethodField()
+#     orderSubtotal = serializers.SerializerMethodField()
+#     couponDiscount = serializers.DecimalField(max_digits=10, decimal_places=2, source='coupon_discount')
+#     shippingCharge = serializers.DecimalField(max_digits=10, decimal_places=2, source='shipping')
+#     totalAmount = serializers.DecimalField(max_digits=10, decimal_places=2, source='final_total')
+#     refundAmount = serializers.SerializerMethodField()
+#     paymentMethod = serializers.CharField(source='payment_method')
+
+#     class Meta:
+#         model = Order
+#         fields = [
+#             'orderId', 'date', 'orderMrp', 'itemDiscount', 'orderSubtotal',
+#             'couponDiscount', 'shippingCharge', 'totalAmount', 'refundAmount', 'paymentMethod'
+#         ]
+
+#     def get_date(self, obj):
+#         return obj.created_at.strftime('%Y-%m-%d %H:%M')
+
+#     def get_orderMrp(self, obj):
+#         total = Decimal('0.00')
+#         for item in obj.items.all():
+#             try:
+#                 subtotal = Decimal(str(item.subtotal))  # Convert to Decimal, handle strings
+#                 total += subtotal
+#             except (InvalidOperation, TypeError) as e:
+#                 logger.error(f"Invalid subtotal for OrderItem {item.id}: {item.subtotal} ({type(item.subtotal)})")
+#                 continue
+#         return total
+
+#     def get_itemDiscount(self, obj):
+#         total = Decimal('0.00')
+#         for item in obj.items.all():
+#             try:
+#                 discount = Decimal(str(item.discount))  # Convert to Decimal, handle strings
+#                 total += discount
+#             except (InvalidOperation, TypeError) as e:
+#                 logger.error(f"Invalid discount for OrderItem {item.id}: {item.discount} ({type(item.discount)})")
+#                 continue
+#         return total
+
+#     def get_orderSubtotal(self, obj):
+#         total = Decimal('0.00')
+#         for item in obj.items.all():
+#             try:
+#                 subtotal = Decimal(str(item.subtotal))
+#                 discount = Decimal(str(item.discount))
+#                 total += (subtotal - discount)
+#             except (InvalidOperation, TypeError) as e:
+#                 logger.error(f"Invalid subtotal/discount for OrderItem {item.id}: subtotal={item.subtotal}, discount={item.discount}")
+#                 continue
+#         return total
+
+#     def get_refundAmount(self, obj):
+#         total = Decimal('0.00')
+#         for item in obj.items.filter(status__in=['returned', 'cancelled']):
+#             try:
+#                 final_price = Decimal(str(item.final_price))  # Convert to Decimal, handle strings
+#                 total += final_price
+#             except (InvalidOperation, TypeError) as e:
+#                 logger.error(f"Invalid final_price for OrderItem {item.id}: {item.final_price} ({type(item.final_price)})")
+#                 continue
+#         return total
+
 class SalesReportSerializer(serializers.ModelSerializer):
-    orderId = serializers.CharField(source='order_number')
+    orderId = serializers.CharField(source='order_number')  # or 'id' if order_number isn't unique
     date = serializers.SerializerMethodField()
     orderMrp = serializers.SerializerMethodField()
     itemDiscount = serializers.SerializerMethodField()
     orderSubtotal = serializers.SerializerMethodField()
-    couponDiscount = serializers.DecimalField(max_digits=10, decimal_places=2, source='coupon_discount')
-    shippingCharge = serializers.DecimalField(max_digits=10, decimal_places=2, source='shipping')
-    totalAmount = serializers.DecimalField(max_digits=10, decimal_places=2, source='final_total')
-    refundAmount = serializers.SerializerMethodField()
+    couponDiscount = serializers.DecimalField(source='coupon_discount', max_digits=10, decimal_places=2)
+    shippingCharge = serializers.DecimalField(source='shipping', max_digits=10, decimal_places=2)
+    totalAmount = serializers.DecimalField(source='total_amount', max_digits=10, decimal_places=2)
     paymentMethod = serializers.CharField(source='payment_method')
 
     class Meta:
         model = Order
         fields = [
             'orderId', 'date', 'orderMrp', 'itemDiscount', 'orderSubtotal',
-            'couponDiscount', 'shippingCharge', 'totalAmount', 'refundAmount', 'paymentMethod'
+            'couponDiscount', 'shippingCharge', 'totalAmount', 'paymentMethod'
         ]
 
     def get_date(self, obj):
-        return obj.created_at.strftime('%Y-%m-%d %H:%M')
+        return obj.created_at.date()
 
     def get_orderMrp(self, obj):
-        total = Decimal('0.00')
-        for item in obj.items.all():
-            try:
-                subtotal = Decimal(str(item.subtotal))  # Convert to Decimal, handle strings
-                total += subtotal
-            except (InvalidOperation, TypeError) as e:
-                logger.error(f"Invalid subtotal for OrderItem {item.id}: {item.subtotal} ({type(item.subtotal)})")
-                continue
-        return total
+        
+        return float(obj.total_amount + obj.total_discount)
 
     def get_itemDiscount(self, obj):
-        total = Decimal('0.00')
-        for item in obj.items.all():
-            try:
-                discount = Decimal(str(item.discount))  # Convert to Decimal, handle strings
-                total += discount
-            except (InvalidOperation, TypeError) as e:
-                logger.error(f"Invalid discount for OrderItem {item.id}: {item.discount} ({type(item.discount)})")
-                continue
-        return total
+        
+        return float(obj.total_discount - obj.coupon_discount)
 
     def get_orderSubtotal(self, obj):
-        total = Decimal('0.00')
-        for item in obj.items.all():
-            try:
-                subtotal = Decimal(str(item.subtotal))
-                discount = Decimal(str(item.discount))
-                total += (subtotal - discount)
-            except (InvalidOperation, TypeError) as e:
-                logger.error(f"Invalid subtotal/discount for OrderItem {item.id}: subtotal={item.subtotal}, discount={item.discount}")
-                continue
-        return total
-
-    def get_refundAmount(self, obj):
-        total = Decimal('0.00')
-        for item in obj.items.filter(status__in=['returned', 'cancelled']):
-            try:
-                final_price = Decimal(str(item.final_price))  # Convert to Decimal, handle strings
-                total += final_price
-            except (InvalidOperation, TypeError) as e:
-                logger.error(f"Invalid final_price for OrderItem {item.id}: {item.final_price} ({type(item.final_price)})")
-                continue
-        return total
+        
+        return float(obj.total_amount - obj.shipping)

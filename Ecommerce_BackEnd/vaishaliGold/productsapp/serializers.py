@@ -34,10 +34,12 @@ class ProductVariantSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = ProductVariant
-        fields = ['id', 'available', 'is_active', 'gross_weight', 'gold_price', 
-                  'stone_rate', 'making_charge', 'tax', 'stock','applied_offer','base_price', 'tax_amount', 'discount_amount', 'total_price',]
-    
-
+        fields = [
+            'id', 'available', 'is_active', 'gross_weight', 'gold_price', 
+            'stone_rate', 'making_charge', 'tax', 'stock', 'applied_offer',
+            'base_price', 'tax_amount', 'discount_amount', 'total_price'
+        ]
+        read_only_fields = ['base_price', 'tax_amount', 'discount_amount', 'total_price']
     def get_applied_offer(self, obj):
 
         discount = obj.product.discount  if (obj.product.product_offer_Isactive and obj.product.is_active) else 0
@@ -47,8 +49,14 @@ class ProductVariantSerializer(serializers.ModelSerializer):
         return {
             'offer_percentage': max_offer,
             'offer_type': 'product' if discount  >= category_offer else 'category' if category_offer > 0 else 'none'
+
+
         }
-   
+    def validate_tax(self, value):
+       
+        if value is None:
+            raise serializers.ValidationError("Tax field is required.")
+        return value
     
 class  ProductImageSerializer(serializers.ModelSerializer):
 
@@ -111,29 +119,40 @@ class ProductSerializer(serializers.ModelSerializer):
      
     
     def update(self, instance, validated_data):
-        
         variants_data = validated_data.pop('variants', None)
         uploaded_images = validated_data.pop('uploaded_images', [])
 
-        
+        # Update product fields
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
         instance.save()
 
-        
+        # Update variants
         if variants_data is not None:
-            
-            instance.variants.all().delete()
-            
-            ProductVariant.objects.bulk_create([
-                ProductVariant(product=instance, **variant) for variant in variants_data
-            ])
+            # Get existing variant IDs
+            existing_variant_ids = set(instance.variants.values_list('id', flat=True))
+            incoming_variant_ids = set(variant.get('id') for variant in variants_data if variant.get('id'))
+
+            # Delete variants that are no longer present
+            variants_to_delete = existing_variant_ids - incoming_variant_ids
+            instance.variants.filter(id__in=variants_to_delete).delete()
+
+            # Update or create variants
+            for variant_data in variants_data:
+                variant_id = variant_data.pop('id', None)
+                if variant_id:
+                    # Update existing variant
+                    variant = instance.variants.get(id=variant_id)
+                    for attr, value in variant_data.items():
+                        setattr(variant, attr, value)
+                    variant.save()  # Triggers save method for calculations
+                else:
+                    # Create new variant
+                    ProductVariant.objects.create(product=instance, **variant_data)
 
         # Update images
         if uploaded_images:
-            
             instance.images.all().delete()
-            
             ProductImage.objects.bulk_create([
                 ProductImage(product=instance, image=image) for image in uploaded_images
             ])
@@ -152,3 +171,11 @@ class ProductSerializer(serializers.ModelSerializer):
     
         prices = [variant.total_price for variant in available_variants]  # Use stored total_price
         return min(prices) if prices else None
+
+
+from rest_framework.serializers import Serializer, CharField, DecimalField
+
+class TaxSerializer(Serializer):
+    id = CharField()
+    name = CharField()
+    percentage = DecimalField(max_digits=10, decimal_places=2)

@@ -1577,7 +1577,7 @@ const ViewOrderDetails = () => {
     if (typeof str !== "string" || str.length === 0) return "Unknown";
     return str.charAt(0).toUpperCase() + str.slice(1);
   };
-
+  const BASE_URL = "http://127.0.0.1:8000"
   const loadRazorpayScript = () => {
     return new Promise((resolve, reject) => {
       if (window.Razorpay) {
@@ -2606,7 +2606,7 @@ const ViewOrderDetails = () => {
                   >
                     <div className="w-24 h-24 bg-white rounded-xl overflow-hidden flex-shrink-0 group-hover:shadow-lg transition-all duration-300 border border-gray-100">
                       <img
-                        src={item.product.images[0] || "https://yourdomain.com/placeholder.jpg"}
+                        src={`${BASE_URL}${item.product.images[0]}` || "https://yourdomain.com/placeholder.jpg"}
                         alt={item.product.name}
                         className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500"
                       />

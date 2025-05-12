@@ -556,7 +556,7 @@ const AddAddress = () => {
             {/* Alternate Number */}
             <div className="space-y-2">
               <Label htmlFor="alternate_number" className="text-[#7a2828] font-medium">
-                Alternate Number (Optional)
+                Alternate Number 
               </Label>
               <Input
                 id="alternate_number"
@@ -566,6 +566,7 @@ const AddAddress = () => {
                 onChange={handleChange}
                 className="border-[#e9d9b6] focus:border-[#7a2828] focus:ring-[#7a2828]/20 transition-all duration-300 hover:border-[#d4b78c]"
               />
+              {errors?.alternate_number && <p className="text-[#7a2828] text-sm mt-1">{errors.alternate_number}</p>}
             </div>
 
             {/* Address Details */}
