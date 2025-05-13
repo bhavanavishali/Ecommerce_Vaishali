@@ -202,13 +202,14 @@ class Order(models.Model):
     total_discount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     total_tax = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     final_total = models.DecimalField(max_digits=10, decimal_places=2)
-    coupon_discount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00) 
+    
 
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)
     est_delivery = models.DateField(null=True, blank=True)
 
     coupon = models.ForeignKey(Coupon, on_delete=models.SET_NULL, null=True, blank=True)
+    coupon_discount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00) 
 
     status = models.CharField(max_length=50, choices=ORDER_STATUS_CHOICES, default='pending')
     payment_status = models.CharField(max_length=50, choices=PAYMENT_STATUS_CHOICES, default='pending')
@@ -223,6 +224,30 @@ class Order(models.Model):
     razorpay_order_id = models.CharField(max_length=100, null=True, blank=True)
     razorpay_payment_id = models.CharField(max_length=100, null=True, blank=True)
     razorpay_signature = models.CharField(max_length=100, null=True, blank=True)
+
+    def apply_coupon(self, coupon):
+        """
+        Apply a coupon to the order, validate its applicability, and update totals.
+        """
+        if not coupon:
+            self.coupon = None
+            self.coupon_discount = 0.00
+            self.recalculate_totals()
+            self.save()
+            return
+
+        # Validate coupon
+        if not coupon.is_valid(self.user, self):
+            raise ValueError("Invalid or inapplicable coupon")
+
+        self.coupon = coupon
+        # Calculate coupon discount based on coupon type
+        if coupon.discount_type == 'percentage':
+            self.coupon_discount = (coupon.discount_value / 100) * self.total_amount
+        else:  # fixed amount
+            self.coupon_discount = min(coupon.discount_value, self.total_amount)  # Ensure discount doesn't exceed total
+        self.recalculate_totals()
+        self.save()
 
     def cancelorder(self, cancel_reason):
         with transaction.atomic():
@@ -248,15 +273,6 @@ class Order(models.Model):
             if self.cart:
                 self.cart.clear()
 
-    def save(self, *args, **kwargs):
-        if not self.order_number:
-            self.order_number = f"ORD{timezone.now().strftime('%Y%m%d%H%M%S')}"
-        if not self.est_delivery:
-            self.est_delivery = (self.created_at or timezone.now()).date() + timezone.timedelta(days=3)
-        super().save(*args, **kwargs)
-
-    def __str__(self):
-        return f"Order {self.order_number}"
 
 
     def request_return(self, return_reason):
@@ -310,7 +326,8 @@ class Order(models.Model):
         
         self.total_discount = sum(item.discount + item.coupon_discount for item in active_items)
         self.total_tax = sum(item.variant.tax_amount * item.quantity for item in active_items)
-        self.final_total = self.total_amount - self.total_discount + self.total_tax+self.shipping
+        self.total_discount += self.coupon_discount
+        self.final_total = self.total_amount - self.total_discount + self.total_tax + self.shipping
 
     def save(self, *args, **kwargs):
         if not self.order_number:

@@ -60,10 +60,10 @@ class CartSerializer(serializers.ModelSerializer):
     final_tax = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
     final_total = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
     final_coupon_discount=serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
-   
+    shipping=serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
     class Meta:
         model = Cart
-        fields = ['id', 'user', 'items', 'total_items', 'final_subtotal', 'final_discount', 'final_tax', 'final_total','coupon','final_coupon_discount']
+        fields = ['id', 'user', 'items', 'total_items', 'final_subtotal', 'final_discount', 'final_tax', 'final_total','coupon','final_coupon_discount','shipping']
 
     def get_total_items(self, obj):
         return obj.items.count()
@@ -118,7 +118,8 @@ class OrderSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
     order_address = OrderAddressSerializer(read_only=True)
     address_id = serializers.PrimaryKeyRelatedField(queryset=Address.objects.all(), write_only=True)
-
+    coupon = serializers.PrimaryKeyRelatedField(queryset=Coupon.objects.all(), required=False, allow_null=True, write_only=True)
+    
     class Meta:
         model = Order
         fields = [

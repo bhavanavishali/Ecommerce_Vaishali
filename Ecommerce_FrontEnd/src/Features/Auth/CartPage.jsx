@@ -163,10 +163,15 @@ export default function ShoppingCart() {
                     -₹ {cart.final_discount.toLocaleString("en-IN")}
                   </span>
                 </div>
+                    <div className="flex justify-between">
+                  <span>Shipping:</span>
+                  <span className="font-medium">₹ {cart.shipping.toLocaleString("en-IN")}</span>
+                </div>
                 <div className="flex justify-between">
                   <span>Tax:</span>
                   <span className="font-medium">₹ {cart.final_tax.toLocaleString("en-IN")}</span>
                 </div>
+             
                 <div className="flex justify-between font-medium text-lg border-t pt-3">
                   <span>Total:</span>
                   <span>₹ {cart.final_total.toLocaleString("en-IN")}</span>
