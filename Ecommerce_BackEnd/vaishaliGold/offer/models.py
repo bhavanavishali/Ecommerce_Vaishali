@@ -3,6 +3,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils import timezone
 from decimal import Decimal
 
+
 class Coupon(models.Model):
     COUPON_TYPE=(
         ('flat','Flat'),
@@ -22,13 +23,28 @@ class Coupon(models.Model):
     min_offer_amount=models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     coupon_type= models.CharField(max_length=20, choices=COUPON_TYPE, default='flat')
     user = models.ForeignKey('authenticationapp.User', on_delete=models.CASCADE, null=True, blank=True)
+    
+   
+    max_uses_per_user = models.PositiveIntegerField(default=1) 
+    def is_valid(self, user):
+        from cartapp.models import Order
+        # Check if coupon is expired
+        
 
-    def is_valid(self):
-        now = timezone.now().date()   
-        return (
-            self.is_active and
-            self.valid_from <= now <= self.valid_to and
-            (self.max_uses == 0 or self.used_count < self.max_uses)
-        )
+        # Check if max uses exceeded
+        if self.max_uses > 0 and self.used_count >= self.max_uses:
+            return False
+
+        # Check if user has exceeded max uses
+        if user and self.max_uses_per_user > 0:
+            user_order_count = Order.objects.filter(
+                user=user,
+                coupon=self,
+                payment_status='completed'
+            ).count()
+            if user_order_count >= self.max_uses_per_user:
+                return False
+
+        return True
     def __str__(self):
         return self.coupon_code

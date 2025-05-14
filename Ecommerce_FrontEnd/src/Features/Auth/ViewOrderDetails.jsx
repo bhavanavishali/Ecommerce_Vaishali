@@ -1597,7 +1597,7 @@ const ViewOrderDetails = () => {
       try {
         const response = await api.get(`cartapp/orders/${id}/`);
         setOrder(response.data);
-        console.log("Order data:", response.data);
+        console.log("Order data plxxxxxxxxxxxxxxx:", response.data);
         setIsLoading(false);
       } catch (err) {
         setError("Failed to load order details. Please try again later.");
@@ -2907,16 +2907,25 @@ const ViewOrderDetails = () => {
                   <Separator className="mb-8 bg-gradient-to-r from-[#e5d1d1] to-[#f0e6c9] h-0.5 rounded-full" />
                   <div className="space-y-4">
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Order MRP</span>
+                      <span className="text-gray-600">Total Subtotal</span>
                       <span className="font-semibold">₹{order.total_amount}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Shipping</span>
+                      <span className="font-semibold">₹{order.shipping}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Tax </span>
+                      <span className="font-semibold">₹{order.total_tax}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600">Total Order Discount</span>
                       <span className="text-red-600">− ₹{order.total_discount}</span>
                     </div>
+
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Product returned</span>
-                      <span className="text-red-600">− ₹{order.total_discount}</span>
+                      <span className="text-gray-600">Coupon Discount</span>
+                      <span className="text-red-600">− ₹{order.coupon_discount}</span>
                     </div>
                     <Separator className="my-4 bg-gradient-to-r from-[#e5d1d1] to-[#f0e6c9] h-0.5 rounded-full" />
                     <div className="flex justify-between">

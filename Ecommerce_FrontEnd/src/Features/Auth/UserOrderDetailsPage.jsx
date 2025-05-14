@@ -247,7 +247,7 @@ const MyOrders = () => {
                     {item.discount > 0 && (
                       <div className="text-sm">
                         <span className="line-through text-gray-500">{formatPrice(item.subtotal)}</span>
-                        <span className="text-green-600 ml-2">Save {formatPrice(item.discount)}</span>
+                        
                       </div>
                     )}
                   </div>

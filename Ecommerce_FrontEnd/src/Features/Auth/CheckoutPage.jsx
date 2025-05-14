@@ -959,7 +959,6 @@ export default function CheckoutPage() {
   const navigate = useNavigate();
   const BASE_URL = "http://127.0.0.1:8000";
 
-  // State Declarations
   const [loading, setLoading] = useState(true);
   const [addresses, setAddresses] = useState([]);
   const [error, setError] = useState(null);
@@ -982,7 +981,6 @@ export default function CheckoutPage() {
     isDefault: false,
   });
 
-  // Load Razorpay script once on mount
   useEffect(() => {
     const script = document.createElement('script');
     script.src = 'https://checkout.razorpay.com/v1/checkout.js';
@@ -993,30 +991,36 @@ export default function CheckoutPage() {
     };
   }, []);
 
-  // Fetch cart if not loaded
   useEffect(() => {
     if (!cart) {
       fetchCart();
     }
   }, [cart, fetchCart]);
 
-  // Set couponApplied from cart data
-  useEffect(() => {
-    if (cart?.coupon && cart?.final_coupon_discount > 0) {
-      setCouponApplied({
-        code: cart.coupon.coupon_code,
-        discount: cart.final_coupon_discount,
-      });
-      setCouponCode(cart.coupon.coupon_code);
-    }
-  }, [cart]);
 
-  // Fetch addresses on mount
+  useEffect(() => {
+  console.log('Cart data:', cart);
+  if (cart?.coupon && cart?.final_coupon_discount > 0 && cart.coupon.coupon_code) {
+    setCouponApplied({
+      code: cart.coupon.coupon_code,
+      discount: cart.final_coupon_discount,
+    });
+    setCouponCode(cart.coupon.coupon_code);
+    console.log('couponApplied set:', { code: cart.coupon.coupon_code, discount: cart.final_coupon_discount });
+  }
+  else {
+  console.log('Coupon not applied: missing coupon_code or invalid cart data');
+  setCouponApplied(null);
+  setCouponCode("");
+}
+}, [cart]);
+
+console.log('couponApplied:', couponApplied);
   useEffect(() => {
     fetchAddress();
   }, []);
 
-  // Set default address when addresses change
+
   useEffect(() => {
     if (addresses.length > 0 && !selectedAddress) {
       setSelectedAddress(addresses.find(addr => addr.isDefault)?.id || addresses[0].id);
@@ -1048,7 +1052,6 @@ export default function CheckoutPage() {
     }
   };
 
-  // Map cart items using backend data
   const cartItems = cart?.items?.map(item => ({
     id: item.id,
     name: item.product.name,
@@ -1060,12 +1063,13 @@ export default function CheckoutPage() {
     image: item.primary_image,
   })) || [];
 
-  // Use backend cart totals directly
   const subtotal = cart?.final_subtotal || 0;
   const totalTax = cart?.final_tax || 0;
   const totalDiscount = cart?.final_discount || 0;
   const total = cart?.final_total || 0;
   const shipping = cart?.shipping || 0;
+  const final_coupon_discount=cart?.final_coupon_discount || 0;
+
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat("en-IN", {
@@ -1096,7 +1100,8 @@ export default function CheckoutPage() {
       setCouponApplied({ code: couponCode, discount: response.data.discount });
       setCouponError(null);
       setError(null);
-      fetchCart(); // Refresh cart to sync totals
+      await fetchCart();
+      console.log("apllied",response.data)
     } catch (err) {
       setCouponError(err.response?.data?.error || "Invalid coupon code");
       setCouponApplied(null);
@@ -1109,7 +1114,7 @@ export default function CheckoutPage() {
       setCouponApplied(null);
       setCouponCode("");
       setCouponError(null);
-      fetchCart(); // Refresh cart to update totals
+      fetchCart();
     } catch (err) {
       setCouponError("Failed to remove coupon");
     }
@@ -1230,7 +1235,7 @@ export default function CheckoutPage() {
       setError(null);
     } catch (err) {
       setError(err.response?.data?.message || "Failed to set default address");
-      await fetchAddress(); // Refetch to ensure consistency
+      await fetchAddress();
     }
   };
 
@@ -1242,84 +1247,47 @@ export default function CheckoutPage() {
     setShowAddressDialog(true);
   };
 
+  
   const handlePlaceOrder = async () => {
     if (!selectedAddress) {
-      setError("Please select a shipping address");
-      return;
+        setError("Please select a shipping address");
+        return;
     }
-
     setIsPlacingOrder(true);
     try {
-      if (selectedPayment === "card") {
-        if (!window.Razorpay) {
-          setError("Payment service is unavailable. Please try again later.");
-          return;
+        const couponData = couponApplied && couponApplied.code ? { coupon_code: couponApplied.code } : {};
+        console.log('couponApplied:', couponApplied);
+        console.log('couponData:', couponData);
+        if (selectedPayment === "card") {
+            if (!window.Razorpay) {
+                setError("Payment service is unavailable. Please try again later.");
+                return;
+            }
+            const response = await api.post('cartapp/orders/razorpay/create/', {
+                address_id: selectedAddress,
+                payment_method: 'card',
+                ...couponData,
+            });
+            console.log('Razorpay create response:', response.data); // Add this
+            // Rest unchanged
+        } else {
+            const response = await api.post('cartapp/orders/create/', {
+                address_id: selectedAddress,
+                payment_method: selectedPayment,
+                ...couponData,
+            });
+            console.log('Order create response:', response.data); // Add this
+            navigate(`/order-details/${response.data.order.id}`);
         }
-        const response = await api.post('cartapp/orders/razorpay/create/', {
-          address_id: selectedAddress,
-          payment_method: 'card',
-          coupon_code: couponApplied?.code || null,
-        });
-        const { order_id, amount, currency, key, order } = response.data;
-
-        const options = {
-          key,
-          amount,
-          currency,
-          name: "Vaishali Gold",
-          description: "Order Payment",
-          order_id,
-          handler: async function (response) {
-            try {
-              const verifyResponse = await api.post('cartapp/orders/razorpay/verify/', {
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_signature: response.razorpay_signature,
-                order_id: order.id
-              });
-              navigate(`/order-details/${order.id}`);
-            } catch (error) {
-              setError("Payment verification failed. Please try again.");
-            }
-          },
-          prefill: {
-            name: `${cart?.user?.first_name || ''} ${cart?.user?.last_name || ''}`.trim(),
-            email: cart?.user?.email || '',
-            contact: cart?.user?.phone_number || ''
-          },
-          theme: {
-            color: "#8B2131"
-          },
-          modal: {
-            ondismiss: () => {
-              setIsPlacingOrder(false);
-            }
-          }
-        };
-
-        const rzp = new window.Razorpay(options);
-        rzp.on('payment.failed', () => {
-          setError("Payment failed. Please try again.");
-          setIsPlacingOrder(false);
-        });
-        rzp.open();
-      } else {
-        const response = await api.post('cartapp/orders/create/', {
-          address_id: selectedAddress,
-          payment_method: selectedPayment,
-          coupon_code: couponApplied?.code || null,
-        });
-        navigate(`/order-details/${response.data.order.id}`);
-      }
     } catch (error) {
-      setError(error.response?.data?.error || "Failed to place order. Please try again.");
+        console.error('Place order error details:', error.response?.data, error.message); // Add this
+        setError(error.response?.data?.error || "Failed to place order. Please try again.");
     } finally {
-      if (selectedPayment !== "card") {
-        setIsPlacingOrder(false);
-      }
+        if (selectedPayment !== "card") {
+            setIsPlacingOrder(false);
+        }
     }
-  };
-
+};
   // Icon Components
   const IconArrowLeft = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -1596,7 +1564,7 @@ export default function CheckoutPage() {
     );
   };
 
-  return (
+ return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
       <div className="mb-8">
         <div className="flex items-center mb-4">

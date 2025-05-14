@@ -96,8 +96,10 @@ REST_FRAMEWORK = {
         'auth_custom.custom_auth.CookieJWTAuthentication',
         
     ),
+    
    
 }
+
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=1),

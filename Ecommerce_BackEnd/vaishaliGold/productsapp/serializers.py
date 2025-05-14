@@ -12,12 +12,11 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'is_active','category_offer', 'category_offer_Isactive']
 
     def validate_name(self, value):
-                                                        
-    # Check for case-sensitive duplicates
-        if Category.objects.filter(name=value).exists():
-            if self.instance and self.instance.name == value:
+    # Check for case-insensitive duplicates
+        if Category.objects.filter(name__iexact=value).exists():
+            if self.instance and self.instance.name.lower() == value.lower():
                 return value 
-            raise ValidationError("A category with this name already exists.")
+            raise ValidationError("A category with this name already exists (case-insensitive).")
         return value
     
 

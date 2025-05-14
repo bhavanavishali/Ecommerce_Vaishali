@@ -7,7 +7,7 @@ from productsapp.models import ProductVariant
 from authenticationapp.models import Address
 from datetime import timedelta
 from django.db import  transaction
-from offer.models import Coupon
+# from offer.models import Coupon
 from productsapp.models import Product, ProductVariant
 
 from django.core.exceptions import ValidationError
@@ -29,7 +29,7 @@ class Cart(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='cart')
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)
-    coupon = models.ForeignKey(Coupon, on_delete=models.SET_NULL, null=True, blank=True, related_name='carts')
+    coupon = models.ForeignKey('offer.Coupon', on_delete=models.SET_NULL, null=True, blank=True, related_name='carts')
     final_subtotal = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     final_discount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     final_tax = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
@@ -82,12 +82,13 @@ class Cart(models.Model):
 
     def apply_coupon(self, coupon_code):
         """Apply a coupon to the cart."""
+        from offer.models import Coupon
         if not self.items.exists():
             raise ValidationError("Cart is empty")
         
         try:
             coupon = Coupon.objects.get(coupon_code=coupon_code)
-            if not coupon.is_valid():
+            if not coupon.is_valid(self.user):
                 raise ValidationError("Coupon is not valid or has expired")
             
             total_amount = self.get_final_subtotal()
@@ -208,7 +209,7 @@ class Order(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     est_delivery = models.DateField(null=True, blank=True)
 
-    coupon = models.ForeignKey(Coupon, on_delete=models.SET_NULL, null=True, blank=True)
+    coupon = models.ForeignKey('offer.Coupon', on_delete=models.SET_NULL, null=True, blank=True)
     coupon_discount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00) 
 
     status = models.CharField(max_length=50, choices=ORDER_STATUS_CHOICES, default='pending')
@@ -236,7 +237,7 @@ class Order(models.Model):
             self.save()
             return
 
-        # Validate coupon
+
         if not coupon.is_valid(self.user, self):
             raise ValueError("Invalid or inapplicable coupon")
 
@@ -263,6 +264,7 @@ class Order(models.Model):
                 if self.payment_method in ['card', 'wallet']:
                     wallet, _ = Wallet.objects.get_or_create(user=self.user)
                     wallet.add_funds(self.final_total, order_number=self.order_number)
+                    
             else:
                 self.payment_status = 'cancelled'
 
@@ -324,10 +326,10 @@ class Order(models.Model):
         active_items = self.items.filter(status='active')
         self.total_amount = sum(item.subtotal for item in active_items)
         
-        self.total_discount = sum(item.discount + item.coupon_discount for item in active_items)
+        self.total_discount = sum(item.discount  for item in active_items)
         self.total_tax = sum(item.variant.tax_amount * item.quantity for item in active_items)
-        self.total_discount += self.coupon_discount
-        self.final_total = self.total_amount - self.total_discount + self.total_tax + self.shipping
+        
+        self.final_total = self.total_amount - self.total_discount + self.total_tax + self.shipping -self.coupon_discount
 
     def save(self, *args, **kwargs):
         if not self.order_number:
