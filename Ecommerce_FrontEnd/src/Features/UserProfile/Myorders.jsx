@@ -300,7 +300,7 @@ const MyOrders = () => {
                   <th className="text-left p-4 font-medium text-gray-500">DATE</th>
                   <th className="text-left p-4 font-medium text-gray-500">ITEMS</th>
                   <th className="text-left p-4 font-medium text-gray-500">AMOUNT</th>
-                  <th className="text-left p-4 font-medium text-gray-500">ORDER STATUS</th>
+                  
                   <th className="text-right p-4 font-medium text-gray-500"></th>
                 </tr>
               </thead>
@@ -311,7 +311,7 @@ const MyOrders = () => {
                     <td className="p-4 text-gray-600">{formatDate(order.created_at)}</td>
                     <td className="p-4">{order.items?.length || 0} items</td>
                     <td className="p-4 font-medium">₹{order.final_total}</td>
-                    <td className="p-4">{getStatusBadge( order.status)}</td>
+                    
                     <td className="p-4 text-right">
                     <Button variant="secondary" className="bg-red-800 text-white hover:bg-red-700"
                                         onClick={()=>navigate(`/user/view-order-details/${order.id}`)}>

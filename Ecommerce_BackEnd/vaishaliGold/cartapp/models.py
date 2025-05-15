@@ -65,10 +65,11 @@ class Cart(models.Model):
         subtotal = self.get_final_subtotal()
         discount = self.get_final_discount()
         tax = self.get_final_tax()
-        coupon_discount = self.final_coupon_discount
+        self.update_shipping
+        coupon_discount = Decimal(str(self.final_coupon_discount))
         total=subtotal-discount+tax
         if total < 1000:
-            return (total + 100 - coupon_discount).quantize(Decimal('0.01'))
+            return (total + self.shipping - coupon_discount).quantize(Decimal('0.01'))
         return (subtotal - discount + tax - coupon_discount).quantize(Decimal('0.01'))
 
     def update_totals(self):
@@ -264,7 +265,7 @@ class Order(models.Model):
                 if self.payment_method in ['card', 'wallet']:
                     wallet, _ = Wallet.objects.get_or_create(user=self.user)
                     wallet.add_funds(self.final_total, order_number=self.order_number)
-                    
+
             else:
                 self.payment_status = 'cancelled'
 
@@ -386,9 +387,9 @@ class OrderItem(models.Model):
                 logger.error(f"Cannot cancel item {self.id}: Variant {self.variant.id} is invalid or unavailable")
                 raise ValueError(f"Variant {self.variant.product.name} is not available for stock update")
             
+            # Update stock
             original_stock = self.variant.stock
             expected_stock = original_stock + self.quantity
-            
             self.variant.stock += self.quantity
             self.variant.save()
             
@@ -405,29 +406,45 @@ class OrderItem(models.Model):
                 f"Added {self.quantity}, New stock: {self.variant.stock}"
             )
             
+            # Update item status
             self.status = 'cancelled'
             self.cancelled_at = timezone.now()
             self.cancel_reason = cancel_reason
             self.save()
 
             order = self.order
-            if order.payment_status == 'completed' and order.payment_method in ['card', 'wallet']:
-                refund_amount = self.subtotal - self.coupon_discount
-                if refund_amount <= 0:
-                    logger.error(f"Cannot refund item {self.id}: refund_amount is {refund_amount}")
-                    raise ValueError(f"Cannot refund item {self.variant.product.name}: Invalid refund amount")
-                logger.info(f"Processing wallet credit for user {order.user}, amount: {refund_amount}")
-                wallet, _ = Wallet.objects.get_or_create(user=order.user)
-                wallet.add_funds(self.final_price, order_number=order.order_number)
+            refund_amount = self.final_price
+            shipping_refunded = False
 
-            active_items = order.items.filter(status='active')
+            
+            active_items = order.items.filter(status='active').exclude(id=self.id)
+            print("*********************")
             if not active_items.exists():
+                
+                refund_amount += order.shipping  
+                print("bbbbbbbbbbbbbbbb",refund_amount)
+                shipping_refunded = True
                 order.status = 'cancelled'
                 order.payment_status = 'refunded' if order.payment_status == 'completed' else 'cancelled'
                 order.cancelled_at = timezone.now()
                 order.cancel_reason = cancel_reason
+                order.save()
+
             
-            order.save()
+            if order.payment_status in ['completed','refunded'] and order.payment_method in ['card', 'wallet']:
+                if refund_amount <= 0:
+                    logger.error(f"Cannot refund item {self.id}: refund_amount is {refund_amount}")
+                    raise ValueError(f"Cannot refund item {self.variant.product.name}: Invalid refund amount")
+                
+                logger.info(f"Processing wallet credit for user {order.user}, amount: {refund_amount}")
+                wallet, _ = Wallet.objects.get_or_create(user=order.user)
+                wallet.add_funds(refund_amount, order_number=order.order_number)
+                
+                
+                self.payment_status = 'refunded' if not active_items.exists() else 'partially_refunded'
+                self.save()
+                
+                logger.info(f"Refunded {refund_amount} for item {self.id}, shipping_refunded: {shipping_refunded}")
 
 
     def request_item_return(self, return_reason):

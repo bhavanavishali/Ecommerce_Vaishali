@@ -705,3 +705,48 @@ const SalesReport = () => {
 };
 
 export default SalesReport;
+
+ {/* Right side - Order Summary */}
+//         <div className="space-y-4">
+//           <Card className="border rounded-md shadow-sm">
+//             <CardContent className="p-6">
+//               <h3 className="font-medium text-lg mb-4">Order Summary</h3>
+//               <div className="space-y-3">
+//                 <div className="flex justify-between">
+//                   <span>Subtotal:</span>
+//                   <span className="font-medium">₹ {cart.final_subtotal.toLocaleString("en-IN")}</span>
+//                 </div>
+//                 <div className="flex justify-between">
+//                   <span>Discount:</span>
+//                   <span className="font-medium text-green-600">
+//                     -₹ {cart.final_discount.toLocaleString("en-IN")}
+//                   </span>
+//                 </div>
+//                     <div className="flex justify-between">
+//                   <span>Shipping:</span>
+//                   <span className="font-medium">₹ {cart.shipping.toLocaleString("en-IN")}</span>
+//                 </div>
+//                 <div className="flex justify-between">
+//                   <span>Tax:</span>
+//                   <span className="font-medium">₹ {cart.final_tax.toLocaleString("en-IN")}</span>
+//                 </div>
+             
+//                 <div className="flex justify-between font-medium text-lg border-t pt-3">
+//                   <span>Total:</span>
+//                   <span>₹ {cart.final_total.toLocaleString("en-IN")}</span>
+//                 </div>
+//                 <p className="text-xs text-right text-gray-500 mt-2">(Inclusive of all taxes)</p>
+//                 <Button
+//                   className="w-full mt-4 bg-[#8c2a2a] hover:bg-[#7a2424] text-white"
+//                   onClick={() => navigate("/checkoutpage")}
+//                   disabled={loading || cart.items.length === 0}
+//                 >
+//                   Place Order
+//                 </Button>
+//               </div>
+//             </CardContent>
+//           </Card>
+//         </div>
+//       </div>
+//     </div>
+//   );
