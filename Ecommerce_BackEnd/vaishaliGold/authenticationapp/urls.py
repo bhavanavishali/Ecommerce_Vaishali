@@ -20,9 +20,7 @@ urlpatterns = [
     # admin authenctication
 
     path('refresh_token/',TokenRefreshFromCookieView.as_view(),name='refresh_token'),
-    
     path('adminlogin/', AdminLoginview.as_view(), name='admin-login'),
-
     path('admin/logout/', AdminLogoutView.as_view(), name='admin-logout'),
 
     path('verify-otp/', VerifyOTPView.as_view(), name='verify-otp'),
