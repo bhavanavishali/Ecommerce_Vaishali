@@ -61,8 +61,18 @@ export const CartProvider = ({ children }) => {
     }
   };
 
+   const clearCart = async () => {
+    try {
+      const response = await api.post('cartapp/cart/clear/'); // New endpoint to clear cart
+      setCart(null); // Reset cart state to empty
+      console.log("Cart cleared:", response.data);
+    } catch (error) {
+      console.error('Error clearing cart:', error);
+    }
+  };
+
   return (
-    <CartContext.Provider value={{ cart, fetchCart, addToCart, updateQuantity, removeFromCart }}>
+    <CartContext.Provider value={{ cart, fetchCart, addToCart, updateQuantity, removeFromCart,clearCart }}>
       {children}
     </CartContext.Provider>
   );

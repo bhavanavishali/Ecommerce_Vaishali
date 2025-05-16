@@ -8,6 +8,7 @@ urlpatterns = [
     path('cart/add/', AddToCartView.as_view(), name='cart-add'),
     path('cart/update/', UpdateCartItemView.as_view(), name='cart-update'),
     path('cart/remove/', RemoveFromCartView.as_view(), name='cart-remove'),
+    path('cart/clear/', ClearCartView.as_view(), name='cart-clear'),
 
     # order related views 
     path('orders/',OrderListView.as_view(),name='orders-list'),

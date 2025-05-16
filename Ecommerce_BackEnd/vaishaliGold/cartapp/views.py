@@ -117,6 +117,20 @@ class RemoveFromCartView(APIView):
         serializer = CartSerializer(cart)
         return Response(serializer.data)
     
+
+class ClearCartView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        try:
+            cart = Cart.objects.get(user=request.user)
+            CartItem.objects.filter(cart=cart).delete() 
+            cart.update_totals()  
+            serializer = CartSerializer(cart)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Cart.DoesNotExist:
+            return Response({'error': 'Cart not found'}, status=status.HTTP_404_NOT_FOUND)
+    
 #======================== Coupon apply==================================
 
 

@@ -16,7 +16,7 @@ const Header = () => {
   const user = useSelector((state) => state.auth.user)
   
   console.log("Redux state:", useSelector(state => state.auth));
-  console.log("User from localStorage:", JSON.parse(localStorage.getItem("user")));
+
 
   
   const totalItems = user && cart?.items?.length ? cart.items.length : 0

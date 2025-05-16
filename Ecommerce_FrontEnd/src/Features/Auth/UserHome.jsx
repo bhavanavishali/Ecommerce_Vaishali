@@ -1858,7 +1858,7 @@ function UserHome() {
                         onClick={(e) => handleAddToCart(selectedVariantId, quantity, e)}
                       >
                         <ShoppingCart className="w-4 h-4" />
-                        {product.available ? "Add to Cart" : "Out of Stock"}
+                        {product.available  ? "Add to Cart" : "Out of Stock"}
                       </Button>
                     </div>
                     <div className="absolute inset-0 border-2 border-[#7a2828] rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>

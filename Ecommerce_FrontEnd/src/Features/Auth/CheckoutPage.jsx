@@ -1913,7 +1913,7 @@ import { Link, useNavigate } from "react-router-dom";
 import api from '../../api';
 
 export default function CheckoutPage() {
-  const { cart, fetchCart, removeFromCart, loading: cartLoading, error: cartError } = useCart();
+  const { cart, fetchCart, removeFromCart, clearCart , loading: cartLoading, error: cartError } = useCart();
   const navigate = useNavigate();
   const BASE_URL = "http://127.0.0.1:8000";
 
@@ -2204,133 +2204,269 @@ export default function CheckoutPage() {
     setShowAddressDialog(true);
   };
 
-  const handlePlaceOrder = async () => {
-    if (!selectedAddress) {
-      setError("Please select a shipping address");
-      return;
-    }
-    setIsPlacingOrder(true);
-    try {
-      const couponData = couponApplied && couponApplied.code ? { coupon_code: couponApplied.code } : {};
-      console.log('couponApplied:', couponApplied);
-      console.log('couponData:', couponData);
+  // const handlePlaceOrder = async () => {
+  //   if (!selectedAddress) {
+  //     setError("Please select a shipping address");
+  //     return;
+  //   }
+  //   setIsPlacingOrder(true);
+  //   try {
+  //     const couponData = couponApplied && couponApplied.code ? { coupon_code: couponApplied.code } : {};
+  //     console.log('couponApplied:', couponApplied);
+  //     console.log('couponData:', couponData);
 
-      if (selectedPayment === "card") {
-        if (!window.Razorpay) {
-          setError("Payment service is unavailable. Please ensure the Razorpay script is loaded.");
-          console.error("Razorpay SDK not available");
-          setIsPlacingOrder(false);
-          return;
-        }
+  //     if (selectedPayment === "card") {
+  //       if (!window.Razorpay) {
+  //         setError("Payment service is unavailable. Please ensure the Razorpay script is loaded.");
+  //         console.error("Razorpay SDK not available");
+  //         setIsPlacingOrder(false);
+  //         return;
+  //       }
 
-        // Make API call to create Razorpay order
-        const response = await api.post('cartapp/orders/razorpay/create/', {
-          address_id: selectedAddress,
-          payment_method: 'card',
-          ...couponData,
-        });
-        console.log('Razorpay create response:', response.data);
+  //       // Make API call to create Razorpay order
+  //       const response = await api.post('cartapp/orders/razorpay/create/', {
+  //         address_id: selectedAddress,
+  //         payment_method: 'card',
+  //         ...couponData,
+  //       });
+  //       console.log('Razorpay create response:', response.data);
 
-        // Validate response
-        if (!response.data.order_id || !response.data.amount) {
-          throw new Error("Invalid Razorpay response: missing order_id or amount");
-        }
-        const { order_id: razorpayOrderId, amount, currency, key, order } = response.data;
+  //       // Validate response
+  //       if (!response.data.order_id || !response.data.amount) {
+  //         throw new Error("Invalid Razorpay response: missing order_id or amount");
+  //       }
+  //       const { order_id: razorpayOrderId, amount, currency, key, order } = response.data;
         
-        const options = {
-          key: key,
-          amount: amount, 
-          currency: currency,
-          name: 'Vishali Gold',
-         description: `Payment for Order #${order.order_number}`,
-          image: 'https://your-logo-url.com/logo.png', 
-          order_id: razorpayOrderId, 
-          handler: async function (response) {
-            try {
-              const verifyResponse = await api.post('cartapp/orders/razorpay/verify/', {
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_signature: response.razorpay_signature,
-              });
-              console.log('Payment verification response:', verifyResponse.data);
-              navigate(`/order-details/${verifyResponse.data.order.id}`);
-            } catch (err) {
-              console.error('Payment verification error:', err.response?.data, err.message);
-              setError('Payment verification failed. Please contact support.');
-              navigate(`/user/view-order-details/${verifyResponse.data.order.id}`);
+  //       const options = {
+  //         key: key,
+  //         amount: amount, 
+  //         currency: currency,
+  //         name: 'Vishali Gold',
+  //        description: `Payment for Order #${order.order_number}`,
+  //         image: 'https://your-logo-url.com/logo.png', 
+  //         order_id: razorpayOrderId, 
+  //         handler: async function (response) {
+  //           try {
+  //             const verifyResponse = await api.post('cartapp/orders/razorpay/verify/', {
+  //               razorpay_order_id: response.razorpay_order_id,
+  //               razorpay_payment_id: response.razorpay_payment_id,
+  //               razorpay_signature: response.razorpay_signature,
+  //             });
+  //             console.log('Payment verification response:', verifyResponse.data);
+  //             navigate(`/order-details/${verifyResponse.data.order.id}`);
+  //           } catch (err) {
+  //             console.error('Payment verification error:', err.response?.data, err.message);
+  //             setError('Payment verification failed. Please contact support.');
+  //             navigate(`/user/view-order-details/${verifyResponse.data.order.id}`);
              
-            } finally {
-              setIsPlacingOrder(false);
-            }
-          },
-          prefill: {
-            name: addresses.find(addr => addr.id === selectedAddress)?.name || '',
-            email: 'customer@example.com', // Replace with actual user email if available
-            contact: addresses.find(addr => addr.id === selectedAddress)?.phone || '',
-          },
-          notes: {
-            address_id: selectedAddress,
-            order_id: response.data.order.id, // Include order_id for reference
-          },
-          theme: {
-            color: '#8B2131',
-          },
-          modal: {
-            ondismiss: async () => {
-              setIsPlacingOrder(false);
-              setError('Payment cancelled by user.');
-              try {
-                await api.post('cartapp/orders/cancel/', { order_id: response.data.order.id });
-                console.log('Pending order cancelled');
-              } catch (err) {
-                console.error('Failed to cancel order:', err);
-              }
-            },
-          },
-        };
+  //           } finally {
+  //             setIsPlacingOrder(false);
+  //           }
+  //         },
+  //         prefill: {
+  //           name: addresses.find(addr => addr.id === selectedAddress)?.name || '',
+  //           email: 'customer@example.com', // Replace with actual user email if available
+  //           contact: addresses.find(addr => addr.id === selectedAddress)?.phone || '',
+  //         },
+  //         notes: {
+  //           address_id: selectedAddress,
+  //           order_id: response.data.order.id, // Include order_id for reference
+  //         },
+  //         theme: {
+  //           color: '#8B2131',
+  //         },
+  //         modal: {
+  //           ondismiss: async () => {
+  //             setIsPlacingOrder(false);
+  //             setError('Payment cancelled by user.');
+  //             try {
+  //               await api.post('cartapp/orders/cancel/', { order_id: response.data.order.id });
+  //               console.log('Pending order cancelled');
+  //             } catch (err) {
+  //               console.error('Failed to cancel order:', err);
+  //             }
+  //           },
+  //         },
+  //       };
 
-        try {
-          const rzp = new window.Razorpay(options);
-          rzp.on('payment.failed', async function (response) {
-            console.error('Razorpay payment failed:', response.error);
-            setError(`Payment failed: ${response.error.description}`);
+  //       try {
+  //         const rzp = new window.Razorpay(options);
+  //         rzp.on('payment.failed', async function (response) {
+  //           console.error('Razorpay payment failed:', response.error);
+  //           setError(`Payment failed: ${response.error.description}`);
+  //           setIsPlacingOrder(false);
+  //           try {
+  //             await api.post('cartapp/orders/cancel/', { order_id: response.data.order.id });
+  //             console.log('Pending order cancelled');
+  //           } catch (err) {
+  //             console.error('Failed to cancel order:', err);
+  //           }
+  //         });
+  //         rzp.open();
+  //       } catch (err) {
+  //         console.error('Razorpay modal error:', err);
+  //         setError('Failed to initialize payment. Please try again.');
+  //         setIsPlacingOrder(false);
+  //         // Cancel the pending order
+  //         try {
+  //           await api.post('cartapp/orders/cancel/', { order_id: response.data.order.id });
+  //           console.log('Pending order cancelled');
+  //         } catch (cancelErr) {
+  //           console.error('Failed to cancel order:', cancelErr);
+  //         }
+  //       }
+  //     } else {
+  //       const response = await api.post('cartapp/orders/create/', {
+  //         address_id: selectedAddress,
+  //         payment_method: selectedPayment,
+  //         ...couponData,
+  //       });
+  //       console.log('Order create response:', response.data);
+  //       navigate(`/order-details/${response.data.order.id}`);
+  //       setIsPlacingOrder(false);
+  //     }
+  //   } catch (error) {
+  //     console.error('Place order error details:', error.response?.data, error.message);
+  //     setError(error.response?.data?.error || error.message || "Failed to place order. Please try again.");
+  //     setIsPlacingOrder(false);
+  //   }
+  // };
+
+
+
+  const handlePlaceOrder = async () => {
+  if (!selectedAddress) {
+    setError("Please select a shipping address");
+    return;
+  }
+  setIsPlacingOrder(true);
+  try {
+    const couponData = couponApplied && couponApplied.code ? { coupon_code: couponApplied.code } : {};
+    console.log('couponApplied:', couponApplied);
+    console.log('couponData:', couponData);
+
+    if (selectedPayment === "card") {
+      if (!window.Razorpay) {
+        setError("Payment service is unavailable. Please ensure the Razorpay script is loaded.");
+        console.error("Razorpay SDK not available");
+        setIsPlacingOrder(false);
+        return;
+      }
+
+      const response = await api.post('cartapp/orders/razorpay/create/', {
+        address_id: selectedAddress,
+        payment_method: 'card',
+        ...couponData,
+      });
+      console.log('Razorpay create response:', response.data);
+
+      if (!response.data.order_id || !response.data.amount) {
+        throw new Error("Invalid Razorpay response: missing order_id or amount");
+      }
+      const { order_id: razorpayOrderId, amount, currency, key, order } = response.data;
+
+      const options = {
+        key: key,
+        amount: amount,
+        currency: currency,
+        name: 'Vishali Gold',
+        description: `Payment for Order #${order.order_number}`,
+        image: 'https://your-logo-url.com/logo.png',
+        order_id: razorpayOrderId,
+        handler: async function (response) {
+          try {
+            const verifyResponse = await api.post('cartapp/orders/razorpay/verify/', {
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+            });
+            console.log('Payment verification response:', verifyResponse.data);
+            if (verifyResponse.data.cart) {
+              setCart(verifyResponse.data.cart);
+            } else {
+              await clearCart();
+            }
+            navigate(`/order-details/${verifyResponse.data.order.id}`);
+          } catch (err) {
+            console.error('Payment verification error:', err.response?.data, err.message);
+            setError('Payment verification failed. Please contact support.');
+            navigate(`/user/view-order-details/${verifyResponse.data.order.id}`);
+          } finally {
             setIsPlacingOrder(false);
+          }
+        },
+        prefill: {
+          name: addresses.find(addr => addr.id === selectedAddress)?.name || '',
+          email: 'customer@example.com',
+          contact: addresses.find(addr => addr.id === selectedAddress)?.phone || '',
+        },
+        notes: {
+          address_id: selectedAddress,
+          order_id: response.data.order.id,
+        },
+        theme: {
+          color: '#8B2131',
+        },
+        modal: {
+          ondismiss: async () => {
+            setIsPlacingOrder(false);
+            setError('Payment cancelled by user.');
             try {
               await api.post('cartapp/orders/cancel/', { order_id: response.data.order.id });
               console.log('Pending order cancelled');
             } catch (err) {
               console.error('Failed to cancel order:', err);
             }
-          });
-          rzp.open();
-        } catch (err) {
-          console.error('Razorpay modal error:', err);
-          setError('Failed to initialize payment. Please try again.');
+          },
+        },
+      };
+
+      try {
+        const rzp = new window.Razorpay(options);
+        rzp.on('payment.failed', async function (response) {
+          console.error('Razorpay payment failed:', response.error);
+          setError(`Payment failed: ${response.error.description}`);
           setIsPlacingOrder(false);
-          // Cancel the pending order
           try {
             await api.post('cartapp/orders/cancel/', { order_id: response.data.order.id });
             console.log('Pending order cancelled');
-          } catch (cancelErr) {
-            console.error('Failed to cancel order:', cancelErr);
+          } catch (err) {
+            console.error('Failed to cancel order:', err);
           }
-        }
-      } else {
-        const response = await api.post('cartapp/orders/create/', {
-          address_id: selectedAddress,
-          payment_method: selectedPayment,
-          ...couponData,
         });
-        console.log('Order create response:', response.data);
-        navigate(`/order-details/${response.data.order.id}`);
+        rzp.open();
+      } catch (err) {
+        console.error('Razorpay modal error:', err);
+        setError('Failed to initialize payment. Please try again.');
         setIsPlacingOrder(false);
+        try {
+          await api.post('cartapp/orders/cancel/', { order_id: response.data.order.id });
+          console.log('Pending order cancelled');
+        } catch (cancelErr) {
+          console.error('Failed to cancel order:', cancelErr);
+        }
       }
-    } catch (error) {
-      console.error('Place order error details:', error.response?.data, error.message);
-      setError(error.response?.data?.error || error.message || "Failed to place order. Please try again.");
+    } else {
+      const response = await api.post('cartapp/orders/create/', {
+        address_id: selectedAddress,
+        payment_method: selectedPayment,
+        ...couponData,
+      });
+      console.log('Order create response:', response.data);
+      if (response.data.cart) {
+        setCart(response.data.cart);
+      } else {
+        await clearCart();
+      }
+      navigate(`/order-details/${response.data.order.id}`);
       setIsPlacingOrder(false);
     }
-  };
+  } catch (error) {
+    console.error('Place order error details:', error.response?.data, error.message);
+    setError(error.response?.data?.error || error.message || "Failed to place order. Please try again.");
+    setIsPlacingOrder(false);
+  }
+};
 
   // Icon Components
   const IconArrowLeft = () => (

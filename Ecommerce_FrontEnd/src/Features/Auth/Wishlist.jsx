@@ -6,10 +6,14 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useWishlist } from "@/Context/WishlistContext";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2"; 
+import { useCart } from "@/Context/CartContext"
+import { useState } from "react";
 
 export default function Wishlist() {
   const { wishlist, fetchWishlist,removeFromWishlist, loading, error } = useWishlist();
   const navigate = useNavigate();
+  const [quantity, setQuantity] = useState(1)
+    const { addToCart } = useCart()
   console.log("i want wishlistitem",wishlist)
 
   const BASE_URL = "http://127.0.0.1:8000"
@@ -18,6 +22,29 @@ export default function Wishlist() {
       fetchWishlist();
     }
   }, [wishlist, fetchWishlist]);
+
+  const handleAddToCart = async (variantId, quantity, event) => {
+    if (event) {
+      event.preventDefault()
+      event.stopPropagation()
+    }
+
+    try {
+      await addToCart(variantId, quantity)
+      const toast = document.createElement("div")
+      toast.className =
+        "fixed bottom-4 right-4 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded shadow-lg transform transition-transform duration-500 ease-in-out z-50"
+      toast.innerHTML = "Item added to cart successfully!"
+      document.body.appendChild(toast)
+
+      setTimeout(() => {
+        toast.classList.add("translate-y-20", "opacity-0")
+        setTimeout(() => document.body.removeChild(toast), 500)
+      }, 3000)
+    } catch (error) {
+      console.error("Add to cart failed:", error)
+    }
+  }
 
   if (loading) return <div>Loading cart...</div>;
   if (error) return <div>Error: {error}</div>;
@@ -76,7 +103,7 @@ export default function Wishlist() {
                           variant="outline"
                           size="sm"
                           className="bg-[#7a2828] text-white border border-red-600 hover:bg-rose-50 hover:text-rose-700 hover:border-rose-200 mt-4"
-                          onClick={() => navigate(`/productdetails/${item.product.id}`)}
+                          onClick={(e) => handleAddToCart(item.variant.id, quantity, e) }
                           disabled={loading}
                         >
                           Add to Cart

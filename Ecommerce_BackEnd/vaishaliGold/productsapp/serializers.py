@@ -79,7 +79,17 @@ class ProductSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'category', 'category_name', 'description', 
                  'occasion', 'gender', 'is_active', 'bis_hallmark', 'size',
                  'created_at', 'updated_at', 'variants', 'available', 
+
+    
                  'gold_color', 'price','image','uploaded_images','discount', 'product_offer_Isactive']
+        
+        def validate_name(self, value):
+        
+            if Product.objects.filter(name__iexact=value).exists():
+                if self.instance and self.instance.name.lower() == value.lower():
+                    return value 
+                raise ValidationError("A product with this name already exists (case-insensitive).")
+            return value
         
     def validate_discount(self, value):
         if not (0 <= value <= 100):
