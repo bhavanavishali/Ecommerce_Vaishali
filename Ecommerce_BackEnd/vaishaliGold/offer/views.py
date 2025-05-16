@@ -47,6 +47,7 @@ class CouponView(APIView):
        permission_classes = [IsAuthenticated]
 
        def get(self, request):
+           
            try:
                coupons = Coupon.objects.filter(user=request.user, is_active=True)
                serializer = CouponSerializer(coupons, many=True)

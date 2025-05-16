@@ -1126,6 +1126,7 @@ class SalesReportView(APIView):
     def get(self, request):
         try:
             # Get filter parameters
+            print("ssssssssssssssss",request.user)
             filter_type = request.query_params.get('filter_type', 'thisYear')
             from_date = request.query_params.get('from_date')
             to_date = request.query_params.get('to_date')

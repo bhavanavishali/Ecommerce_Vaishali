@@ -98,6 +98,7 @@ class ProductFilter(APIView):
 
 
 class UserCategoryList(APIView):
+    
     def get(self, request):
         categories = Category.objects.filter(is_active=True)
         serializer = CategorySerializer(categories, many=True)

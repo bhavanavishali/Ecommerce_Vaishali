@@ -31,6 +31,8 @@ import OrderHandlePage from './Features/Auth/OrderHandlePage';
 import ViewOrderDetails from './Features/Auth/ViewOrderDetails';
 import Wishlist from './Features/Auth/Wishlist';
 import Invoice from './Features/Auth/Invoice';
+import ProtectedRoute from './protected_route/protected_user';
+import AdminProtectedRoute from './protected_route/protected_admin';
 
 
 
@@ -47,39 +49,41 @@ function App() {
       <Route path='/'element={<Layout/>}>
       <Route index element={<Landingpage/>}/>
       
-      <Route path='/user/home' element={<UserHome/>} />
-      <Route path='/productdetails/:id' element={<ProductDetails/>} />
-      <Route path='/cart' element={<Cart/>}/>
-      <Route path='/userprofile' element={<UserProfile/>}/>
-      <Route path='/addaddress' element={<AddAddress/>} />
-      <Route path='/checkoutpage' element={<CheckoutPage/>}/>
-      <Route path='/order-details/:orderId' element={<UserOrderDetailsPage/>}/> 
-      <Route path='/myorders' element={<Myorders/>}/>
-      <Route path='/user/view-order-details/:id' element={<ViewOrderDetails/>}/>
-      <Route path='/wishlist' element={<Wishlist/>}/>
-      <Route path='/invoice/:id' element={<Invoice/>}/>
+        {/* user protected sessions */}
+
+      <Route path='/user/home' element={<ProtectedRoute><UserHome/></ProtectedRoute>} />
+      <Route path='/productdetails/:id' element={<ProtectedRoute><ProductDetails/></ProtectedRoute>} />
+      <Route path='/cart' element={<ProtectedRoute><Cart/></ProtectedRoute>}/>
+      <Route path='/userprofile' element={<ProtectedRoute><UserProfile/></ProtectedRoute>}/>
+      <Route path='/addaddress' element={<ProtectedRoute><AddAddress/></ProtectedRoute>} />
+      <Route path='/checkoutpage' element={<ProtectedRoute><CheckoutPage/></ProtectedRoute>}/>
+      <Route path='/order-details/:orderId' element={<ProtectedRoute><UserOrderDetailsPage/></ProtectedRoute>}/> 
+      <Route path='/myorders' element={<ProtectedRoute><Myorders/></ProtectedRoute>}/>
+      <Route path='/user/view-order-details/:id' element={<ProtectedRoute><ViewOrderDetails/></ProtectedRoute>}/>
+      <Route path='/wishlist' element={<ProtectedRoute><Wishlist/></ProtectedRoute>}/>
+      <Route path='/invoice/:id' element={<ProtectedRoute><Invoice/></ProtectedRoute>}/>
       </Route>
+
+
       {/* authentication section */}
 
       <Route path='/signup' element={<SignUpForm/>}/>
       <Route path='/login' element={<Login/>}/>
       <Route path='/google' element={<GoogleLoginButton/>} />
-
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password/:uidb64/:token" element={<ResetPassword />} />
 
       {/* Admin section */}
       <Route path='/adminLogin' element={<AdminLogin/>}/>
       
-      <Route path='/dashboard' element={<Dashboard/>}/>
-      <Route path='/admin/producttable' element={<ProductTable/>} />
-      <Route path='/addproduct' element={<AddProductForm/>}/>
-      <Route path='/admin/categorytable' element={<CategoryTable/>} />
-      <Route path='/admin/usertable' element={<UserTable/>} />
-      <Route path='/admin/editproduct/:id' element={<ProductEdit/>} />
-      <Route path='/admin/ordertable/' element={<OrderTable/>}/>
-      
-      <Route path='/admin/orderhandlepage/:id' element={<OrderHandlePage/>}/>
+      <Route path='/dashboard' element={<AdminProtectedRoute><Dashboard/></AdminProtectedRoute>}/>
+      <Route path='/admin/producttable' element={<AdminProtectedRoute><ProductTable/></AdminProtectedRoute>} />
+      <Route path='/addproduct' element={<AdminProtectedRoute><AddProductForm/></AdminProtectedRoute>}/>
+      <Route path='/admin/categorytable' element={<AdminProtectedRoute><CategoryTable/></AdminProtectedRoute>} />
+      <Route path='/admin/usertable' element={<AdminProtectedRoute><UserTable/></AdminProtectedRoute>} />
+      <Route path='/admin/editproduct/:id' element={<AdminProtectedRoute><ProductEdit/></AdminProtectedRoute>} />
+      <Route path='/admin/ordertable/' element={<AdminProtectedRoute><OrderTable/></AdminProtectedRoute>}/>
+      <Route path='/admin/orderhandlepage/:id' element={<AdminProtectedRoute><OrderHandlePage/></AdminProtectedRoute>}/>
       
       
 

@@ -102,6 +102,7 @@ class LoginView(APIView):
                 'last_name': user.last_name,
                 'username': user.username,
                 'email': user.email,
+                'is_superadmin': user.is_superadmin,
             },
             'message': 'Login successful'
         }, status=status.HTTP_200_OK)
@@ -166,7 +167,7 @@ class AdminLogoutView(APIView):
 
         
         refresh_token = request.COOKIES.get('refresh_token')
-        print("Refresh token:", refresh_token)
+        print("Refresh token:",refresh_token)
         
         response = Response({'message': 'Logged out successfully.'})
 
@@ -201,11 +202,11 @@ class VerifyOTPView(APIView):
                 cache.set(cache_key, stored_data, timeout=120)
                 cache.delete(cache_key)
 
-                # Check for referral and reward referrer
+                
                 referral = Referral.objects.filter(referred_user=user).first()
                 if referral and not referral.rewarded:
                     with transaction.atomic():
-                        # Create coupon for referrer
+                        
                         coupon_code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
                         while Coupon.objects.filter(coupon_code=coupon_code).exists():
                             coupon_code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
@@ -221,7 +222,7 @@ class VerifyOTPView(APIView):
                             coupon_type='flat',
                             user=referral.referrer
                         )
-                        # Create coupon for referred user
+                        
                         welcome_coupon_code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
                         while Coupon.objects.filter(coupon_code=welcome_coupon_code).exists():
                             welcome_coupon_code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
@@ -248,6 +249,8 @@ class VerifyOTPView(APIView):
                 return Response({'error': 'Invalid or expired OTP'}, status=status.HTTP_400_BAD_REQUEST)
         except User.DoesNotExist:
             return Response({'error': 'User not found'}, status=status.HTTP_400_BAD_REQUEST)
+        
+
         
 class ReferralLinkView(APIView):
     permission_classes = [IsAuthenticated]
@@ -347,6 +350,7 @@ class AdminLoginview(APIView):
                 'last_name': user.last_name,
                 'username': user.username,
                 'email': user.email,
+                'is_superadmin': user.is_superadmin,
             },
             'message': 'Admin Login successful'
         }, status=status.HTTP_200_OK)
@@ -762,4 +766,5 @@ class TokenRefreshFromCookieView(APIView):
                 {"detail": f"Error processing token: {str(e)}"},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
     )
-        
+ 
+
