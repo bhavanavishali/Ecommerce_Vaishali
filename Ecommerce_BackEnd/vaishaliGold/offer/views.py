@@ -56,3 +56,4 @@ class CouponView(APIView):
            except Exception as e:
                logger.error(f"Error fetching coupons for {request.user.email}: {str(e)}")
                return Response({"error": "Failed to fetch coupons"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+

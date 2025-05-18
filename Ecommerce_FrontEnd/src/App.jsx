@@ -34,7 +34,7 @@ import Invoice from './Features/Auth/Invoice';
 import ProtectedRoute from './protected_route/protected_user';
 import AdminProtectedRoute from './protected_route/protected_admin';
 
-
+import Report from './Features/SalesReport/Report';
 
 function App() {
 
@@ -84,6 +84,7 @@ function App() {
       <Route path='/admin/editproduct/:id' element={<AdminProtectedRoute><ProductEdit/></AdminProtectedRoute>} />
       <Route path='/admin/ordertable/' element={<AdminProtectedRoute><OrderTable/></AdminProtectedRoute>}/>
       <Route path='/admin/orderhandlepage/:id' element={<AdminProtectedRoute><OrderHandlePage/></AdminProtectedRoute>}/>
+      <Route path='/admin/report/' element={<AdminProtectedRoute><Report/></AdminProtectedRoute>}/>
       
       
 

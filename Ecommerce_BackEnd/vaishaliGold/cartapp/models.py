@@ -197,7 +197,7 @@ class Order(models.Model):
     
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders')
     address = models.ForeignKey(Address, on_delete=models.SET_NULL, null=True)
-    cart = models.ForeignKey('Cart', on_delete=models.SET_NULL,null=True,related_name='orders')  # Changed to CASCADE
+    cart = models.ForeignKey('Cart', on_delete=models.SET_NULL,null=True,related_name='orders')  
     order_number = models.CharField(max_length=20, unique=True)
 
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)

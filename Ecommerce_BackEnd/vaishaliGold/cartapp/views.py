@@ -73,6 +73,8 @@ class AddToCartView(APIView):
         cart_item.save() # Triggers cart.update_totals()
         serializer = CartSerializer(cart)
         return Response(serializer.data)
+
+
     
 
 class UpdateCartItemView(APIView):
@@ -435,11 +437,12 @@ class OrderUpdateView(APIView):
                     status=status.HTTP_400_BAD_REQUEST
                 )
             
-            # Update order status
+        
             order.status = order_status
             
-            # If the order status is 'delivered', update all active OrderItems to 'delivered'
+            
             if order_status == 'delivered':
+                
                 with transaction.atomic():
                     for item in order.items.filter(status='active'):
                         item.status = 'delivered'
@@ -588,310 +591,6 @@ def create_order_address(order, address):
         mobile_number=address.mobile_number,
         alternate_number=address.alternate_number         
     )
-# class RazorpayOrderCreateView(APIView):
-#     permission_classes = [IsAuthenticated]
-
-#     def post(self, request):
-#         try:
-#             cart = get_object_or_404(Cart, user=request.user)
-#             if not cart.items.exists():
-#                 return Response({"error": "Your cart is empty."}, status=status.HTTP_400_BAD_REQUEST)
-
-#             address_id = request.data.get('address_id')
-#             coupon_code = request.data.get('coupon_code')
-#             if not address_id or not str(address_id).isdigit():
-#                 return Response({"error": "Valid address_id is required."},
-#                                status=status.HTTP_400_BAD_REQUEST)
-
-#             address = get_object_or_404(Address, id=address_id, user=request.user)
-#             coupon = None
-#             coupon_discount = Decimal('0.00')
-#             if coupon_code:
-#                 try:
-#                     coupon = Coupon.objects.get(coupon_code=coupon_code)
-#                     if not coupon.is_valid():
-#                         return Response({"error": "Coupon is not valid or has expired."},
-#                                         status=status.HTTP_400_BAD_REQUEST)
-#                     total_amount = cart.get_final_subtotal()
-#                     if total_amount < coupon.min_amount:
-#                         return Response(
-#                             {"error": f"Order total must be at least {coupon.min_amount} to use this coupon"},
-#                             status=status.HTTP_400_BAD_REQUEST
-#                         )
-#                     coupon_discount = coupon.discount if coupon.coupon_type == 'flat' else (coupon.discount / 100) * total_amount
-#                     if coupon_discount > total_amount:
-#                         coupon_discount = total_amount
-#                     coupon.used_count += 1
-#                     coupon.save()
-#                 except Coupon.DoesNotExist:
-#                     return Response({"error": "Invalid coupon code."}, status=status.HTTP_400_BAD_REQUEST)
-
-#             total_amount = cart.get_final_subtotal()
-#             total_discount = cart.get_final_discount()
-#             total_tax = cart.get_final_tax()
-#             final_total = total_amount - total_discount - coupon_discount + total_tax
-#             if final_total <= 0:
-#                 return Response({"error": "Order amount must be positive"},
-#                                status=status.HTTP_400_BAD_REQUEST)
-#             amount_in_paisa = int(final_total * 100)
-
-#             client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
-#             razorpay_order = client.order.create({
-#                 'amount': amount_in_paisa,
-#                 'currency': 'INR',
-#                 'payment_capture': 1
-#             })
-
-#             order = Order.objects.create(
-#                 user=request.user,
-#                 cart=cart,
-#                 address=address,
-#                 total_amount=total_amount,
-#                 total_discount=total_discount,
-#                 coupon_discount=coupon_discount,
-#                 total_tax=total_tax,
-#                 final_total=final_total,
-#                 payment_method='card',
-#                 status='pending',
-              
-#                 coupon=coupon
-#             )
-
-#             create_order_address(order, address)
-
-#             for cart_item in cart.items.all():
-#                 if cart_item.quantity > cart_item.variant.stock:
-#                     order.delete()
-#                     return Response(
-#                         {"error": f"Not enough stock for {cart_item.variant.product.name}"},
-#                         status=status.HTTP_400_BAD_REQUEST
-#                     )
-
-#                 subtotal = cart_item.get_subtotal()
-#                 item_discount = cart_item.get_discount_amount()
-#                 tax = cart_item.get_tax_amount()
-#                 item_coupon_discount = Decimal('0.00')
-#                 if coupon and total_amount > 0:
-#                     proportion = subtotal / total_amount
-#                     item_coupon_discount = coupon_discount * proportion
-#                 final_price = subtotal - item_discount - item_coupon_discount + tax
-
-#                 OrderItem.objects.create(
-#                     order=order,
-#                     variant=cart_item.variant,
-#                     quantity=cart_item.quantity,
-#                     price=cart_item.variant.total_price,
-#                     subtotal=subtotal,
-#                     discount=item_discount,
-#                     coupon_discount=item_coupon_discount,
-#                     tax=tax,
-#                     final_price=final_price
-                    
-#                 )
-
-#                 cart_item.variant.stock -= cart_item.quantity
-#                 cart_item.variant.save()
-
-#             order.razorpay_order_id = razorpay_order["id"]
-#             order.save()
-
-#             cart.clear()
-
-#             return Response({
-#                 'order_id': razorpay_order['id'],
-#                 'amount': amount_in_paisa,
-#                 'currency': 'INR',
-#                 'key': settings.RAZORPAY_KEY_ID,
-#                 'order': OrderSerializer(order).data
-#             }, status=status.HTTP_200_OK)
-
-#         except Exception as e:
-#             logger.exception("Error creating Razorpay order: %s", str(e))
-#             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
-
-# class RazorpayOrderCreateView(APIView):
-#     permission_classes = [IsAuthenticated]
-
-#     def post(self, request):
-#         try:
-#             cart = get_object_or_404(Cart, user=request.user)
-#             if not cart.items.exists():
-#                 return Response({"error": "Your cart is Issues empty."}, status=status.HTTP_400_BAD_REQUEST)
-
-#             address_id = request.data.get('address_id')
-#             coupon_code = request.data.get('coupon_code')
-#             if coupon_code and cart.coupon and cart.coupon.coupon_code != coupon_code:
-#                 return Response({"error": "Coupon code does not match the applied coupon in cart."}, status=status.HTTP_400_BAD_REQUEST)
-#             if not address_id or not str(address_id).isdigit():
-#                 return Response({"error": "Valid address_id is required."},
-#                                status=status.HTTP_400_BAD_REQUEST)
-
-#             address = get_object_or_404(Address, id=address_id, user=request.user)
-#             coupon = None
-#             coupon_discount = Decimal('0.00')
-#             if coupon_code:
-#                 try:
-#                     coupon = Coupon.objects.get(coupon_code=coupon_code)
-#                     if not coupon.is_valid():
-#                         return Response({"error": "Coupon is not valid or has expired."},
-#                                         status=status.HTTP_400_BAD_REQUEST)
-#                     total_amount = cart.get_final_subtotal()
-#                     if total_amount < coupon.min_amount:
-#                         return Response(
-#                             {"error": f"Order total must be at least {coupon.min_amount} to use this coupon"},
-#                             status=status.HTTP_400_BAD_REQUEST
-#                         )
-#                     coupon_discount = coupon.discount if coupon.coupon_type == 'flat' else (coupon.discount / 100) * total_amount
-#                     if coupon_discount > total_amount:
-#                         coupon_discount = total_amount
-#                     coupon.used_count += 1
-#                     coupon.save()
-#                 except Coupon.DoesNotExist:
-#                     return Response({"error": "Invalid coupon ID."}, status=status.HTTP_400_BAD_REQUEST)
-
-#             total_amount = cart.get_final_subtotal()
-#             total_discount = cart.get_final_discount()
-#             total_tax = cart.get_final_tax()
-#             final_total = total_amount - total_discount - coupon_discount + total_tax
-#             if final_total <= 0:
-#                 return Response({"error": "Order amount must be positive"},
-#                                status=status.HTTP_400_BAD_REQUEST)
-#             amount_in_paisa = int(final_total * 100)
-
-#             client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
-#             razorpay_order = client.order.create({
-#                 'amount': amount_in_paisa,
-#                 'currency': 'INR',
-#                 'payment_capture': 1
-#             })
-
-#             order = Order.objects.create(
-#                 user=request.user,
-#                 cart=cart,
-#                 address=address,
-#                 total_amount=total_amount,
-#                 total_discount=total_discount,
-#                 coupon=coupon,
-#                 coupon_discount=coupon_discount,
-#                 total_tax=total_tax,
-#                 final_total=final_total,
-#                 payment_method='card',
-#                 status='pending',
-                
-#             )
-
-#             create_order_address(order, address)
-
-#             for cart_item in cart.items.all():
-#                 if cart_item.quantity > cart_item.variant.stock:
-#                     order.delete()
-#                     return Response(
-#                         {"error": f"Not enough stock for {cart_item.variant.product.name}"},
-#                         status=status.HTTP_400_BAD_REQUEST
-#                     )
-
-#                 subtotal = cart_item.get_subtotal()
-#                 item_discount = cart_item.get_discount_amount()
-#                 tax = cart_item.get_tax_amount()
-#                 item_coupon_discount = Decimal('0.00')
-#                 if coupon and total_amount > 0:
-#                     proportion = subtotal / total_amount
-#                     item_coupon_discount = coupon_discount * proportion
-#                 final_price = subtotal - item_discount - item_coupon_discount + tax
-
-#                 OrderItem.objects.create(
-#                     order=order,
-#                     variant=cart_item.variant,
-#                     quantity=cart_item.quantity,
-#                     price=cart_item.variant.total_price,
-#                     subtotal=subtotal,
-#                     discount=item_discount,
-#                     coupon_discount=item_coupon_discount,
-#                     tax=tax,
-#                     final_price=final_price
-#                 )
-
-#                 cart_item.variant.stock -= cart_item.quantity
-#                 cart_item.variant.save()
-
-#             order.razorpay_order_id = razorpay_order["id"]
-#             order.save()
-
-#             cart.clear()
-
-#             return Response({
-#                 'order_id': razorpay_order['id'],
-#                 'amount': amount_in_paisa,
-#                 'currency': 'INR',
-#                 'key': settings.RAZORPAY_KEY_ID,
-#                 'order': OrderSerializer(order).data
-#             }, status=status.HTTP_200_OK)
-
-#         except Exception as e:
-#             logger.exception("Error creating Razorpay order: %s", str(e))
-#             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-# class RazorpayPaymentVerificationView(APIView):
-#     permission_classes = [IsAuthenticated]
-
-#     def post(self, request):
-#         try:
-#             required_fields = ['razorpay_payment_id', 'razorpay_order_id', 'razorpay_signature']
-#             for field in required_fields:
-#                 if not request.data.get(field):
-#                     return Response({"error": f"Missing required field: {field}"}, 
-#                                    status=status.HTTP_400_BAD_REQUEST)
-
-#             razorpay_payment_id = request.data.get('razorpay_payment_id')
-#             razorpay_order_id = request.data.get('razorpay_order_id')
-#             razorpay_signature = request.data.get('razorpay_signature')
-#             logger.debug("Request data: %s", request.data)
-
-#             client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
-#             client.utility.verify_payment_signature({
-#                 'razorpay_order_id': razorpay_order_id,
-#                 'razorpay_payment_id': razorpay_payment_id,
-#                 'razorpay_signature': razorpay_signature
-#             })
-
-#             try:
-#                 with transaction.atomic():
-#                     order = get_object_or_404(Order, razorpay_order_id=razorpay_order_id, user=request.user)
-#                     if order.payment_status == 'completed':
-#                         return Response({"error": "Payment already verified"}, 
-#                                        status=status.HTTP_400_BAD_REQUEST)
-#                     order.razorpay_payment_id = razorpay_payment_id
-#                     order.razorpay_signature = razorpay_signature
-#                     order.payment_status = 'completed'
-#                     order.status = 'processing'
-#                     if hasattr(order, 'items') and order.items.exists():  # Check if items relation exists
-#                         order.items.update(payment_status='complete')  # Bulk update
-#                     else:
-#                         logger.warning("No items found for order %s", order.id)
-#                     order.save()
-#                     logger.info("Order %s updated successfully", order.id)
-#             except Exception as e:
-#                 logger.error("Database error for order %s: %s", razorpay_order_id, str(e))
-#                 return Response({"error": f"Failed to update order: {str(e)}"}, 
-#                                status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-#             return Response({
-#                 'message': 'Payment verified successfully',
-#                 'order_id': order.id
-#             }, status=status.HTTP_200_OK)
-
-#         except razorpay.errors.SignatureVerificationError as e:
-#             logger.error("Signature verification failed: %s", str(e))
-#             return Response({"error": "Payment verification failed"}, 
-#                            status=status.HTTP_400_BAD_REQUEST)
-#         except Exception as e:
-#             logger.exception("Unexpected error during payment verification: %s", str(e))
-#             return Response({"error": f"Internal server error: {str(e)}"}, 
-#                            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
 
 class RazorpayOrderCreateView(APIView):
     permission_classes = [IsAuthenticated]
@@ -1134,19 +833,330 @@ from decimal import Decimal
 
 
 
+# class SalesReportView(APIView):
+#     permission_classes = [IsAdminUser]
+
+#     def get(self, request):
+#         try:
+#             # Get filter parameters
+#             print("ssssssssssssssss",request.user)
+#             filter_type = request.query_params.get('filter_type', 'thisYear')
+#             from_date = request.query_params.get('from_date')
+#             to_date = request.query_params.get('to_date')
+
+#             # Initialize date range
+#             today = timezone.now().date()
+#             if filter_type == 'today':
+#                 from_date = to_date = today
+#             elif filter_type == 'thisWeek':
+#                 from_date = today - timezone.timedelta(days=today.weekday())
+#                 to_date = today
+#             elif filter_type == 'thisMonth':
+#                 from_date = today.replace(day=1)
+#                 to_date = today
+#             elif filter_type == 'thisYear':
+#                 from_date = today.replace(month=1, day=1)
+#                 to_date = today
+#             elif filter_type == 'custom':
+#                 if not (from_date and to_date):
+#                     return Response(
+#                         {"error": "Both from_date and to_date are required for custom filter"},
+#                         status=status.HTTP_400_BAD_REQUEST
+#                     )
+#             else:
+#                 return Response(
+#                     {"error": f"Invalid filter_type: {filter_type}"},
+#                     status=status.HTTP_400_BAD_REQUEST
+#                 )
+
+           
+#             if filter_type == 'custom':
+#                 try:
+#                     if from_date and not isinstance(from_date, datetime.date):
+#                         from_date = datetime.strptime(from_date, '%Y-%m-%d').date()
+#                     if to_date and not isinstance(to_date, datetime.date):
+#                         to_date = datetime.strptime(to_date, '%Y-%m-%d').date()
+#                 except ValueError:
+#                     return Response(
+#                         {"error": "Invalid date format. Use YYYY-MM-DD"},
+#                         status=status.HTTP_400_BAD_REQUEST
+#                     )
+
+#                 # Ensure to_date is not before from_date
+#                 if from_date and to_date and to_date < from_date:
+#                     return Response(
+#                         {"error": "To date cannot be before from date"},
+#                         status=status.HTTP_400_BAD_REQUEST
+#                     )
+
+#             # Query orders
+#             queryset = Order.objects.all()
+#             if from_date:
+#                 queryset = queryset.filter(created_at__date__gte=from_date)
+#             if to_date:
+#                 queryset = queryset.filter(created_at__date__lte=to_date)
+
+#             # Calculate summary using database aggregations
+#             summary = queryset.aggregate(
+#                 total_sales=Coalesce(Sum('total_amount'), Value(0.00, output_field=DecimalField())),
+#                 total_discount=Coalesce(Sum('total_discount'), Value(0.00, output_field=DecimalField())),
+#                 coupon_discount=Coalesce(Sum('coupon_discount'), Value(0.00, output_field=DecimalField())),
+#             )
+
+#             # Serialize data
+#             serializer = SalesReportSerializer(queryset, many=True)
+
+#             return Response({
+#                 'salesData': serializer.data,
+#                 'summary': {
+#                     'totalSales': float(summary['total_sales']),
+#                     'totalDiscount': float(summary['total_discount']),
+#                 }
+#             }, status=status.HTTP_200_OK)
+
+#         except Exception as e:
+#             logger.error(f"Error generating sales report: {str(e)}", exc_info=True)
+#             return Response(
+#                 {"error": f"Failed to generate sales report: {str(e)}"},
+#                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
+#             )
+
+
+
+
+logger = logging.getLogger(__name__)
+
+# class SalesReportView(APIView):
+#     permission_classes = [IsAdminUser]
+
+#     def get(self, request):
+#         try:
+#             filter_type = request.query_params.get('filter_type', 'thisYear')
+#             from_date = request.query_params.get('from_date')
+#             to_date = request.query_params.get('to_date')
+
+#             # Initialize date range
+#             today = timezone.now().date()
+
+#             # Handle filter types
+#             if filter_type == 'today':
+#                 from_date = to_date = today
+#             elif filter_type == 'thisWeek':
+#                 from_date = today - timezone.timedelta(days=today.weekday())
+#                 to_date = today
+#             elif filter_type == 'thisMonth':
+#                 from_date = today.replace(day=1)
+#                 to_date = today
+#             elif filter_type == 'thisYear':
+#                 from_date = today.replace(month=1, day=1)
+#                 to_date = today
+#             elif filter_type == 'custom':
+#                 # Validate presence of from_date and to_date
+#                 if not (from_date and to_date):
+#                     logger.warning(f"Missing date parameters: from_date={from_date}, to_date={to_date}")
+#                     return Response(
+#                         {"error": "Both from_date and to_date are required for custom filter"},
+#                         status=status.HTTP_400_BAD_REQUEST
+#                     )
+#                 # Parse dates
+#                 try:
+#                     from_date = datetime.strptime(from_date, '%Y-%m-%d').date()  # Fixed
+#                     to_date = datetime.strptime(to_date, '%Y-%m-%d').date()      # Fixed
+#                 except ValueError as e:
+#                     logger.warning(f"Invalid date format: from_date={from_date}, to_date={to_date}, error={str(e)}")
+#                     return Response(
+#                         {"error": "Invalid date format. Use YYYY-MM-DD"},
+#                         status=status.HTTP_400_BAD_REQUEST
+#                     )
+#                 # Validate date range
+#                 if to_date < from_date:
+#                     logger.warning(f"Invalid date range: to_date={to_date} is before from_date={from_date}")
+#                     return Response(
+#                         {"error": "To date cannot be before from date"},
+#                         status=status.HTTP_400_BAD_REQUEST
+#                     )
+#             else:
+#                 logger.warning(f"Invalid filter_type: {filter_type}")
+#                 return Response(
+#                     {"error": f"Invalid filter_type: {filter_type}"},
+#                     status=status.HTTP_400_BAD_REQUEST
+#                 )
+
+#             # Build queryset with explicit date filtering
+#             queryset = Order.objects.all()
+#             if from_date and to_date:
+#                 # Ensure timezone-aware filtering
+#                 queryset = queryset.filter(
+#                     created_at__date__gte=from_date,
+#                     created_at__date__lte=to_date
+#                 )
+#                 logger.debug(
+#                     f"Custom filter applied: from_date={from_date}, to_date={to_date}, "
+#                     f"queryset_count={queryset.count()}"
+#                 )
+
+#             # Aggregate summary
+#             summary = queryset.aggregate(
+#                 total_sales=Coalesce(Sum('total_amount'), Value(0.00, output_field=DecimalField())),
+#                 total_discount=Coalesce(Sum('total_discount'), Value(0.00, output_field=DecimalField())),
+#                 coupon_discount=Coalesce(Sum('coupon_discount'), Value(0.00, output_field=DecimalField())),
+#             )
+
+#             # Serialize data
+#             serializer = SalesReportSerializer(queryset, many=True)
+
+#             # Log response details for debugging
+#             logger.debug(
+#                 f"Filter Type: {filter_type}, From: {from_date}, To: {to_date}, "
+#                 f"Results: {queryset.count()}, Sales Data Length: {len(serializer.data)}"
+#             )
+
+#             # Return response
+#             response_data = {
+#                 'salesData': serializer.data,
+#                 'summary': {
+#                     'totalSales': float(summary['total_sales']),
+#                     'totalDiscount': float(summary['total_discount']),
+#                     'couponDiscount': float(summary['coupon_discount']),
+#                 }
+#             }
+
+#             # Add debug message if no data
+#             if not queryset.exists():
+#                 response_data['message'] = "No orders found in the specified date range"
+
+#             return Response(response_data, status=status.HTTP_200_OK)
+
+#         except Exception as e:
+#             logger.error(f"Error generating sales report: {str(e)}", exc_info=True)
+#             return Response(
+#                 {"error": f"Failed to generate sales report: {str(e)}"},
+#                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
+#             )
+
+
+from django.core.paginator import Paginator
+from django.db.models import Sum, Value, DecimalField, Q
+# class SalesReportView(APIView):
+#     permission_classes = [IsAdminUser]
+
+#     def get(self, request):
+#         try:
+#             filter_type = request.query_params.get('filter_type', 'thisYear')
+#             from_date = request.query_params.get('from_date')
+#             to_date = request.query_params.get('to_date')
+#             page = int(request.query_params.get('page', 1))
+#             page_size = int(request.query_params.get('page_size', 10))
+
+#             today = timezone.now().date()
+
+#             if filter_type == 'today':
+#                 from_date = to_date = today
+#             elif filter_type == 'thisWeek':
+#                 from_date = today - timezone.timedelta(days=today.weekday())
+#                 to_date = today
+#             elif filter_type == 'thisMonth':
+#                 from_date = today.replace(day=1)
+#                 to_date = today
+#             elif filter_type == 'thisYear':
+#                 from_date = today.replace(month=1, day=1)
+#                 to_date = today
+#             elif filter_type == 'custom':
+#                 if not (from_date and to_date):
+#                     logger.warning(f"Missing date parameters: from_date={from_date}, to_date={to_date}")
+#                     return Response(
+#                         {"error": "Both from_date and to_date are required for custom filter"},
+#                         status=status.HTTP_400_BAD_REQUEST
+#                     )
+#                 try:
+#                     from_date = datetime.strptime(from_date, '%Y-%m-%d').date()
+#                     to_date = datetime.strptime(to_date, '%Y-%m-%d').date()
+#                 except ValueError as e:
+#                     logger.warning(f"Invalid date format: from_date={from_date}, to_date={to_date}, error={str(e)}")
+#                     return Response(
+#                         {"error": "Invalid date format. Use YYYY-MM-DD"},
+#                         status=status.HTTP_400_BAD_REQUEST
+#                     )
+#                 if to_date < from_date:
+#                     logger.warning(f"Invalid date range: to_date={to_date} is before from_date={from_date}")
+#                     return Response(
+#                         {"error": "To date cannot be before from date"},
+#                         status=status.HTTP_400_BAD_REQUEST
+#                     )
+#             else:
+#                 logger.warning(f"Invalid filter_type: {filter_type}")
+#                 return Response(
+#                     {"error": f"Invalid filter_type: {filter_type}"},
+#                     status=status.HTTP_400_BAD_REQUEST
+#                 )
+
+#             queryset = Order.objects.all()
+#             if from_date and to_date:
+#                 # Use inclusive range for dates
+#                 start_datetime = timezone.make_aware(datetime.combine(from_date, datetime.min.time()))
+#                 end_datetime = timezone.make_aware(datetime.combine(to_date, datetime.max.time()))
+#                 queryset = queryset.filter(
+#                     created_at__range=(start_datetime, end_datetime)
+#                 )
+
+#             # Paginate queryset
+#             paginator = Paginator(queryset, page_size)
+#             page_obj = paginator.get_page(page)
+
+#             # Aggregate summary
+#             summary = queryset.aggregate(
+#                 total_sales=Coalesce(Sum('final_total'), Value(0.00, output_field=DecimalField())),
+#                 total_discount=Coalesce(Sum('total_discount'), Value(0.00, output_field=DecimalField())),
+#                 coupon_discount=Coalesce(Sum('coupon_discount'), Value(0.00, output_field=DecimalField())),
+#                 total_refunded=Coalesce(Sum('total_refunded'), Value(0.00, output_field=DecimalField())),
+#             )
+
+#             serializer = SalesReportSerializer(page_obj.object_list, many=True)
+
+#             logger.debug(
+#                 f"Filter Type: {filter_type}, From: {from_date}, To: {to_date}, "
+#                 f"Page: {page}, Page Size: {page_size}, Results: {page_obj.object_list.count()}, "
+#                 f"Sales Data Length: {len(serializer.data)}"
+#             )
+
+#             response_data = {
+#                 'salesData': serializer.data,
+#                 'summary': {
+#                     'totalSales': float(summary['total_sales']),
+#                     'totalDiscount': float(summary['total_discount']),
+#                     'couponDiscount': float(summary['coupon_discount']),
+#                     'totalRefund': float(summary['total_refunded']),
+#                 },
+#                 'total_pages': paginator.num_pages,
+#                 'current_page': page_obj.number,
+#             }
+
+#             if not page_obj.object_list.exists():
+#                 response_data['message'] = "No orders found in the specified date range"
+
+#             return Response(response_data, status=status.HTTP_200_OK)
+
+#         except Exception as e:
+#             logger.error(f"Error generating sales report: {str(e)}", exc_info=True)
+#             return Response(
+#                 {"error": f"Failed to generate sales report: {str(e)}"},
+#                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
+#             )
+
+
 class SalesReportView(APIView):
     permission_classes = [IsAdminUser]
 
     def get(self, request):
         try:
-            # Get filter parameters
-            print("ssssssssssssssss",request.user)
             filter_type = request.query_params.get('filter_type', 'thisYear')
             from_date = request.query_params.get('from_date')
             to_date = request.query_params.get('to_date')
+            page = int(request.query_params.get('page', 1))
+            page_size = int(request.query_params.get('page_size', 10))
 
-            # Initialize date range
             today = timezone.now().date()
+
             if filter_type == 'today':
                 from_date = to_date = today
             elif filter_type == 'thisWeek':
@@ -1160,60 +1170,80 @@ class SalesReportView(APIView):
                 to_date = today
             elif filter_type == 'custom':
                 if not (from_date and to_date):
+                    logger.warning(f"Missing date parameters: from_date={from_date}, to_date={to_date}")
                     return Response(
                         {"error": "Both from_date and to_date are required for custom filter"},
                         status=status.HTTP_400_BAD_REQUEST
                     )
+                try:
+                    from_date = datetime.strptime(from_date, '%Y-%m-%d').date()
+                    to_date = datetime.strptime(to_date, '%Y-%m-%d').date()
+                except ValueError as e:
+                    logger.warning(f"Invalid date format: from_date={from_date}, to_date={to_date}, error={str(e)}")
+                    return Response(
+                        {"error": "Invalid date format. Use YYYY-MM-DD"},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+                if to_date < from_date:
+                    logger.warning(f"Invalid date range: to_date={to_date} is before from_date={from_date}")
+                    return Response(
+                        {"error": "To date cannot be before from date"},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
             else:
+                logger.warning(f"Invalid filter_type: {filter_type}")
                 return Response(
                     {"error": f"Invalid filter_type: {filter_type}"},
                     status=status.HTTP_400_BAD_REQUEST
                 )
 
-           
-            if filter_type == 'custom':
-                try:
-                    if from_date and not isinstance(from_date, datetime.date):
-                        from_date = datetime.strptime(from_date, '%Y-%m-%d').date()
-                    if to_date and not isinstance(to_date, datetime.date):
-                        to_date = datetime.strptime(to_date, '%Y-%m-%d').date()
-                except ValueError:
-                    return Response(
-                        {"error": "Invalid date format. Use YYYY-MM-DD"},
-                        status=status.HTTP_400_BAD_REQUEST
-                    )
-
-                # Ensure to_date is not before from_date
-                if from_date and to_date and to_date < from_date:
-                    return Response(
-                        {"error": "To date cannot be before from date"},
-                        status=status.HTTP_400_BAD_REQUEST
-                    )
-
-            # Query orders
             queryset = Order.objects.all()
-            if from_date:
-                queryset = queryset.filter(created_at__date__gte=from_date)
-            if to_date:
-                queryset = queryset.filter(created_at__date__lte=to_date)
+            if from_date and to_date:
+                start_datetime = timezone.make_aware(datetime.combine(from_date, datetime.min.time()))
+                end_datetime = timezone.make_aware(datetime.combine(to_date, datetime.max.time()))
+                queryset = queryset.filter(
+                    created_at__range=(start_datetime, end_datetime)
+                )
 
-            # Calculate summary using database aggregations
+            # Paginate queryset
+            paginator = Paginator(queryset, page_size)
+            page_obj = paginator.get_page(page)
+
+            # Aggregate summary
             summary = queryset.aggregate(
-                total_sales=Coalesce(Sum('total_amount'), Value(0.00, output_field=DecimalField())),
+                total_sales=Coalesce(Sum('final_total'), Value(0.00, output_field=DecimalField())),
                 total_discount=Coalesce(Sum('total_discount'), Value(0.00, output_field=DecimalField())),
                 coupon_discount=Coalesce(Sum('coupon_discount'), Value(0.00, output_field=DecimalField())),
+                total_refunded=Coalesce(
+                    Sum('items__final_price', filter=Q(items__status='returned')),
+                    Value(0.00, output_field=DecimalField())
+                ),
             )
 
-            # Serialize data
-            serializer = SalesReportSerializer(queryset, many=True)
+            serializer = SalesReportSerializer(page_obj.object_list, many=True)
+            print("55555555555555555",summary)
+            logger.debug(
+                f"Filter Type: {filter_type}, From: {from_date}, To: {to_date}, "
+                f"Page: {page}, Page Size: {page_size}, Results: {page_obj.object_list.count()}, "
+                f"Sales Data Length: {len(serializer.data)}"
+            )
 
-            return Response({
+            response_data = {
                 'salesData': serializer.data,
                 'summary': {
                     'totalSales': float(summary['total_sales']),
                     'totalDiscount': float(summary['total_discount']),
-                }
-            }, status=status.HTTP_200_OK)
+                    'couponDiscount': float(summary['coupon_discount']),
+                    'totalRefund': float(summary['total_refunded']),
+                },
+                'total_pages': paginator.num_pages,
+                'current_page': page_obj.number,
+            }
+
+            if not page_obj.object_list.exists():
+                response_data['message'] = "No orders found in the specified date range"
+
+            return Response(response_data, status=status.HTTP_200_OK)
 
         except Exception as e:
             logger.error(f"Error generating sales report: {str(e)}", exc_info=True)

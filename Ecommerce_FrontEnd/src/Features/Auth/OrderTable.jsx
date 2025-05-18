@@ -126,7 +126,7 @@ function OrderTable() {
                             <TableHead className="font-medium">Customer</TableHead>
                             <TableHead className="font-medium">Date</TableHead>
                             <TableHead className="font-medium">Total Amount</TableHead>
-                            <TableHead className="font-medium">Status</TableHead>
+                            
                             <TableHead className="font-medium">Actions</TableHead>
                         </TableRow>
                     </TableHeader>
@@ -138,18 +138,7 @@ function OrderTable() {
                                     <TableCell>{order.user?.first_name} {order.user?.last_name}</TableCell>
                                     <TableCell>{new Date(order.created_at).toLocaleDateString()}</TableCell>
                                     <TableCell>{parseFloat(order.final_total).toFixed(2)}</TableCell>
-                                    <TableCell>
-                                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                            order.status === "pending" ? "bg-yellow-100 text-yellow-800" :
-                                            order.status === "confirmed" ? "bg-blue-100 text-blue-800" :
-                                            order.status === "processing" ? "bg-purple-100 text-purple-800" :
-                                            order.status === "shipped" ? "bg-indigo-100 text-indigo-800" :
-                                            order.status === "delivered" ? "bg-green-100 text-green-800" :
-                                            "bg-red-100 text-red-800"
-                                        }`}>
-                                            {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-                                        </span>
-                                    </TableCell>
+                                    
                                     <TableCell>
                                         <Button 
                                             variant="secondary" 

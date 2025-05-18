@@ -117,7 +117,7 @@ class UserProductList(APIView):
 class ProductListCreateView(APIView):
     def get(self, request):
        
-        product = Product.objects.all()
+        product = Product.objects.all().order_by('-created_at')
         print("it is my product",product)
         serializer = ProductSerializer(product, many=True)
         return Response(serializer.data)

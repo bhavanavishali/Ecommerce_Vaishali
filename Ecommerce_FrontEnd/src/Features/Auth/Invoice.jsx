@@ -459,10 +459,7 @@ export default function InvoicePage() {
                       <span className="text-sm text-gray-500">Payment Method</span>
                       <span className="text-sm font-medium">{invoice.payment_method}</span>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-sm text-gray-500">Payment Status</span>
-                      <span className="text-sm font-medium">{invoice.payment_status}</span>
-                    </div>
+                    
                   </div>
                 </div>
               </div>

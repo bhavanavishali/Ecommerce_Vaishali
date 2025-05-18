@@ -131,18 +131,18 @@ class ProductSerializer(serializers.ModelSerializer):
         variants_data = validated_data.pop('variants', None)
         uploaded_images = validated_data.pop('uploaded_images', [])
 
-        # Update product fields
+       
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
         instance.save()
 
-        # Update variants
+        
         if variants_data is not None:
-            # Get existing variant IDs
+            
             existing_variant_ids = set(instance.variants.values_list('id', flat=True))
             incoming_variant_ids = set(variant.get('id') for variant in variants_data if variant.get('id'))
 
-            # Delete variants that are no longer present
+            
             variants_to_delete = existing_variant_ids - incoming_variant_ids
             instance.variants.filter(id__in=variants_to_delete).delete()
 

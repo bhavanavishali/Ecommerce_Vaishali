@@ -7,5 +7,7 @@ urlpatterns = [
 
    path('coupons/', CouponListCreateView.as_view(), name='coupon-list-create'),
     path('coupons/<int:pk>/', CouponDetailView.as_view(), name='coupon-detail'),
-    path('user/coupons/',CouponView.as_view(),name='user-coupons')
+    path('user/coupons/',CouponView.as_view(),name='user-coupons'),
+
+   
 ]

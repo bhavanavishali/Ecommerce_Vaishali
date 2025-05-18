@@ -6,7 +6,8 @@ const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState(null);
-  
+
+
   const fetchCart = async () => {                    // for fetch cart 
     try {
       
@@ -63,8 +64,8 @@ export const CartProvider = ({ children }) => {
 
    const clearCart = async () => {
     try {
-      const response = await api.post('cartapp/cart/clear/'); // New endpoint to clear cart
-      setCart(null); // Reset cart state to empty
+      const response = await api.post('cartapp/cart/clear/');
+      setCart(null)
       console.log("Cart cleared:", response.data);
     } catch (error) {
       console.error('Error clearing cart:', error);

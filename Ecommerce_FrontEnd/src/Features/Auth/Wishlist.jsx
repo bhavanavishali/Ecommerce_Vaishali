@@ -69,13 +69,13 @@ export default function Wishlist() {
               <CardContent className="p-4">
                 <div className="flex flex-col sm:flex-row gap-4">
                   {/* Product Image */}
-                  {/* <div className="w-full sm:w-32 h-32 flex-shrink-0">
+                  <div className="w-full sm:w-32 h-32 flex-shrink-0">
                     <img
-                      src={`${BASE_URL}${item.product.images[0]}`}
+                      src={`${BASE_URL}${item.product.images[0].url}`}
                       alt={item.product.name}
                       className="w-full h-full object-contain"
                     />
-                  </div> */}
+                  </div>
 
                   {/* Product Details */}
                   <div className="flex-grow">

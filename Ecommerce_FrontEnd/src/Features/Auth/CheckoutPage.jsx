@@ -3032,17 +3032,10 @@ export default function CheckoutPage() {
                 </p>
               )}
               <div className="flex justify-between">
-                <span className="text-gray-600">Subtotal</span>
+                <span className="text-gray-600">Item Total</span>
                 <span>{formatPrice(subtotal)}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">Shipping</span>
-                <span>+{formatPrice(shipping)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">Tax</span>
-                <span>{formatPrice(totalTax)}</span>
-              </div>
+              
               {totalDiscount > 0 && (
                 <div className="flex justify-between text-green-600">
                   <span className="flex items-center">
@@ -3052,15 +3045,25 @@ export default function CheckoutPage() {
                   <span>-{formatPrice(totalDiscount)}</span>
                 </div>
               )}
+              
+              <div className="flex justify-between">
+                <span className="text-gray-600">Tax</span>
+                <span>{formatPrice(totalTax)}</span>
+              </div>
               {couponApplied && (
                 <div className="flex justify-between text-green-600">
                   <span className="flex items-center">
                     <span className="h-5 w-5 mr-1"><IconTag /></span>
                     Coupon Discount
                   </span>
+
                   <span>-{formatPrice(couponApplied.discount)}</span>
                 </div>
               )}
+              <div className="flex justify-between">
+                <span className="text-gray-600">Shipping</span>
+                <span>{formatPrice(shipping)}</span>
+              </div>
               <Separator className="my-2" />
               <div className="flex justify-between font-semibold text-base">
                 <span>Total</span>

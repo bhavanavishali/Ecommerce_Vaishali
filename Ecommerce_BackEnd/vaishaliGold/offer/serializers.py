@@ -42,3 +42,4 @@ class CouponSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError("Discount must be greater than 0")
                 
         return data
+    
