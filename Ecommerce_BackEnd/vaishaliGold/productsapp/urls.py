@@ -12,6 +12,10 @@ urlpatterns = [
     path('products/', ProductListCreateView.as_view(), name='product-list-create'),
     path('products/<int:pk>/', ProductDetailView.as_view(), name='product-detail'),
     
+    # Variant endpoints
+    path('products/<int:product_id>/variants/', ProductVariantListCreateView.as_view(), name='product-variant-list-create'),
+    path('variants/<int:pk>/', ProductVariantDetailView.as_view(), name='product-variant-detail'),
+
     #user listing
     path('user/categories/', UserCategoryList.as_view(), name='user-category-list'),
     path('user/products/', UserProductList.as_view(), name='user-product-list'),

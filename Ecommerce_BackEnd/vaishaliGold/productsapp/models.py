@@ -2,7 +2,7 @@
 from django.db import models
 from django.utils import timezone
 from cloudinary.models import CloudinaryField
-
+from decimal import Decimal
 from django.core.validators import MinValueValidator
 
 
@@ -41,7 +41,7 @@ class Product(models.Model):
         return self.name
     
     
-from decimal import Decimal
+
 class ProductVariant(models.Model):
     product = models.ForeignKey('Product', on_delete=models.CASCADE, related_name="variants")
     tax = models.ForeignKey('cartapp.Tax', on_delete=models.CASCADE, related_name='product_variant_tax', default=1)
@@ -98,14 +98,18 @@ class ProductVariant(models.Model):
     def save(self, *args, **kwargs):
         self.calculate_base_price()
         self.calculate_discount_amount()
-        self.calculate_tax_per_product()  # Tax after discount
+        self.calculate_tax_per_product()  
         self.calculate_total_price()
         super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.product.name} - {self.gross_weight}g - ₹{self.total_price}"
     
+
+
+    
 class ProductImage(models.Model):
+    
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images')
     image = models.ImageField(upload_to='images/', default="", null=True, blank=True)
     is_primary = models.BooleanField(default=False)

@@ -6,6 +6,7 @@ import SignUpForm from './Features/Auth/SignUpPage';
 import Login from './Features/Auth/Login';
 import { fromJSON } from 'postcss';
 import AddProductForm from './Features/Auth/AddProductForm';
+import AddVariantForm from './Features/Auth/AddProductVariant';
 import Dashboard from './Features/Auth/AdminSidebar';
 import ProductTable from './Features/Auth/ProductTable';
 import CategoryTable from './Features/Auth/CategoryTable';
@@ -79,6 +80,7 @@ function App() {
       <Route path='/dashboard' element={<AdminProtectedRoute><Dashboard/></AdminProtectedRoute>}/>
       <Route path='/admin/producttable' element={<AdminProtectedRoute><ProductTable/></AdminProtectedRoute>} />
       <Route path='/addproduct' element={<AdminProtectedRoute><AddProductForm/></AdminProtectedRoute>}/>
+      <Route path='/admin/addvariant/:product_id' element={<AdminProtectedRoute><AddVariantForm/></AdminProtectedRoute>}/>
       <Route path='/admin/categorytable' element={<AdminProtectedRoute><CategoryTable/></AdminProtectedRoute>} />
       <Route path='/admin/usertable' element={<AdminProtectedRoute><UserTable/></AdminProtectedRoute>} />
       <Route path='/admin/editproduct/:id' element={<AdminProtectedRoute><ProductEdit/></AdminProtectedRoute>} />

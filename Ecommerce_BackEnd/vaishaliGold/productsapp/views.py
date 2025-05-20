@@ -123,11 +123,7 @@ class ProductListCreateView(APIView):
         return Response(serializer.data)
 
     def post(self, request):
-        print("Received POST Data:", request.data)
-        
-       
         data = request.data.copy()
-        
         
         uploaded_images = request.FILES.getlist('uploaded_images')
         if uploaded_images:
@@ -138,7 +134,6 @@ class ProductListCreateView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         
-        print("Serializer Errors:", serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -158,9 +153,7 @@ class ProductDetailView(APIView):
         if product is None:
             return Response({"error": "Product not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        
         data = request.data.copy()
-        
         
         uploaded_images = request.FILES.getlist('uploaded_images')
         if uploaded_images:
@@ -177,7 +170,78 @@ class ProductDetailView(APIView):
         product.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
     
+class ProductVariantListCreateView(APIView):
+    permission_classes = [IsAuthenticated]
 
+    def get(self, request, product_id):
+        product = get_object_or_404(Product, id=product_id)
+        variants = ProductVariant.objects.filter(product=product)
+        serializer = ProductVariantSerializer(variants, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, product_id):
+        product = get_object_or_404(Product, id=product_id)
+        print("Request data type:", type(request.data))  
+        print("Request data content:", request.data)  
+        data = request.data
+
+     
+        if isinstance(data, str):
+            try:
+                data = json.loads(data)
+            except json.JSONDecodeError:
+                return Response(
+                    {"error": "Invalid JSON data provided"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+        # Ensure data is a list
+        if not isinstance(data, list):
+            return Response(
+                {"error": "Data must be a list of variant objects"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        
+        for item in data:
+            if not isinstance(item, dict):
+                return Response(
+                    {"error": f"Invalid data format: {item} is not a dictionary"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+        serializer = ProductVariantSerializer(data=data, many=True, context={'view': self})
+        if serializer.is_valid():
+            print("Validated data:", serializer.validated_data)  
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        print("Serializer errors:", serializer.errors)  # Debug
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class ProductVariantDetailView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self, pk):
+        return get_object_or_404(ProductVariant, pk=pk)
+
+    def get(self, request, pk):
+        variant = self.get_object(pk)
+        serializer = ProductVariantSerializer(variant)
+        return Response(serializer.data)
+
+    def patch(self, request, pk):
+        print('dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd ')
+        variant = self.get_object(pk)
+        serializer = ProductVariantSerializer(variant, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        variant = self.get_object(pk)
+        variant.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 # ========================Image based =======================================================
 
@@ -209,39 +273,26 @@ class ProductImageUploadView(APIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     
 class ProductImageListView(APIView):
-    """
-    View to list all images for a specific product
-    """
+   
     def get(self, request, id):
         
         product = get_object_or_404(Product, id=id)
-
-     
         images = ProductImage.objects.filter(product=product)
-  
         serializer = ProductImageSerializer(images, many=True)
         return Response(serializer.data)
 
 class ProductImageDetailView(APIView):
     
     def get(self, request, id):
-        """
-        Retrieve a specific product image
-        """
         
         image = get_object_or_404(ProductImage, id=id)
-        
-        
+     
         serializer = ProductImageSerializer(image)
         return Response(serializer.data)
 
     def delete(self, request, id):
-        """
-        Delete a specific product image
-        """
-        
+       
         image = get_object_or_404(ProductImage, id=id)
-        
         
         image.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
