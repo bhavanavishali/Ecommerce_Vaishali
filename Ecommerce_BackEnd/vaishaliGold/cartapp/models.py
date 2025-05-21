@@ -377,6 +377,10 @@ class OrderItem(models.Model):
     returned_at = models.DateTimeField(null=True, blank=True)
     return_reason = models.TextField(blank=True, null=True)
 
+    product_name = models.CharField(max_length=100, null=True, blank=True)
+    product_description = models.TextField(blank=True, null=True)
+    product_image = models.CharField(max_length=255, null=True, blank=True)
+
 
     def cancel_item(self, cancel_reason):
         with transaction.atomic():

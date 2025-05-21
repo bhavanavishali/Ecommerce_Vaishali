@@ -636,6 +636,7 @@ class RazorpayOrderCreateView(APIView):
             cart.update_shipping()  # Update shipping cost
             shipping = cart.shipping
             final_total = total_amount - total_discount - coupon_discount + total_tax + shipping
+
             if final_total <= 0:
                 return Response({"error": "Order amount must be positive"}, status=status.HTTP_400_BAD_REQUEST)
             amount_in_paisa = int(final_total * 100)
@@ -692,18 +693,25 @@ class RazorpayOrderCreateView(APIView):
                     proportion = subtotal / total_amount
                     item_coupon_discount = coupon_discount * proportion
                 final_price = subtotal - item_discount - item_coupon_discount + tax
-                
+
+                primary_image = cart_item.variant.product.images.filter(is_primary=True).first()
+                image_url = primary_image.image.url if primary_image else (
+                cart_item.variant.product.images.first().image.url if cart_item.variant.product.images.exists() else None
+            )
 
                 OrderItem.objects.create(
                     order=order,
                     variant=cart_item.variant,
                     quantity=cart_item.quantity,
-                    price='0.00',
+                    price=cart_item.variant.total_price,
                     subtotal=subtotal,
                     discount=item_discount,
                     coupon_discount=item_coupon_discount,
                     tax=tax,
-                    final_price=final_price
+                    final_price=final_price,
+                    product_name=cart_item.variant.product.name,  # Store snapshot
+                    product_description=cart_item.variant.product.description,  # Store snapshot
+                    product_image=image_url
                 )
 
                 cart_item.variant.stock -= cart_item.quantity

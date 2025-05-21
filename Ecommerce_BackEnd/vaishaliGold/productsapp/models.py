@@ -92,7 +92,7 @@ class ProductVariant(models.Model):
 
     def calculate_total_price(self):
         total_price = self.base_price - self.discount_amount + self.tax_amount
-        self.total_price = total_price.quantize(Decimal('0.01'))  # Round to 2 decimal places
+        self.total_price = total_price.quantize(Decimal('0.01')) 
         return self.total_price
 
     def save(self, *args, **kwargs):

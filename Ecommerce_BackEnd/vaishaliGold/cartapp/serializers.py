@@ -129,14 +129,13 @@ class OrderItemSerializer(serializers.ModelSerializer):
         fields = ['id', 'variant', 'product', 'quantity', 'price', 'subtotal', 'discount','coupon_discount','tax','final_price', 'status', 'cancel_reason', 'cancelled_at', 'returned_at', 'return_reason']
 
     def get_product(self, obj):
-        product = obj.variant.product
         return {
-            "id": product.id,
-            "name": product.name,
-            "description": product.description,
-            "category": product.category.name if product.category else None,
-            "gold_color": product.gold_color,
-            "images": [image.image.url for image in product.images.all()]
+            "id": obj.variant.product.id,
+            "name": obj.product_name or obj.variant.product.name,  
+            "description": obj.product_description or obj.variant.product.description,  
+            "category": obj.variant.product.category.name if obj.variant.product.category else None,
+            "gold_color": obj.variant.product.gold_color,
+            "images": [obj.product_image] if obj.product_image else []  
         }
     def validate(self, data):
         if data.get('cancel_reason') and not data['cancel_reason'].strip():
@@ -211,7 +210,7 @@ class OrderSerializer(serializers.ModelSerializer):
         user = self.context['request'].user
         address = validated_data.pop('address_id')
         payment_method = validated_data.get('payment_method', 'cod')
-        coupon = validated_data.pop('coupon_code', None)  # Coupon object or None
+        coupon = validated_data.pop('coupon_code', None)  
 
         cart = Cart.objects.filter(user=user).first()
         if not cart or not cart.items.exists():
@@ -244,7 +243,7 @@ class OrderSerializer(serializers.ModelSerializer):
                 total_discount = cart.get_final_discount()
                 total_tax = cart.get_final_tax()
                 coupon_discount = Decimal('0.00')
-                cart.update_shipping()  # Update shipping cost
+                cart.update_shipping()  
                 shipping = cart.shipping
 
                 if coupon:
@@ -304,6 +303,11 @@ class OrderSerializer(serializers.ModelSerializer):
                         item_coupon_discount = coupon_discount * proportion
                     final_price = subtotal - item_discount - item_coupon_discount + tax
 
+                    primary_image = variant.product.images.filter(is_primary=True).first()
+                    image_url = primary_image.image.url if primary_image else (
+                    variant.product.images.first().image.url if variant.product.images.exists() else None
+                )
+
                     OrderItem.objects.create(
                         order=order,
                         variant=variant,
@@ -314,8 +318,13 @@ class OrderSerializer(serializers.ModelSerializer):
                         coupon_discount=item_coupon_discount,
                         tax=tax,
                         final_price=final_price,
-                        payment_status=payment_status
+                        payment_status=payment_status,
+                        product_name=variant.product.name,
+                        product_description=variant.product.description,  
+                        product_image=image_url
                     )
+                    
+                    
 
                     ProductVariant.objects.filter(id=variant.id).update(
                         stock=F('stock') - cart_item.quantity
