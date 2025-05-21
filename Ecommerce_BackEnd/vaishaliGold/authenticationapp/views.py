@@ -559,7 +559,7 @@ class UserListCreate(APIView):
 
     def get(self,request):
        
-        user=User.objects.filter(is_superadmin=False)
+        user=User.objects.filter(is_superadmin=False).order_by('date_join')
         serializer=UserSerializer(user,many =True)
         print(serializer)
         return Response(serializer.data)

@@ -641,9 +641,7 @@ const AddProductVariantForm = () => {
                     value={editingVariant.gross_weight}
                     onChange={handleEditChange}
                     placeholder="Gross Weight"
-                    required
-                    min="0.01"
-                    step="0.01"
+                    
                   />
                 </div>
                 <div>
@@ -656,9 +654,8 @@ const AddProductVariantForm = () => {
                     value={editingVariant.gold_price}
                     onChange={handleEditChange}
                     placeholder="Gold Price"
-                    required
-                    min="0.01"
-                    step="0.01"
+                  
+                    
                   />
                 </div>
                 <div>
@@ -671,8 +668,7 @@ const AddProductVariantForm = () => {
                     value={editingVariant.stone_rate}
                     onChange={handleEditChange}
                     placeholder="Stone Rate"
-                    min="0"
-                    step="0.01"
+                    
                   />
                 </div>
                 <div>
@@ -685,9 +681,8 @@ const AddProductVariantForm = () => {
                     value={editingVariant.making_charge}
                     onChange={handleEditChange}
                     placeholder="Making Charge"
-                    required
-                    min="0"
-                    step="0.01"
+                   
+                    
                   />
                 </div>
                 <div>
@@ -697,7 +692,7 @@ const AddProductVariantForm = () => {
                   <Select
                     onValueChange={(val) => handleEditSelectChange("tax", val)}
                     value={editingVariant.tax}
-                    required
+                   
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select Tax" />
@@ -725,9 +720,7 @@ const AddProductVariantForm = () => {
                     value={editingVariant.stock}
                     onChange={handleEditChange}
                     placeholder="Stock"
-                    required
-                    min="0"
-                    step="1"
+                    
                   />
                 </div>
               </div>

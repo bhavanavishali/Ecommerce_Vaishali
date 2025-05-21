@@ -230,7 +230,7 @@ class ProductVariantDetailView(APIView):
         return Response(serializer.data)
 
     def patch(self, request, pk):
-        print('dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd ')
+      
         variant = self.get_object(pk)
         serializer = ProductVariantSerializer(variant, data=request.data, partial=True)
         if serializer.is_valid():

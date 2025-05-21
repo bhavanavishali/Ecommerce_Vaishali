@@ -4,7 +4,9 @@ from django.utils import timezone
 from cloudinary.models import CloudinaryField
 from decimal import Decimal
 from django.core.validators import MinValueValidator
-
+from decimal import Decimal
+import logging
+logger = logging.getLogger(__name__)
 
 
 class Category(models.Model):
@@ -62,9 +64,12 @@ class ProductVariant(models.Model):
     applied_offer_percentage = models.DecimalField(max_digits=5, decimal_places=2, default=0.00)
     applied_offer_type = models.CharField(max_length=50, default='none')
 
-    def get_total_price_before_discount(self):
-        return (Decimal(self.gold_price) * Decimal(self.gross_weight)) + Decimal(self.stone_rate) + Decimal(self.making_charge)
     
+    def get_total_price_before_discount(self):
+            logger.info(f"gold_price: {self.gold_price}, gross_weight: {self.gross_weight}, "
+                        f"stone_rate: {self.stone_rate}, making_charge: {self.making_charge}")
+            return (Decimal(self.gold_price) * Decimal(self.gross_weight)) + Decimal(self.stone_rate) + Decimal(self.making_charge)
+            
 
     def calculate_base_price(self):
         self.base_price = self.get_total_price_before_discount()
@@ -96,6 +101,8 @@ class ProductVariant(models.Model):
         return self.total_price
 
     def save(self, *args, **kwargs):
+        if self.gold_price is None or self.gross_weight is None:
+            raise ValueError("gold_price and gross_weight must have valid values.")
         self.calculate_base_price()
         self.calculate_discount_amount()
         self.calculate_tax_per_product()  
