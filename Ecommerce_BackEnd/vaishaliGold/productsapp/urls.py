@@ -30,7 +30,7 @@ urlpatterns = [
     path('products/<int:id>/images/list/', 
          ProductImageListView.as_view(),name='product-image-list'),
     
-    #  delete a specific image
+   
     path('product-images/<int:id>/', ProductImageDetailView.as_view(),name='product-image-detail'),
 
     path('taxes/', TaxListView.as_view(), name='tax-list'),

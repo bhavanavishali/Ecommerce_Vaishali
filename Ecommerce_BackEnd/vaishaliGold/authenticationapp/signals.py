@@ -41,7 +41,7 @@ def send_otp_email(sender, instance, created, **kwargs):
         except Exception as e:
             print(f"Email sending failed: {str(e)}")
 
-
+ 
 @receiver(post_save, sender=User)
 def create_referral(sender, instance, created, **kwargs):
     if created and instance.is_email_verified:

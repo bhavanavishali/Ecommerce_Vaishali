@@ -24,18 +24,17 @@ class Coupon(models.Model):
     coupon_type= models.CharField(max_length=20, choices=COUPON_TYPE, default='flat')
     user = models.ForeignKey('authenticationapp.User', on_delete=models.CASCADE, null=True, blank=True)
     
-   
     max_uses_per_user = models.PositiveIntegerField(default=1) 
     def is_valid(self, user):
         from cartapp.models import Order
-        # Check if coupon is expired
+       
         
 
-        # Check if max uses exceeded
+        
         if self.max_uses > 0 and self.used_count >= self.max_uses:
             return False
 
-        # Check if user has exceeded max uses
+        
         if user and self.max_uses_per_user > 0:
             user_order_count = Order.objects.filter(
                 user=user,

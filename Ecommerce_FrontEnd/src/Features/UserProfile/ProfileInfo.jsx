@@ -48,21 +48,39 @@ const ProfileInfo = () => {
     fetchData()
   }, [])
 
-  const fetchUser = async () => {
-    try {
-      const response = await api.get("profile/")
-      const userData = response.data
-      setUser({
-        firstName: userData.user.first_name || "",
-        lastName: userData.user.last_name || "",
-        dob: userData.user.dob || "",
-        mobile: userData.user.phone_number || "",
-        email: userData.user.email || "",
-      })
-    } catch (error) {
-      console.error("Error fetching user profile:", error)
-    }
+  // const fetchUser = async () => {
+  //   try {
+  //     const response = await api.get("profile/")
+  //     const userData = response.data
+  //     setUser({
+  //       firstName: userData.user.first_name || "",
+  //       lastName: userData.user.last_name || "",
+  //       dob: userData.user.dob || "",
+  //       mobile: userData.user.phone_number || "",
+  //       email: userData.user.email || "",
+  //     })
+  //   } catch (error) {
+  //     console.error("Error fetching user profile:", error)
+  //   }
+  // }
+const fetchUser = async () => {
+  try {
+    setLoading(true);
+    const response = await api.get("profile/");
+    const userData = response.data.user; // Adjust based on your API response structure
+    setUser({
+      firstName: userData.first_name || "",
+      lastName: userData.last_name || "",
+      mobile: userData.phone_number || "",
+      email: userData.email || "",
+    });
+  } catch (error) {
+    console.error("Error fetching user profile:", error);
+  } finally {
+    setLoading(false);
   }
+};
+
 
   const fetchReferralData = async () => {
     try {
@@ -86,25 +104,61 @@ const ProfileInfo = () => {
     }
   }
 
-  const handleUpdate = async () => {
-    try {
-      setSaving(true)
-      await api.patch("profile/", {user})
+  // const handleUpdate = async () => {
+  //   try {
+  //     setSaving(true)
+  //     await api.patch("profile/", {user})
+  //     setTimeout(() => {
+  //       setSaving(false)
+  //       document.getElementById("success-message").classList.remove("opacity-0")
+  //       document.getElementById("success-message").classList.add("opacity-100")
+  //       setTimeout(() => {
+  //         document.getElementById("success-message").classList.remove("opacity-100")
+  //         document.getElementById("success-message").classList.add("opacity-0")
+  //       }, 3000)
+  //     }, 600)
+  //   } catch (error) {
+  //     console.error("Error updating profile:", error)
+  //     setSaving(false)
+  //     alert("Failed to update profile")
+  //   }
+  // }
+
+ const handleUpdate = async () => {
+  try {
+    setSaving(true);
+    const payload = {
+      first_name: user.firstName,
+      last_name: user.lastName,
+      phone_number: user.mobile,
+      email: user.email,
+    };
+    const response = await api.patch("profile/", payload);
+    if (response.status === 200) {
+      setUser({
+        firstName: response.data.user.first_name || "",
+        lastName: response.data.user.last_name || "",
+        mobile: response.data.user.phone_number || "",
+        email: response.data.user.email || "",
+      });
       setTimeout(() => {
-        setSaving(false)
-        document.getElementById("success-message").classList.remove("opacity-0")
-        document.getElementById("success-message").classList.add("opacity-100")
+        setSaving(false);
+        document.getElementById("success-message").classList.remove("opacity-0");
+        document.getElementById("success-message").classList.add("opacity-100");
         setTimeout(() => {
-          document.getElementById("success-message").classList.remove("opacity-100")
-          document.getElementById("success-message").classList.add("opacity-0")
-        }, 3000)
-      }, 600)
-    } catch (error) {
-      console.error("Error updating profile:", error)
-      setSaving(false)
-      alert("Failed to update profile")
+          document.getElementById("success-message").classList.remove("opacity-100");
+          document.getElementById("success-message").classList.add("opacity-0");
+        }, 3000);
+      }, 600);
+    } else {
+      throw new Error("Unexpected response status");
     }
+  } catch (error) {
+    console.error("Error updating profile:", error);
+    setSaving(false);
+    alert(`Failed to update profile: ${error.response?.data?.message || error.message}`);
   }
+};
 
   const handleChange = (e) => {
     const { id, value } = e.target

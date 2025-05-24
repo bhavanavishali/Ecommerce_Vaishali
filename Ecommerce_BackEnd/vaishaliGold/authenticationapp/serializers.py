@@ -10,6 +10,94 @@ logger = logging.getLogger(__name__)
 
 User = get_user_model()
 
+# class UserProfileSerializer(serializers.ModelSerializer):
+#     first_name = serializers.CharField(source='user.first_name', required=False)
+#     last_name = serializers.CharField(source='user.last_name', required=False)
+#     phone_number = serializers.CharField(source='user.phone_number', required=False)
+#     username = serializers.CharField(source='user.username', required=False)
+#     email = serializers.EmailField(source='user.email', read_only=True)
+
+#     class Meta:
+#         model = UserProfile
+#         fields = ['username', 'profile_picture', 'first_name', 'last_name', 'phone_number', 'email']
+
+#     def validate_first_name(self, value):
+#         if not value:
+#             raise serializers.ValidationError("First name is required")
+#         if len(value) < 2:
+#             raise serializers.ValidationError("First name must be at least 2 characters")
+#         if not re.match(r'^[a-zA-Z\s]+$', value):
+#             raise serializers.ValidationError("First name must contain only letters and spaces")
+#         return value
+
+#     def validate_last_name(self, value):
+#         if not value:
+#             raise serializers.ValidationError("Last name is required")
+#         if len(value) < 2:
+#             raise serializers.ValidationError("Last name must be at least 2 characters")
+#         if not re.match(r'^[a-zA-Z\s]+$', value):
+#             raise serializers.ValidationError("Last name must contain only letters and spaces")
+#         return value
+
+#     def validate_username(self, value):
+#         if not value:
+#             raise serializers.ValidationError("Username is required")
+#         if len(value) < 2:
+#             raise serializers.ValidationError("Username must be at least 2 characters")
+#         if not re.match(r'^[a-zA-Z\s]+$', value):
+#             raise serializers.ValidationError("Username must contain only letters and spaces")
+#         if User.objects.filter(username=value).exclude(email=self.instance.user.email if self.instance else None).exists():
+#             raise serializers.ValidationError("Username is already taken")
+#         return value
+
+#     def validate_phone_number(self, value):
+#         if not value:
+#             raise serializers.ValidationError("Phone number is required")
+#         if not re.match(r'^\d{10}$', value):
+#             raise serializers.ValidationError("Phone number must be exactly 10 digits")
+#         return value
+
+#     def validate_profile_picture(self, value):
+#         if value:
+#             if not value.name.lower().endswith(('.jpg', '.jpeg', '.png', '.gif')):
+#                 raise serializers.ValidationError("Profile picture must be JPEG, PNG, or GIF")
+#             if value.size > 5 * 1024 * 1024:
+#                 raise serializers.ValidationError("Profile picture must be less than 5MB")
+#         return value
+
+#     def update(self, instance, validated_data):
+        
+#         user_data = {
+#         'first_name': self.initial_data.get('first_name'),
+#         'last_name': self.initial_data.get('last_name'),
+#         'username': self.initial_data.get('username'),
+#         'phone_number': self.initial_data.get('phone_number'),
+#         }
+
+#         user = instance.user
+#         for field, value in user_data.items():
+#             if value is not None:
+#                 setattr(user, field, value)
+#         user.full_clean()
+#         user.save()
+#         logger.info(f"User {user.email} updated successfully")
+
+       
+#         if 'profile_picture' in validated_data:
+#             instance.profile_picture = validated_data['profile_picture']
+#         instance.full_clean()
+#         instance.save()
+
+#         return instance
+        
+    
+        
+#     def to_representation(self, instance):
+#         representation = super().to_representation(instance)
+#         representation['profile_picture'] = instance.profile_picture.url if instance.profile_picture else None
+#         return representation
+    
+
 class UserProfileSerializer(serializers.ModelSerializer):
     first_name = serializers.CharField(source='user.first_name', required=False)
     last_name = serializers.CharField(source='user.last_name', required=False)
@@ -22,80 +110,73 @@ class UserProfileSerializer(serializers.ModelSerializer):
         fields = ['username', 'profile_picture', 'first_name', 'last_name', 'phone_number', 'email']
 
     def validate_first_name(self, value):
-        if not value:
-            raise serializers.ValidationError("First name is required")
-        if len(value) < 2:
-            raise serializers.ValidationError("First name must be at least 2 characters")
-        if not re.match(r'^[a-zA-Z\s]+$', value):
-            raise serializers.ValidationError("First name must contain only letters and spaces")
+        if value and (len(value) < 2 or not re.match(r'^[a-zA-Z\s]+$', value)):
+            raise serializers.ValidationError("First name must be at least 2 characters and contain only letters and spaces")
         return value
 
     def validate_last_name(self, value):
-        if not value:
-            raise serializers.ValidationError("Last name is required")
-        if len(value) < 2:
-            raise serializers.ValidationError("Last name must be at least 2 characters")
-        if not re.match(r'^[a-zA-Z\s]+$', value):
-            raise serializers.ValidationError("Last name must contain only letters and spaces")
+        if value and (len(value) < 2 or not re.match(r'^[a-zA-Z\s]+$', value)):
+            raise serializers.ValidationError("Last name must be at least 2 characters and contain only letters and spaces")
         return value
 
     def validate_username(self, value):
-        if not value:
-            raise serializers.ValidationError("Username is required")
-        if len(value) < 2:
-            raise serializers.ValidationError("Username must be at least 2 characters")
-        if not re.match(r'^[a-zA-Z\s]+$', value):
-            raise serializers.ValidationError("Username must contain only letters and spaces")
-        if User.objects.filter(username=value).exclude(email=self.instance.user.email if self.instance else None).exists():
+        if value and (len(value) < 2 or not re.match(r'^[a-zA-Z\s]+$', value)):
+            raise serializers.ValidationError("Username must be at least 2 characters and contain only letters and spaces")
+        if value and User.objects.filter(username=value).exclude(email=self.instance.user.email if self.instance else None).exists():
             raise serializers.ValidationError("Username is already taken")
         return value
 
     def validate_phone_number(self, value):
-        if not value:
-            raise serializers.ValidationError("Phone number is required")
-        if not re.match(r'^\d{10}$', value):
+        if value and not re.match(r'^\d{10}$', value):
             raise serializers.ValidationError("Phone number must be exactly 10 digits")
         return value
 
     def validate_profile_picture(self, value):
-        if value:
-            if not value.name.lower().endswith(('.jpg', '.jpeg', '.png', '.gif')):
-                raise serializers.ValidationError("Profile picture must be JPEG, PNG, or GIF")
-            if value.size > 5 * 1024 * 1024:
-                raise serializers.ValidationError("Profile picture must be less than 5MB")
+        if value and (not value.name.lower().endswith(('.jpg', '.jpeg', '.png', '.gif')) or value.size > 5 * 1024 * 1024):
+            raise serializers.ValidationError("Profile picture must be JPEG, PNG, or GIF and less than 5MB")
         return value
 
     def update(self, instance, validated_data):
+        logger.info(f"Updating profile for user: {instance.user.email}, data: {validated_data}")
         
         user_data = {
-        'first_name': self.initial_data.get('first_name'),
-        'last_name': self.initial_data.get('last_name'),
-        'username': self.initial_data.get('username'),
-        'phone_number': self.initial_data.get('phone_number'),
+            'first_name': validated_data.pop('user.first_name', instance.user.first_name),
+            'last_name': validated_data.pop('user.last_name', instance.user.last_name),
+            'username': validated_data.pop('user.username', instance.user.username),
+            'phone_number': validated_data.pop('user.phone_number', instance.user.phone_number),
         }
-
+ 
         user = instance.user
         for field, value in user_data.items():
-            if value is not None:
+            if value:
                 setattr(user, field, value)
-        user.full_clean()
-        user.save()
-        logger.info(f"User {user.email} updated successfully")
+        
+        try:
+            user.full_clean()
+            user.save()
+            logger.info(f"User {user.email} updated successfully")
+        except Exception as e:
+            logger.error(f"Failed to update user {user.email}: {str(e)}")
+            raise serializers.ValidationError(f"Failed to update user: {str(e)}")
 
-       
         if 'profile_picture' in validated_data:
             instance.profile_picture = validated_data['profile_picture']
-        instance.full_clean()
-        instance.save()
+        
+        try:
+            instance.full_clean()
+            instance.save()
+            logger.info(f"UserProfile for {user.email} updated successfully")
+        except Exception as e:
+            logger.error(f"Failed to update UserProfile for {user.email}: {str(e)}")
+            raise serializers.ValidationError(f"Failed to update profile: {str(e)}")
 
         return instance
-        
-    
-        
+
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         representation['profile_picture'] = instance.profile_picture.url if instance.profile_picture else None
         return representation
+    
     
 class UserSerializer(serializers.ModelSerializer):
     profile_picture = serializers.ImageField(source='users.profile_picture', read_only=True)

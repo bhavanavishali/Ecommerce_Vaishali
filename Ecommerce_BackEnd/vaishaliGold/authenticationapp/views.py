@@ -63,7 +63,7 @@ class SignupView(APIView):
         serializer = UserSerializer(data=serializer_data)
         if serializer.is_valid():
             user = serializer.save()
-            UserProfile.objects.create(user=user)
+            # UserProfile.objects.create(user=user)
             return Response({
                 'user': UserSerializer(user).data
             }, status=status.HTTP_201_CREATED)
@@ -110,7 +110,7 @@ class LoginView(APIView):
             'message': 'Login successful'
         }, status=status.HTTP_200_OK)
 
-        # Set the token in HttpOnly cookie
+        
         response.set_cookie(
             key='access_token',
             value=access_token,
@@ -121,7 +121,7 @@ class LoginView(APIView):
             
         )
         
-        # Set the refresh token in HttpOnly cookie
+       
         response.set_cookie(
             key='refresh_token',
             value=refresh_token,
@@ -390,44 +390,94 @@ def get_csrf_token(request):
     return JsonResponse({'detail': 'CSRF cookie set'})
 
 
+# class UserProfileView(APIView):
+#     permission_classes = [IsAuthenticated]
+
+#     def get(self, request):
+#         print(f"request.user: {request.user}, type: {type(request.user)}")
+#         if not request.user.is_authenticated:
+#             return Response({
+#                 'status': 'error',
+#                 'message': 'Authentication required'
+#             }, status=status.HTTP_401_UNAUTHORIZED)
+#         try:
+#             profile = UserProfile.objects.select_related('user').get(user=request.user)
+#             serializer = UserProfileSerializer(profile)
+
+#             print("its data",serializer.data)
+#             return Response({
+#                 'status': 'success',
+#                 'user': serializer.data
+#             }, status=status.HTTP_200_OK)
+        
+#         except UserProfile.DoesNotExist:
+#             return Response({
+#                 'status': 'error',
+#                 'message': 'Profile not found'
+#             }, status=status.HTTP_404_NOT_FOUND)
+
+#     def patch(self, request):
+#         try:
+#             user_profile = UserProfile.objects.get(user=request.user)
+#             print("my neww data",request.data)
+#             serializer = UserProfileSerializer(user_profile, data=request.data, partial=True)
+#             if serializer.is_valid():
+#                 serializer.save()
+#                 print("lll",serializer.data)
+#                 return Response(serializer.data)
+#             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#         except UserProfile.DoesNotExist:
+#             return Response({"message": "Profile not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+
 class UserProfileView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        print(f"request.user: {request.user}, type: {type(request.user)}")
-        if not request.user.is_authenticated:
-            return Response({
-                'status': 'error',
-                'message': 'Authentication required'
-            }, status=status.HTTP_401_UNAUTHORIZED)
+        logger.info(f"Fetching profile for user: {request.user.email}")
         try:
             profile = UserProfile.objects.select_related('user').get(user=request.user)
             serializer = UserProfileSerializer(profile)
-
-            print("its data",serializer.data)
             return Response({
                 'status': 'success',
                 'user': serializer.data
             }, status=status.HTTP_200_OK)
-        
         except UserProfile.DoesNotExist:
+            logger.error(f"Profile not found for user: {request.user.email}")
             return Response({
                 'status': 'error',
                 'message': 'Profile not found'
             }, status=status.HTTP_404_NOT_FOUND)
 
     def patch(self, request):
+        logger.info(f"Updating profile for user: {request.user.email}, data: {request.data}")
         try:
             user_profile = UserProfile.objects.get(user=request.user)
-            print("my neww data",request.data)
             serializer = UserProfileSerializer(user_profile, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
-                print("lll",serializer.data)
-                return Response(serializer.data)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                return Response({
+                    'status': 'success',
+                    'user': serializer.data
+                }, status=status.HTTP_200_OK)
+            logger.error(f"Validation errors: {serializer.errors}")
+            return Response({
+                'status': 'error',
+                'message': serializer.errors
+            }, status=status.HTTP_400_BAD_REQUEST)
         except UserProfile.DoesNotExist:
-            return Response({"message": "Profile not found"}, status=status.HTTP_404_NOT_FOUND)
+            logger.error(f"Profile not found for user: {request.user.email}")
+            return Response({
+                'status': 'error',
+                'message': 'Profile not found'
+            }, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            logger.error(f"Unexpected error: {str(e)}")
+            return Response({
+                'status': 'error',
+                'message': f"An error occurred: {str(e)}"
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
         
 class GoogleLoginView(APIView):
     @csrf_exempt
@@ -516,104 +566,7 @@ class GoogleLoginView(APIView):
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-# class GoogleLoginView(APIView):
-#     def post(self, request):
-#         serializer = GoogleAuthSerializer(data=request.data)
-        
-#         if serializer.is_valid():
-#             id_token_str = serializer.validated_data['id_token']
-            
-#             try:
-                
-#                 idinfo = id_token.verify_oauth2_token(
-#                     id_token_str, 
-#                     requests.Request(), 
-#                     settings.GOOGLE_CLIENT_ID
-#                 )
-                
-                
-#                 if idinfo['aud'] != settings.GOOGLE_CLIENT_ID:
-#                     return Response(
-#                         {'error': 'Invalid token audience'}, 
-#                         status=status.HTTP_401_UNAUTHORIZED
-#                     )
-                
-                
-#                 google_id = idinfo['sub']
-#                 email = idinfo['email']
-#                 name = idinfo.get('name', '')
-                
-                
-#                 try:
-#                     user = User.objects.get(email=email)
-                    
-#                     if not user.google_id:
-#                         user.google_id = google_id
-#                         user.save()
-#                         UserProfile.objects.create(user=user)
-#                 except User.DoesNotExist:
-                    
-#                     username = email.split('@')[0]
-                    
-#                     if User.objects.filter(username=username).exists():
-#                         username = f"{username}_{google_id[:6]}"
-                    
-#                     user = User.objects.create_user(
-#                         username=username,
-#                         email=email,
-#                         google_id=google_id
-#                     )
-                    
-                    
-#                     user.set_password(User.objects.make_random_password())
-                    
-                         
-#                     if name:
-#                         name_parts = name.split(' ', 1)
-#                         user.first_name = name_parts[0]
-#                         if len(name_parts) > 1:
-#                             user.last_name = name_parts[1]
 
-                    
-#                     user.save()
-                    
-                
-                
-#                 refresh_token = RefreshToken.for_user(user)
-#                 access_token=refresh_token.access_token
-
-#                 response = Response({
-#                     'user': UserSerializer(user).data
-#                 })
-                
-                
-#                 response.set_cookie(
-#                     key='access_token',
-#                     value=access_token,
-#                     httponly=True,  
-#                     secure=False,  
-#                     samesite='lax', 
-#                     max_age=86400,  
-#                 )
-                
-#                 response.set_cookie(
-#                     key='refresh_token',
-#                     value=refresh_token,
-#                     httponly=True,  
-#                     secure=False,  
-#                     samesite='lax',  
-#                     max_age=86400, 
-#                 )
-                
-#                 return response
-                
-#             except ValueError:
-#                 return Response(
-#                     {'error': 'Invalid token'}, 
-#                     status=status.HTTP_401_UNAUTHORIZED
-#                 )
-        
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 #================ User management=================================
 

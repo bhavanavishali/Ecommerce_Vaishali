@@ -56,4 +56,46 @@ class CouponView(APIView):
            except Exception as e:
                logger.error(f"Error fetching coupons for {request.user.email}: {str(e)}")
                return Response({"error": "Failed to fetch coupons"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+           
 
+
+
+# Available couponse 
+
+
+class ActiveCoupon(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        try:
+            coupons = Coupon.objects.filter(user=request.user, is_active=True)
+            serializer = CouponSerializer(coupons, many=True)
+            logger.info(f"Fetched {coupons.count()} coupons for user {request.user.email}")
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            logger.error(f"Error fetching coupons for {request.user.email}: {str(e)}")
+            return Response({"error": "Failed to fetch coupons"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class AvailableCouponsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        try:
+           
+            now = timezone.now().date()
+            coupons = Coupon.objects.filter(
+                
+                is_active=True,
+                valid_from__lte=now,
+                valid_to__gte=now
+            ).exclude(used_count__gte=models.F('max_uses')).filter(max_uses__gt=0)
+            
+            
+            valid_coupons = [coupon for coupon in coupons if coupon.is_valid(request.user)]
+            
+            serializer = CouponSerializer(valid_coupons, many=True)
+            logger.info(f"Fetched {len(valid_coupons)} available coupons for user {request.user.email}")
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            logger.error(f"Error fetching available coupons for {request.user.email}: {str(e)}")
+            return Response({"error": "Failed to fetch available coupons"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

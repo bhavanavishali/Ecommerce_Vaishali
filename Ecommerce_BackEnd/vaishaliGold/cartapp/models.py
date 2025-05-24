@@ -160,7 +160,7 @@ class CartItem(models.Model):
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
-        # Remove from wishlist if exists
+        
         wishlist = Wishlist.objects.filter(user=self.cart.user).first()
         if wishlist:
             WishlistItem.objects.filter(wishlist=wishlist, variant=self.variant).delete()
