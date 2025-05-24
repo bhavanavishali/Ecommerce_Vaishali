@@ -2,11 +2,12 @@
 from django.db import models
 from django.utils import timezone
 from cloudinary.models import CloudinaryField
-from decimal import Decimal
+from decimal import Decimal,InvalidOperation
 from django.core.validators import MinValueValidator
-from decimal import Decimal
+from django.core.exceptions import ValidationError
 import logging
 logger = logging.getLogger(__name__)
+logger.debug(f"Logger initialized for module: {__name__}")
 
 
 class Category(models.Model):
@@ -14,6 +15,7 @@ class Category(models.Model):
     is_active = models.BooleanField(default=True)
     category_offer = models.DecimalField(max_digits=5, decimal_places=2, default=0)
     category_offer_Isactive = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.name
@@ -65,56 +67,76 @@ class ProductVariant(models.Model):
     applied_offer_type = models.CharField(max_length=50, default='none')
 
     
+
     def get_total_price_before_discount(self):
-            logger.info(f"gold_price: {self.gold_price}, gross_weight: {self.gross_weight}, "
-                        f"stone_rate: {self.stone_rate}, making_charge: {self.making_charge}")
-            return (Decimal(self.gold_price) * Decimal(self.gross_weight)) + Decimal(self.stone_rate) + Decimal(self.making_charge)
-            
+        logger.info(f"gold_price: {self.gold_price}, gross_weight: {self.gross_weight}, "
+                    f"stone_rate: {self.stone_rate}, making_charge: {self.making_charge}")
+        return (Decimal(self.gold_price) * Decimal(self.gross_weight)) + Decimal(self.stone_rate) + Decimal(self.making_charge)
 
     def calculate_base_price(self):
-        self.base_price = self.get_total_price_before_discount()
-        return self.base_price
+        try:
+            self.base_price = self.get_total_price_before_discount()
+            logger.info(f"Calculated base_price: {self.base_price}")
+            return self.base_price
+        except Exception as e:
+            logger.error(f"Error in calculate_base_price: {e}")
+            raise ValidationError(f"Error calculating base price: {e}")
 
     def calculate_discount_amount(self):
-        total_price = self.get_total_price_before_discount()
-        discount = self.product.discount if (self.product.product_offer_Isactive and self.product.is_active) else 0
-        category_offer = (self.product.category.category_offer if (self.product.category and
-                          self.product.category.category_offer_Isactive and self.product.category.is_active) else 0)
+        try:
+            total_price = self.get_total_price_before_discount()
+            discount = self.product.discount if (self.product.product_offer_Isactive and self.product.is_active) else 0
+            category_offer = (self.product.category.category_offer if (self.product.category and
+                            self.product.category.category_offer_Isactive and self.product.category.is_active) else 0)
 
-        max_offer = max(discount, category_offer)
-        discount_amount = (total_price * Decimal(max_offer) / 100) if max_offer > 0 else Decimal(0)
+            max_offer = max(discount, category_offer)
+            discount_amount = (total_price * Decimal(max_offer) / 100) if max_offer > 0 else Decimal(0)
 
-        self.discount_amount = discount_amount
-        self.applied_offer_percentage = max_offer
-        self.applied_offer_type = 'product' if discount >= category_offer else 'category' if category_offer > 0 else 'none'
-        return discount_amount
+            self.discount_amount = discount_amount
+            self.applied_offer_percentage = max_offer
+            self.applied_offer_type = 'product' if discount >= category_offer else 'category' if category_offer > 0 else 'none'
+            logger.info(f"Calculated discount_amount: {self.discount_amount}, applied_offer_percentage: {self.applied_offer_percentage}, applied_offer_type: {self.applied_offer_type}")
+            return discount_amount
+        except Exception as e:
+            logger.error(f"Error in calculate_discount_amount: {e}")
+            raise ValidationError(f"Error calculating discount amount: {e}")
 
     def calculate_tax_per_product(self):
-        total_price = self.get_total_price_before_discount() - self.discount_amount
-        tax_amount = (total_price * Decimal(self.tax.percentage) / 100) if hasattr(self.tax, 'percentage') else Decimal(0)
-        self.tax_amount = tax_amount
-        return tax_amount
+        try:
+            total_price = self.get_total_price_before_discount() - self.discount_amount
+            tax_amount = (total_price * Decimal(self.tax.percentage) / 100) if hasattr(self.tax, 'percentage') else Decimal(0)
+            self.tax_amount = tax_amount
+            logger.info(f"Calculated tax_amount: {self.tax_amount}")
+            return tax_amount
+        except Exception as e:
+            logger.error(f"Error in calculate_tax_per_product: {e}")
+            raise ValidationError(f"Error calculating tax amount: {e}")
 
     def calculate_total_price(self):
-        total_price = self.base_price - self.discount_amount + self.tax_amount
-        self.total_price = total_price.quantize(Decimal('0.01')) 
-        return self.total_price
+        try:
+            total_price = self.base_price - self.discount_amount + self.tax_amount
+            self.total_price = total_price.quantize(Decimal('0.01'))
+            logger.info(f"Calculated total_price: {self.total_price}")
+            return self.total_price
+        except Exception as e:
+            logger.error(f"Error in calculate_total_price: {e}")
+            raise ValidationError(f"Error calculating total price: {e}")
 
     def save(self, *args, **kwargs):
+        logger.info(f"Saving ProductVariant: {self}")
         if self.gold_price is None or self.gross_weight is None:
             raise ValueError("gold_price and gross_weight must have valid values.")
         self.calculate_base_price()
         self.calculate_discount_amount()
-        self.calculate_tax_per_product()  
+        self.calculate_tax_per_product()
         self.calculate_total_price()
         super().save(*args, **kwargs)
+        logger.info(f"Saved ProductVariant: {self} with base_price={self.base_price}, "
+                    f"discount_amount={self.discount_amount}, tax_amount={self.tax_amount}, total_price={self.total_price}")
 
     def __str__(self):
         return f"{self.product.name} - {self.gross_weight}g - ₹{self.total_price}"
-    
-
-
-    
+ 
 class ProductImage(models.Model):
     
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images')

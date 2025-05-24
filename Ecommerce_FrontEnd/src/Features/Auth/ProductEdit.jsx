@@ -729,8 +729,51 @@ const ProductEdit = () => {
             required
           />
         </div>
+        {/* Product Images */}
+        <div className="mt-6">
+          <h3 className="text-lg font-semibold mb-3">Product Images</h3>
+          <div className="flex flex-wrap gap-4 mb-4">
+            {imagePreviews.map((preview, index) => (
+              <div key={index} className="relative group">
+                <img
+                  src={preview.startsWith("http") ? preview : `${BASE_URL}${preview}`}
+                  alt={`Preview ${index + 1}`}
+                  className="w-24 h-24 object-cover border rounded-md"
+                />
+                <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
+                  <button
+                    type="button"
+                    onClick={() => editImage(index)}
+                    className="bg-white text-gray-800 rounded-full p-1 mx-1"
+                  >
+                    <Crop size={16} />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => removeImage(index)}
+                    className="bg-white text-red-500 rounded-full p-1 mx-1"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+              </div>
+            ))}
+            <label className="flex flex-col items-center justify-center w-24 h-24 border-2 border-dashed border-gray-300 rounded-md cursor-pointer hover:bg-gray-50">
+              <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                <Upload className="w-8 h-8 text-gray-400" />
+                <p className="text-xs text-gray-500 mt-1">Add Image</p>
+              </div>
+              <input
+                type="file"
+                className="hidden"
+                accept="image/*"
+                onChange={handleImageSelect}
+              />
+            </label>
+          </div>
+        </div>
 
-
+        
         <Button
           type="submit"
           className="w-full bg-[#8c2a2a] hover:bg-[#7a2424] text-white"

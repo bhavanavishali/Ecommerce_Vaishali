@@ -38,15 +38,15 @@ class Cart(models.Model):
     shipping=models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     
     def get_final_subtotal(self):
-        """Calculate the subtotal from all cart items."""
+        
         return sum(item.get_subtotal() for item in self.items.all())
 
     def get_final_discount(self):
-        """Calculate the total discount from all cart items."""
+       
         return sum(item.get_discount_amount() for item in self.items.all())
 
     def get_final_tax(self):
-        """Calculate the total tax from all cart items."""
+        
         return sum(item.get_tax_amount() for item in self.items.all())
     
     def update_shipping(self):
@@ -65,7 +65,7 @@ class Cart(models.Model):
         subtotal = self.get_final_subtotal()
         discount = self.get_final_discount()
         tax = self.get_final_tax()
-        self.update_shipping
+        self.update_shipping()
         coupon_discount = Decimal(str(self.final_coupon_discount))
         total=subtotal-discount+tax
         if total < 1000:
@@ -74,6 +74,7 @@ class Cart(models.Model):
 
     def update_totals(self):
         """Update the stored totals in the Cart model."""
+        print("Checking the update funcitn called or not wehn updating")
         self.final_subtotal = self.get_final_subtotal()
         self.final_discount = self.get_final_discount()
         self.final_tax = self.get_final_tax()
@@ -351,6 +352,8 @@ class OrderItem(models.Model):
         ('returned', 'Returned'),
         ('delivered', 'Delivered'),
         ('return_requested', 'Return Requested'),
+        ('return_denied', 'Return Denied'),
+
     )
     ITEM_PAYMENT_STATUS_CHOICES = (
             ('pending', 'Pending'),
@@ -492,11 +495,11 @@ class OrderItem(models.Model):
         with transaction.atomic():
             if self.status != 'return_requested':
                 raise ValueError("Only return requested items can be denied")
-            self.status = 'delivered'
+            self.status = 'return_denied'
             self.return_reason = None
             self.save()
             if not self.order.items.filter(status='return_requested').exists():
-                self.order.status = 'delivered'
+                self.order.status = 'return_denied'
                 self.order.return_reason = None
                 self.order.save()
 

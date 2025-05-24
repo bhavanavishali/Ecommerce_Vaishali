@@ -38,6 +38,42 @@ class CartDetailView(APIView):
         return Response(serializer.data)
 
 
+# class AddToCartView(APIView):
+#     permission_classes = [IsAuthenticated]
+    
+#     def post(self, request):
+#         cart, created = Cart.objects.get_or_create(user=request.user)
+#         variant_id = request.data.get('variant_id')
+#         if not variant_id or not str(variant_id).isdigit():
+#             return Response({'error': 'Valid variant_id is required'}, 
+#                           status=status.HTTP_400_BAD_REQUEST)
+        
+#         try:
+#             quantity = int(request.data.get('quantity', 1))
+#             if quantity <= 0:
+#                 return Response({'error': 'Quantity must be positive'}, 
+#                               status=status.HTTP_400_BAD_REQUEST)
+#         except ValueError:
+#             return Response({'error': 'Invalid quantity'}, 
+#                           status=status.HTTP_400_BAD_REQUEST)
+        
+#         try:
+#             variant = ProductVariant.objects.get(id=variant_id, available=True, is_active=True)
+#         except ProductVariant.DoesNotExist:
+#             return Response({'error': 'Variant not found or not available'}, status=status.HTTP_404_NOT_FOUND)
+        
+#         cart_item, created = CartItem.objects.get_or_create(cart=cart,variant=variant,defaults={'quantity': quantity})
+        
+#         if not created:
+#             cart_item.quantity += quantity
+        
+#         if cart_item.quantity > variant.stock:
+#             return Response({'error': 'Insufficient stock'}, status=status.HTTP_400_BAD_REQUEST)
+        
+#         cart_item.save() # Triggers cart.update_totals()
+#         serializer = CartSerializer(cart)
+#         return Response(serializer.data)
+
 class AddToCartView(APIView):
     permission_classes = [IsAuthenticated]
     
@@ -60,21 +96,30 @@ class AddToCartView(APIView):
         try:
             variant = ProductVariant.objects.get(id=variant_id, available=True, is_active=True)
         except ProductVariant.DoesNotExist:
-            return Response({'error': 'Variant not found or not available'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'error': 'Variant not found or not available'}, 
+                          status=status.HTTP_404_NOT_FOUND)
         
-        cart_item, created = CartItem.objects.get_or_create(cart=cart,variant=variant,defaults={'quantity': quantity})
+        # Check if stock is 0
+        if variant.stock == 0:
+            return Response({'error': 'This item is out of stock'}, 
+                          status=status.HTTP_400_BAD_REQUEST)
+        
+        cart_item, created = CartItem.objects.get_or_create(
+            cart=cart,
+            variant=variant,
+            defaults={'quantity': quantity}
+        )
         
         if not created:
             cart_item.quantity += quantity
         
         if cart_item.quantity > variant.stock:
-            return Response({'error': 'Insufficient stock'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'Insufficient stock'}, 
+                          status=status.HTTP_400_BAD_REQUEST)
         
-        cart_item.save() # Triggers cart.update_totals()
+        cart_item.save()  # Triggers cart.update_totals()
         serializer = CartSerializer(cart)
         return Response(serializer.data)
-
-
     
 
 class UpdateCartItemView(APIView):
@@ -98,8 +143,9 @@ class UpdateCartItemView(APIView):
                 return Response({'error': 'Insufficient stock'}, 
                               status=status.HTTP_400_BAD_REQUEST)
             item.quantity = quantity
-            item.save()  # Triggers cart.update_totals()
-        
+            item.save()  # Triggers cart.update_totals() 
+            cart.refresh_from_db()
+            print("These is the items after saved ",item)
         serializer = CartSerializer(cart)
         return Response(serializer.data)
 class RemoveFromCartView(APIView):

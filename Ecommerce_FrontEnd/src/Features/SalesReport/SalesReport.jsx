@@ -663,9 +663,7 @@ const SalesReport = () => {
       }
       const response = await api.get('cartapp/sales-report/', {
         params,
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
+       
       });
       const data = response.data.salesData || [];
       if (!fetchAll) {
@@ -880,93 +878,6 @@ const SalesReport = () => {
     }
   };
 
-  const handleDownloadCSV = async () => {
-    setDownloadLoading(true);
-    try {
-      const allSalesData = await fetchSalesData(1, true);
-      if (!allSalesData.length) {
-        setError('No data available to download');
-        return;
-      }
-      const headers = [
-        'Order ID', 'Date', 'User', 'Order MRP', 'Item Discount', 'Item Tax',
-        'Order Subtotal', 'Coupon Discount', 'Shipping Charge', 'Refund Amount', 'Total Amount', 'Payment Method',
-      ];
-      const rows = allSalesData.map(row => [
-        row.orderId || '',
-        row.date || '',
-        row.user || '',
-        `₹ ${Number(row.orderMrp).toFixed(2)}`,
-        `₹ ${Number(row.itemDiscount).toFixed(2)}`,
-        `₹ ${Number(row.itemTax).toFixed(2)}`,
-        `₹ ${Number(row.orderSubtotal).toFixed(2)}`,
-        `₹ ${Number(row.couponDiscount).toFixed(2)}`,
-        `₹ ${Number(row.shippingCharge).toFixed(2)}`,
-        `₹ ${Number(row.refund_amount).toFixed(2)}`,
-        `₹ ${Number(row.totalAmount).toFixed(2)}`,
-        row.paymentMethod || '',
-      ]);
-      const csvContent = [headers.join(','), ...rows.map(row => row.join(','))].join('\n');
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-      saveAs(blob, `sales_report_${filterType}.csv`);
-    } catch (error) {
-      console.error('CSV download error:', error);
-      setError('Failed to download CSV report');
-    } finally {
-      setDownloadLoading(false);
-    }
-  };
-
-  const handleDownloadLog = async () => {
-    setDownloadLoading(true);
-    try {
-      const allSalesData = await fetchSalesData(1, true);
-      if (!allSalesData.length) {
-        setError('No data available to download');
-        return;
-      }
-      const filterLabel = filterType === 'custom'
-        ? `Custom (${dateRange.from ? format(dateRange.from, 'dd/MM/yyyy') : ''} - ${dateRange.to ? format(dateRange.to, 'dd/MM/yyyy') : ''})`
-        : filterType.charAt(0).toUpperCase() + filterType.slice(1);
-
-      const logContent = [
-        `Vaishali Golds Sales Report - ${filterLabel}`,
-        `Generated on: ${format(new Date(), 'dd/MM/yyyy HH:mm:ss')}`,
-        '',
-        `Summary:`,
-        `Total Sales: ₹ ${(Number(totalSales) || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`,
-        `Total Discount: ₹ ${(Number(summary.totalDiscount) || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`,
-        `Total Refund: ₹ ${(Number(summary.totalRefund) || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`,
-        '',
-        `Sales Data:`,
-        ...allSalesData.map(row =>
-          [
-            `Order ID: ${row.orderId || ''}`,
-            `Date: ${row.date || ''}`,
-            `User: ${row.user || ''}`,
-            `Order MRP: ₹ ${Number(row.orderMrp).toFixed(2)}`,
-            `Item Discount: ₹ ${Number(row.itemDiscount).toFixed(2)}`,
-            `Item Tax: ₹ ${Number(row.itemTax).toFixed(2)}`,
-            `Order Subtotal: ₹ ${Number(row.orderSubtotal).toFixed(2)}`,
-            `Coupon Discount: ₹ ${Number(row.couponDiscount).toFixed(2)}`,
-            `Shipping Charge: ₹ ${Number(row.shippingCharge).toFixed(2)}`,
-            `Refund Amount: ₹ ${Number(row.refund_amount).toFixed(2)}`,
-            `Total Amount: ₹ ${Number(row.totalAmount).toFixed(2)}`,
-            `Payment Method: ${row.paymentMethod || ''}`,
-            '---',
-          ].join('\n')
-        ),
-      ].join('\n');
-
-      const blob = new Blob([logContent], { type: 'text/plain;charset=utf-8;' });
-      saveAs(blob, `sales_report_${filterType}.log`);
-    } catch (error) {
-      console.error('Log download error:', error);
-      setError('Failed to download log file');
-    } finally {
-      setDownloadLoading(false);
-    }
-  };
 
   return (
     <div className="bg-white rounded-xl shadow-sm p-6 max-w-7xl mx-auto">

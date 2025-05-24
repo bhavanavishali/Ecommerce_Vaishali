@@ -70,7 +70,9 @@ class CartSerializer(serializers.ModelSerializer):
         read_only_fields = [
             'final_subtotal', 'final_discount', 'final_tax', 'final_coupon_discount', 'final_total', 'shipping'
         ]
-
+        
+    
+    
     def validate_coupon_code(self, value):
         if not value:
             return None
@@ -97,11 +99,16 @@ class CartSerializer(serializers.ModelSerializer):
                 instance.final_coupon_discount = (coupon.discount / 100) * instance.get_final_subtotal()
             if instance.final_coupon_discount > instance.get_final_subtotal():
                 instance.final_coupon_discount = instance.get_final_subtotal()
-        else:
+        else: 
             instance.coupon = None
             instance.final_coupon_discount = Decimal('0.00')
         instance.save()
         return instance
+    
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        print("DEBUG | Final Total before sending to UI:", data.get('final_total'))
+        return data
 
 class OrderAddressSerializer(serializers.ModelSerializer):
     class Meta:

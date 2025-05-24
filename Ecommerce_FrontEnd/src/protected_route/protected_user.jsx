@@ -1,5 +1,5 @@
 
-// ProtectedRoute.js
+
 import { Navigate } from "react-router-dom";
 
 const ProtectedRoute = ({ children }) => {
@@ -11,7 +11,7 @@ const ProtectedRoute = ({ children }) => {
 
   const parsedUser = JSON.parse(user);
 
-  if (parsedUser.is_superadmin === false) {
+  if (parsedUser.is_superadmin === false || parsedUser.is_active === true) {
     return children;
   } else {
     return <Navigate to="/login" replace />;

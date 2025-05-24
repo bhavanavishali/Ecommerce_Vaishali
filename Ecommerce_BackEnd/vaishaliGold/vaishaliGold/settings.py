@@ -96,6 +96,8 @@ REST_FRAMEWORK = {
         'auth_custom.custom_auth.CookieJWTAuthentication',
         
     ),
+    'DEFAULT_PAGINATION_CLASS': 'authenticationapp.pagination.CustomPagination',
+    'PAGE_SIZE': 10
     
    
 }
@@ -107,12 +109,12 @@ SIMPLE_JWT = {
     'ROTATE_REFRESH_TOKENS': False,
     "AUTH_HEADER_TYPES": ("JWT",),
     "ALGORITHM": "HS512",
-    'AUTH_COOKIE': 'access_token',  # Cookie name. Enables cookies if value is set.
-    'AUTH_COOKIE_DOMAIN': None,  # A string like "example.com", or None for standard domain cookie.
-    'AUTH_COOKIE_SECURE': False,  # Whether the auth cookies should be secure (https:// only).
-    'AUTH_COOKIE_HTTP_ONLY': True,  # Http only cookie flag.It's not fetch by javascript.
-    'AUTH_COOKIE_PATH': '/',  # The path of the auth cookie.
-    'AUTH_COOKIE_SAMESITE': 'Lax',  # Whether to set the flag restricting cookie leaks on cross-site requests.
+    'AUTH_COOKIE': 'access_token',  
+    'AUTH_COOKIE_DOMAIN': None,  
+    'AUTH_COOKIE_SECURE': False, 
+    'AUTH_COOKIE_HTTP_ONLY': True,  
+    'AUTH_COOKIE_PATH': '/', 
+    'AUTH_COOKIE_SAMESITE': 'Lax',  
 }
 
 
@@ -213,16 +215,68 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'handlers': {
+#         'console': {
+#             'class': 'logging.StreamHandler',
+#         },
+#     },
+#     'root': {
+#         'handlers': ['console'],
+#         'level': 'INFO',
+#     },
+# }
+import os
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
         },
     },
-    'root': {
-        'handlers': ['console'],
-        'level': 'INFO',
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',  # Capture DEBUG and above (includes INFO, ERROR)
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+        'file': {  # Log to a file for debugging
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'debug.log'),
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        '': {  # Root logger to catch all logs
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'productapp': {
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'productapp.models': {
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'django.server': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
     },
 }

@@ -1,5 +1,3 @@
-
-
 "use client"
 
 import { useState, useEffect } from "react"
@@ -91,7 +89,7 @@ const ProfileInfo = () => {
   const handleUpdate = async () => {
     try {
       setSaving(true)
-      await api.put("profile/", user)
+      await api.patch("profile/", {user})
       setTimeout(() => {
         setSaving(false)
         document.getElementById("success-message").classList.remove("opacity-0")
@@ -261,12 +259,7 @@ const ProfileInfo = () => {
                 </div>
 
                 <div className="flex flex-col sm:flex-row justify-between items-center pt-4 border-t border-amber-200">
-                  <Link
-                    to="/forgot-password"
-                    className="text-[#7a2828] hover:text-[#9a3a3a] transition-all duration-300 hover:underline decoration-amber-400 decoration-2 underline-offset-4 mb-4 sm:mb-0"
-                  >
-                    Forgot Password?
-                  </Link>
+                  
 
                   <Button
                     type="button"

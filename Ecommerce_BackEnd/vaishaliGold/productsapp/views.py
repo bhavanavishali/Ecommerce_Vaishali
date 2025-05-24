@@ -7,14 +7,24 @@ from .serializers import CategorySerializer,ProductImageSerializer,ProductVarian
 import json
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from cartapp.models import *
+from authenticationapp.pagination import CustomPagination
+from django.db.models import Q
 
 #Admin side
 
 class CategoryListCreateView(APIView):
+    pagination_class = CustomPagination
     def get(self, request):
+        # Handle search query
+        search_query = request.query_params.get('search', '')
         categories = Category.objects.all()
-        serializer = CategorySerializer(categories, many=True)
-        return Response(serializer.data)
+        if search_query:
+            categories = categories.filter(name__icontains=search_query)
+        categories = categories.order_by('-created_at')  
+        paginator = self.pagination_class()
+        page = paginator.paginate_queryset(categories, request)
+        serializer = CategorySerializer(page, many=True)
+        return paginator.get_paginated_response(serializer.data)
 
     def post(self, request):
         serializer = CategorySerializer(data=request.data)
@@ -48,6 +58,7 @@ class CategoryDetailView(APIView):
 
 class ProductFilter(APIView):
     permission_classes = [IsAuthenticated]
+    pagination_class = CustomPagination
 
     def get(self, request):
         products = Product.objects.filter(is_active=True, category__is_active=True)
@@ -95,8 +106,6 @@ class ProductFilter(APIView):
         serializer = ProductSerializer(products, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-
-
 class UserCategoryList(APIView):
     
     def get(self, request):
@@ -136,6 +145,8 @@ class ProductListCreateView(APIView):
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+   
 
 class ProductDetailView(APIView):
     permission_classes = [IsAuthenticated]
@@ -195,14 +206,12 @@ class ProductVariantListCreateView(APIView):
                     status=status.HTTP_400_BAD_REQUEST
                 )
 
-        # Ensure data is a list
         if not isinstance(data, list):
             return Response(
                 {"error": "Data must be a list of variant objects"},
                 status=status.HTTP_400_BAD_REQUEST
             )
-
-        
+   
         for item in data:
             if not isinstance(item, dict):
                 return Response(
@@ -217,6 +226,8 @@ class ProductVariantListCreateView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         print("Serializer errors:", serializer.errors)  # Debug
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
 
 class ProductVariantDetailView(APIView):
     permission_classes = [IsAuthenticated]

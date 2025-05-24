@@ -37,6 +37,9 @@ from django.utils.http import urlsafe_base64_decode
 from django.utils.encoding import force_str
 from django.core.mail import send_mail
 
+from django.db.models import Q
+from .pagination import CustomPagination
+
 User = get_user_model()
 
 
@@ -412,46 +415,22 @@ class UserProfileView(APIView):
                 'status': 'error',
                 'message': 'Profile not found'
             }, status=status.HTTP_404_NOT_FOUND)
-    
-    def put(self, request):
-        print("Incoming request:", request.data)
-        print(f"request.user: {request.user}, type: {type(request.user)}")
-        if not request.user.is_authenticated:
-            return Response({
-                'status': 'error',
-                'message': 'Authentication required'
-            }, status=status.HTTP_401_UNAUTHORIZED)
+
+    def patch(self, request):
         try:
-            profile = UserProfile.objects.select_related('user').get(user=request.user)
-            serializer = UserProfileSerializer(profile, data=request.data, partial=True)
-            
+            user_profile = UserProfile.objects.get(user=request.user)
+            print("my neww data",request.data)
+            serializer = UserProfileSerializer(user_profile, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
-                return Response({
-                    'status': 'success',
-                    'message': 'Profile updated successfully',
-                    'data': serializer.data
-                }, status=status.HTTP_200_OK)
-            
-            return Response({
-                'status': 'error',
-                'message': serializer.errors
-            }, status=status.HTTP_400_BAD_REQUEST)
+                print("lll",serializer.data)
+                return Response(serializer.data)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except UserProfile.DoesNotExist:
-            return Response({
-                'status': 'error',
-                'message': 'Profile not found'
-            }, status=status.HTTP_404_NOT_FOUND)
-        except Exception as e:
-            return Response({
-                'status': 'error',
-                'message': str(e)
-            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
+            return Response({"message": "Profile not found"}, status=status.HTTP_404_NOT_FOUND)
+        
 class GoogleLoginView(APIView):
-    
-    
+    @csrf_exempt
     def post(self, request):
         serializer = GoogleAuthSerializer(data=request.data)
         
@@ -459,96 +438,182 @@ class GoogleLoginView(APIView):
             id_token_str = serializer.validated_data['id_token']
             
             try:
-                
                 idinfo = id_token.verify_oauth2_token(
-                    id_token_str, 
-                    requests.Request(), 
+                    id_token_str,
+                    requests.Request(),
                     settings.GOOGLE_CLIENT_ID
                 )
                 
-                
                 if idinfo['aud'] != settings.GOOGLE_CLIENT_ID:
                     return Response(
-                        {'error': 'Invalid token audience'}, 
+                        {'error': 'Invalid token audience'},
                         status=status.HTTP_401_UNAUTHORIZED
                     )
                 
-                
                 google_id = idinfo['sub']
                 email = idinfo['email']
-                name = idinfo.get('name', '')
-                
+                first_name = idinfo.get('given_name', '')
+                last_name = idinfo.get('family_name', '')
                 
                 try:
                     user = User.objects.get(email=email)
-                    
                     if not user.google_id:
                         user.google_id = google_id
                         user.save()
-                        UserProfile.objects.create(user=user)
+                        # Check if UserProfile exists before creating
+                        if not hasattr(user, 'user') or not user.user:
+                            UserProfile.objects.create(user=user)
                 except User.DoesNotExist:
-                    
                     username = email.split('@')[0]
-                    
                     if User.objects.filter(username=username).exists():
                         username = f"{username}_{google_id[:6]}"
                     
                     user = User.objects.create_user(
                         username=username,
                         email=email,
-                        google_id=google_id
+                        google_id=google_id,
+                        first_name=first_name,
+                        
+                        
+                        last_name=last_name,
+                        
+                        phone_number=''  
                     )
-                    
-                    
-                    user.set_password(User.objects.make_random_password())
-                    
-                         
-                    if name:
-                        name_parts = name.split(' ', 1)
-                        user.first_name = name_parts[0]
-                        if len(name_parts) > 1:
-                            user.last_name = name_parts[1]
-
-                    
-                    user.save()
-                    
-                
+                    # UserProfile is created automatically via post_save signal
                 
                 refresh_token = RefreshToken.for_user(user)
-                access_token=refresh_token.access_token
+                access_token = refresh_token.access_token
 
                 response = Response({
                     'user': UserSerializer(user).data
                 })
                 
-                # Set access and refresh tokens in cookies
                 response.set_cookie(
                     key='access_token',
                     value=access_token,
-                    httponly=True,  
-                    secure=False,  
-                    samesite='lax', 
-                    max_age=86400,  
+                    httponly=True,
+                    secure=False,  # Set to True in production
+                    samesite='lax',
+                    max_age=86400,
                 )
                 
                 response.set_cookie(
                     key='refresh_token',
                     value=refresh_token,
-                    httponly=True,  
-                    secure=False,  
-                    samesite='lax',  
-                    max_age=86400, 
+                    httponly=True,
+                    secure=False,  # Set to True in production
+                    samesite='lax',
+                    max_age=86400,
                 )
                 
                 return response
                 
             except ValueError:
                 return Response(
-                    {'error': 'Invalid token'}, 
+                    {'error': 'Invalid token'},
                     status=status.HTTP_401_UNAUTHORIZED
                 )
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+# class GoogleLoginView(APIView):
+#     def post(self, request):
+#         serializer = GoogleAuthSerializer(data=request.data)
+        
+#         if serializer.is_valid():
+#             id_token_str = serializer.validated_data['id_token']
+            
+#             try:
+                
+#                 idinfo = id_token.verify_oauth2_token(
+#                     id_token_str, 
+#                     requests.Request(), 
+#                     settings.GOOGLE_CLIENT_ID
+#                 )
+                
+                
+#                 if idinfo['aud'] != settings.GOOGLE_CLIENT_ID:
+#                     return Response(
+#                         {'error': 'Invalid token audience'}, 
+#                         status=status.HTTP_401_UNAUTHORIZED
+#                     )
+                
+                
+#                 google_id = idinfo['sub']
+#                 email = idinfo['email']
+#                 name = idinfo.get('name', '')
+                
+                
+#                 try:
+#                     user = User.objects.get(email=email)
+                    
+#                     if not user.google_id:
+#                         user.google_id = google_id
+#                         user.save()
+#                         UserProfile.objects.create(user=user)
+#                 except User.DoesNotExist:
+                    
+#                     username = email.split('@')[0]
+                    
+#                     if User.objects.filter(username=username).exists():
+#                         username = f"{username}_{google_id[:6]}"
+                    
+#                     user = User.objects.create_user(
+#                         username=username,
+#                         email=email,
+#                         google_id=google_id
+#                     )
+                    
+                    
+#                     user.set_password(User.objects.make_random_password())
+                    
+                         
+#                     if name:
+#                         name_parts = name.split(' ', 1)
+#                         user.first_name = name_parts[0]
+#                         if len(name_parts) > 1:
+#                             user.last_name = name_parts[1]
+
+                    
+#                     user.save()
+                    
+                
+                
+#                 refresh_token = RefreshToken.for_user(user)
+#                 access_token=refresh_token.access_token
+
+#                 response = Response({
+#                     'user': UserSerializer(user).data
+#                 })
+                
+                
+#                 response.set_cookie(
+#                     key='access_token',
+#                     value=access_token,
+#                     httponly=True,  
+#                     secure=False,  
+#                     samesite='lax', 
+#                     max_age=86400,  
+#                 )
+                
+#                 response.set_cookie(
+#                     key='refresh_token',
+#                     value=refresh_token,
+#                     httponly=True,  
+#                     secure=False,  
+#                     samesite='lax',  
+#                     max_age=86400, 
+#                 )
+                
+#                 return response
+                
+#             except ValueError:
+#                 return Response(
+#                     {'error': 'Invalid token'}, 
+#                     status=status.HTTP_401_UNAUTHORIZED
+#                 )
+        
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 #================ User management=================================
 
@@ -557,12 +622,24 @@ from rest_framework.exceptions import NotAuthenticated
 class UserListCreate(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get(self,request):
-       
-        user=User.objects.filter(is_superadmin=False).order_by('date_join')
-        serializer=UserSerializer(user,many =True)
-        print(serializer)
-        return Response(serializer.data)
+    
+
+    def get(self, request):
+        search_query = request.query_params.get('search', '')
+        users = User.objects.filter(
+            is_superadmin=False
+        ).filter(
+            Q(first_name__icontains=search_query) |
+            Q(last_name__icontains=search_query) |
+            Q(email__icontains=search_query) |
+            Q(phone_number__icontains=search_query)
+        ).order_by('-date_joined')
+
+        
+        paginator = CustomPagination()
+        paginated_users = paginator.paginate_queryset(users, request)
+        serializer = UserSerializer(paginated_users, many=True)
+        return paginator.get_paginated_response(serializer.data)
     
     def post(self,request):
         data=request.data

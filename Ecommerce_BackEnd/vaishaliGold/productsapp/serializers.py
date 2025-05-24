@@ -4,11 +4,12 @@ from .models import Category, Product, ProductVariant, ProductImage
 from rest_framework.serializers import ModelSerializer, ValidationError, ListSerializer
 from django.shortcuts import get_object_or_404
 from cartapp.models import Tax
+from decimal import Decimal
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ['id', 'name', 'is_active', 'category_offer', 'category_offer_Isactive']
+        fields = ['id', 'name', 'is_active', 'category_offer', 'category_offer_Isactive','created_at']
 
     def validate_name(self, value):
         if Category.objects.filter(name__iexact=value).exists():
@@ -23,12 +24,23 @@ class CategorySerializer(serializers.ModelSerializer):
         return value
 
 class ProductVariantListSerializer(ListSerializer):
+   
+
     def create(self, validated_data):
-        print("Validated data in ListSerializer create:", validated_data)  # Debug
         product_id = self.context['view'].kwargs.get('product_id')
         product = get_object_or_404(Product, id=product_id)
-        variants = [ProductVariant(product=product, **data) for data in validated_data]
-        return ProductVariant.objects.bulk_create(variants)
+        variants = []
+        for item in validated_data:
+            item = item.copy()  # Avoid modifying original data
+            # Convert to Decimal
+            item['gold_price'] = Decimal(str(item['gold_price']))
+            item['gross_weight'] = Decimal(str(item['gross_weight']))
+            item['stone_rate'] = Decimal(str(item['stone_rate']))
+            item['making_charge'] = Decimal(str(item['making_charge']))
+            
+            variant = ProductVariant.objects.create(product=product, **item)
+            variants.append(variant)
+        return variants
 
 class ProductVariantSerializer(serializers.ModelSerializer):
     applied_offer = serializers.SerializerMethodField()
@@ -68,7 +80,7 @@ class ProductVariantSerializer(serializers.ModelSerializer):
         for field in required_fields:
             if field not in data:
                 raise serializers.ValidationError(f"{field} is required.")
-        # Additional validation for numeric fields
+      
         if float(data['gross_weight']) <= 0:
             raise serializers.ValidationError("Gross weight must be greater than 0.")
         if float(data['gold_price']) <= 0:
@@ -81,12 +93,9 @@ class ProductVariantSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Stock cannot be negative.")
         return data
 
-    def create(self, validated_data):
-        print("Validated data in create:", validated_data)  # Debug
-        product_id = self.context['view'].kwargs.get('product_id')
-        product = get_object_or_404(Product, id=product_id)
-        return ProductVariant.objects.create(product=product, **validated_data)
 
+
+    
 class ProductImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductImage
