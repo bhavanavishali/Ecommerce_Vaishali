@@ -595,8 +595,8 @@ const validateForm = (formData) => {
     errors.discount = "Valid discount amount is required";
   if (!formData.min_amount || formData.min_amount <= 0)
     errors.min_amount = "Valid minimum purchase amount is required";
-  if (!formData.min_offer_amount || formData.min_offer_amount <= 0)
-    errors.min_offer_amount = "Valid minimum offer amount is required";
+  // if (!formData.min_offer_amount || formData.min_offer_amount <= 0)
+  //   errors.min_offer_amount = "Valid minimum offer amount is required";
   if (!formData.max_uses || formData.max_uses < 0)
     errors.max_uses = "Valid maximum usage is required";
   if (!isValid(formData.valid_from))
@@ -611,8 +611,8 @@ const validateForm = (formData) => {
 export default function CouponManagement() {
   const [coupons, setCoupons] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null); // General error
-  const [formErrors, setFormErrors] = useState({}); // Field-specific errors
+  const [error, setError] = useState(null); 
+  const [formErrors, setFormErrors] = useState({});
   const [open, setOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
@@ -626,7 +626,7 @@ export default function CouponManagement() {
     used_count: 0,
     min_amount: "",
     is_active: true,
-    min_offer_amount: "",
+    // min_offer_amount: "",
   });
 
   useEffect(() => {
@@ -701,7 +701,7 @@ export default function CouponManagement() {
       used_count: 0,
       min_amount: "",
       is_active: true,
-      min_offer_amount: "",
+      // min_offer_amount: "",
     });
     setIsEditing(false);
     setError(null);
@@ -846,7 +846,7 @@ export default function CouponManagement() {
                     name="coupon_name"
                     value={formData.coupon_name}
                     onChange={handleInputChange}
-                    required
+                  
                     className={`w-full ${formErrors.coupon_name ? "border-red-500" : ""}`}
                   />
                   {formErrors.coupon_name && (
@@ -863,7 +863,7 @@ export default function CouponManagement() {
                     name="coupon_code"
                     value={formData.coupon_code}
                     onChange={handleInputChange}
-                    required
+                   
                     className={`w-full ${formErrors.coupon_code ? "border-red-500" : ""}`}
                   />
                   {formErrors.coupon_code && (
@@ -881,7 +881,7 @@ export default function CouponManagement() {
                     type="number"
                     value={formData.min_amount}
                     onChange={handleInputChange}
-                    required
+                
                     className={`w-full ${formErrors.min_amount ? "border-red-500" : ""}`}
                   />
                   {formErrors.min_amount && (
@@ -899,7 +899,7 @@ export default function CouponManagement() {
                     type="number"
                     value={formData.discount}
                     onChange={handleInputChange}
-                    required
+                  
                     className={`w-full ${formErrors.discount ? "border-red-500" : ""}`}
                   />
                   {formErrors.discount && (
@@ -917,7 +917,7 @@ export default function CouponManagement() {
                     type="number"
                     value={formData.max_uses}
                     onChange={handleInputChange}
-                    required
+                 
                     className={`w-full ${formErrors.max_uses ? "border-red-500" : ""}`}
                     placeholder="0"
                   />
@@ -926,9 +926,9 @@ export default function CouponManagement() {
                   )}
                 </div>
 
-                <div className="space-y-2">
+                {/* <div className="space-y-2">
                   <label htmlFor="min_offer_amount" className="text-sm font-medium text-gray-700">
-                    Minimum offer amount*
+                    Max-offer amount*
                   </label>
                   <Input
                     id="min_offer_amount"
@@ -936,13 +936,12 @@ export default function CouponManagement() {
                     type="number"
                     value={formData.min_offer_amount}
                     onChange={handleInputChange}
-                    required
                     className={`w-full ${formErrors.min_offer_amount ? "border-red-500" : ""}`}
                   />
                   {formErrors.min_offer_amount && (
                     <p className="text-red-500 text-xs">{formErrors.min_offer_amount}</p>
                   )}
-                </div>
+                </div> */}
 
                 <div className="space-y-2">
                   <label htmlFor="valid_from" className="text-sm font-medium text-gray-700">
@@ -966,7 +965,7 @@ export default function CouponManagement() {
                         }));
                       }
                     }}
-                    required
+                  
                     className={`w-full ${formErrors.valid_from ? "border-red-500" : ""}`}
                     min={format(new Date(), "yyyy-MM-dd")}
                   />
@@ -997,7 +996,7 @@ export default function CouponManagement() {
                         }));
                       }
                     }}
-                    required
+                  
                     className={`w-full ${formErrors.valid_to ? "border-red-500" : ""}`}
                     min={
                       isValid(formData.valid_from)
@@ -1072,7 +1071,7 @@ export default function CouponManagement() {
                     <TableHead>Expiry Date</TableHead>
                     <TableHead>Usage</TableHead>
                     <TableHead>Used</TableHead>
-                    <TableHead>Minimum offer Amount</TableHead>
+                    {/* <TableHead>Minimum offer Amount</TableHead> */}
                     <TableHead>Status</TableHead>
                     <TableHead>Actions</TableHead>
                   </TableRow>
@@ -1101,7 +1100,7 @@ export default function CouponManagement() {
                         </TableCell>
                         <TableCell>{coupon.max_uses}</TableCell>
                         <TableCell>{coupon.used_count}</TableCell>
-                        <TableCell>{coupon.min_offer_amount}</TableCell>
+                        {/* <TableCell>{coupon.min_offer_amount}</TableCell> */}
                         <TableCell>
                           <Badge
                             variant={coupon.is_active ? "default" : "secondary"}

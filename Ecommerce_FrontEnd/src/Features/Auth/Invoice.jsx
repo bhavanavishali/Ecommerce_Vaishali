@@ -284,6 +284,7 @@ export default function InvoicePage() {
       try {
         const response = await api.get(`cartapp/orders/${id}/`);
         const apiData = response.data;
+        console.log("my invoice",response.data)
 
         // Transform API response to match expected invoice structure
         const transformedInvoice = {
@@ -294,7 +295,9 @@ export default function InvoicePage() {
           final_total: parseFloat(apiData.final_total) || 0,
           total_amount: parseFloat(apiData.total_amount) || 0,
           total_discount: parseFloat(apiData.total_discount) || 0,
-          shippingCharge: 0, // Not present in API, default to 0 or calculate if needed
+          total_tax: parseFloat(apiData.total_tax) || 0,
+          coupon_discount: parseFloat(apiData.coupon_discount) || 0,
+          shipping: parseFloat(apiData.shipping) || 0,
           order_address: {
             name: apiData.order_address.name,
             house_no: apiData.order_address.house_no,
@@ -520,16 +523,27 @@ export default function InvoicePage() {
             <div className="mt-8 flex justify-end">
               <div className="w-full md:w-72 space-y-2">
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-500">Order MRP</span>
+                  <span className="text-gray-500">Item Prices</span>
                   <span>₹ {invoice.total_amount.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-500">Total Order Discount</span>
                   <span className="text-red-600">- ₹ {invoice.total_discount.toFixed(2)}</span>
                 </div>
+                 
+                 <div className="flex justify-between text-sm">
+                  <span className="text-gray-500">Tax</span>
+                 <span className="text-red-600">
+                ₹ {invoice?.total_tax ? invoice.total_tax.toFixed(2) : '0.00'}
+              </span>
+                </div>
+                 <div className="flex justify-between text-sm">
+                  <span className="text-gray-500">Coupon Discount</span>
+                  <span className="text-red-600"> ₹ {invoice.coupon_discount.toFixed(2)}</span>
+                </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-500">Shipping Charge</span>
-                  <span>₹ {invoice.shippingCharge.toFixed(2)}</span>
+                 <span>₹ {invoice?.shipping ? invoice.shipping.toFixed(2) : "0.00"}</span>
                 </div>
                 <Separator className="my-2 bg-amber-200" />
                 <div className="flex justify-between font-medium">

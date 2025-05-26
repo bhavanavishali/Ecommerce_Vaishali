@@ -238,7 +238,7 @@ class VerifyOTPView(APIView):
                             is_active=True,
                             max_uses=1,
                             min_amount=50.00,
-                            coupon_type='flat',
+                            coupon_type='referral',
                             user=user
                         )
                         referral.referrer_coupon = referrer_coupon

@@ -606,6 +606,18 @@ export default function OrderHandlePage() {
                 <span className="text-gray-600">Total Discounts:</span>
                 <span className="font-medium text-rose-600">-₹{order.total_discount}</span>
               </div>
+              <div className="flex justify-between items-center">
+                <span className="text-gray-600">Tax:</span>
+                <span className="font-medium ">₹{order.total_tax}</span>
+              </div>
+               <div className="flex justify-between items-center">
+                <span className="text-gray-600">Coupon discount:</span>
+                <span className="font-medium text-rose-600">-₹{order.coupon_discount}</span>
+              </div>
+               <div className="flex justify-between items-center">
+                <span className="text-gray-600">Shipping:</span>
+                <span className="font-medium">₹{order.shipping}</span>
+              </div>
               <div className="flex justify-between items-center pt-3 border-t border-gray-200 mt-2">
                 <span className="text-gray-900 font-semibold text-lg">Grand Total:</span>
                 <span className="font-bold text-lg text-emerald-700">₹{order.final_total}</span>

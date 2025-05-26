@@ -1,8 +1,8 @@
 
 
-"use client";
 
 import { useState, useEffect } from "react";
+import { useDebounce } from "use-debounce";
 import { useNavigate } from "react-router-dom";
 import { Search, Pencil, Plus, Lock, Unlock } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -24,11 +24,17 @@ export default function ProductTable() {
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
+  const [productsPerPage, setProductsPerPage] = useState(7);
+  const [debouncedSearchTerm] = useDebounce(searchTerm, 300);
   const navigate = useNavigate();
 
   useEffect(() => {
     fetchProducts();
   }, []);
+
+  useEffect(() => {
+    setCurrentPage(1); // Reset to page 1 when search term changes
+  }, [debouncedSearchTerm, productsPerPage]);
 
   const fetchProducts = async () => {
     setLoading(true);
@@ -58,25 +64,27 @@ export default function ProductTable() {
 
   const filteredProducts = products.filter(
     (product) =>
-      product.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.id?.toString().includes(searchTerm.toLowerCase()) ||
-      product.category_name?.toLowerCase().includes(searchTerm.toLowerCase())
+      product.name?.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+      product.id?.toString().includes(debouncedSearchTerm.toLowerCase()) ||
+      product.category_name?.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
   );
 
-  const productsPerPage = 7;
   const indexOfLastProduct = currentPage * productsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
   const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
   const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
 
+  const maxVisiblePages = 5;
+  const startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+  const endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+  const visiblePageNumbers = [];
+  for (let i = startPage; i <= endPage; i++) {
+    visiblePageNumbers.push(i);
+  }
+
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
-
-  const pageNumbers = [];
-  for (let i = 1; i <= totalPages; i++) {
-    pageNumbers.push(i);
-  }
 
   return (
     <div className="container mx-auto p-6">
@@ -93,6 +101,16 @@ export default function ProductTable() {
                 className="pl-10 w-64"
               />
             </div>
+            <select
+              value={productsPerPage}
+              onChange={(e) => setProductsPerPage(Number(e.target.value))}
+              className="border rounded px-2 py-1"
+            >
+              <option value={5}>5 per page</option>
+              <option value={7}>7 per page</option>
+              <option value={10}>10 per page</option>
+              <option value={20}>20 per page</option>
+            </select>
             <Button
               className="bg-[#8B1D24] hover:bg-[#6B171C] text-white flex items-center gap-2"
               onClick={() => navigate("/addproduct")}
@@ -102,25 +120,7 @@ export default function ProductTable() {
           </div>
         </div>
 
-        {loading && (
-          <div className="flex justify-center items-center py-10">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#8B1D24]"></div>
-          </div>
-        )}
-
-        {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative">
-            Error loading products: {error}
-            <Button
-              className="ml-4 bg-[#8B1D24] hover:bg-[#6B171C] text-white text-xs px-2 py-1"
-              onClick={fetchProducts}
-            >
-              Retry
-            </Button>
-          </div>
-        )}
-
-        {!loading && !error && (
+      {!loading && !error && (
           <div className="border rounded-lg overflow-hidden">
             <Table>
               <TableHeader>
@@ -213,7 +213,7 @@ export default function ProductTable() {
                   className={currentPage === 1 ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
                 />
               </PaginationItem>
-              {pageNumbers.map((number) => (
+              {visiblePageNumbers.map((number) => (
                 <PaginationItem key={number}>
                   <PaginationLink
                     isActive={currentPage === number}

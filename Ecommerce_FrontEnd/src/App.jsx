@@ -52,7 +52,7 @@ function App() {
       
         {/* user protected sessions */}
 
-      <Route path='/user/home' element={<UserHome/>} />
+      <Route path='/user/home' element={<ProtectedRoute><UserHome/></ProtectedRoute>} />
       <Route path='/productdetails/:id' element={<ProtectedRoute><ProductDetails/></ProtectedRoute>} />
       <Route path='/cart' element={<ProtectedRoute><Cart/></ProtectedRoute>}/>
       <Route path='/userprofile' element={<ProtectedRoute><UserProfile/></ProtectedRoute>}/>

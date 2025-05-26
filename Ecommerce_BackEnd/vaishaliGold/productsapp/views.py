@@ -15,7 +15,7 @@ from django.db.models import Q
 class CategoryListCreateView(APIView):
     pagination_class = CustomPagination
     def get(self, request):
-        # Handle search query
+        
         search_query = request.query_params.get('search', '')
         categories = Category.objects.all()
         if search_query:

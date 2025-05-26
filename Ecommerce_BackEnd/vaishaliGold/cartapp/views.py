@@ -158,6 +158,7 @@ class RemoveFromCartView(APIView):
         try:
             item = CartItem.objects.get(id=item_id, cart=cart)
             item.delete()
+            cart.update_totals()  
         except CartItem.DoesNotExist:
             return Response({'error': 'Item not found'}, 
                           status=status.HTTP_404_NOT_FOUND)

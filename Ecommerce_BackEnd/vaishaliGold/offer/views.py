@@ -86,6 +86,7 @@ class AvailableCouponsView(APIView):
             coupons = Coupon.objects.filter(
                 
                 is_active=True,
+                coupon_type='flat',
                 valid_from__lte=now,
                 valid_to__gte=now
             ).exclude(used_count__gte=models.F('max_uses')).filter(max_uses__gt=0)
