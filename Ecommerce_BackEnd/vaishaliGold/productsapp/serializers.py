@@ -31,8 +31,8 @@ class ProductVariantListSerializer(ListSerializer):
         product = get_object_or_404(Product, id=product_id)
         variants = []
         for item in validated_data:
-            item = item.copy()  # Avoid modifying original data
-            # Convert to Decimal
+            item = item.copy()  
+       
             item['gold_price'] = Decimal(str(item['gold_price']))
             item['gross_weight'] = Decimal(str(item['gross_weight']))
             item['stone_rate'] = Decimal(str(item['stone_rate']))
@@ -53,7 +53,7 @@ class ProductVariantSerializer(serializers.ModelSerializer):
             'stone_rate', 'making_charge', 'tax', 'stock', 'applied_offer',
             'base_price', 'tax_amount', 'discount_amount', 'total_price'
         ]
-        read_only_fields = ['id', 'base_price', 'tax_amount', 'discount_amount', 'total_price']
+        read_only_fields = ['id', 'base_price', 'tax_amount', 'discount_amount', 'total_price','applied_offer_percentage', 'applied_offer_type']
 
     def get_applied_offer(self, obj):
         discount = obj.product.discount if (obj.product.product_offer_Isactive and obj.product.is_active) else 0

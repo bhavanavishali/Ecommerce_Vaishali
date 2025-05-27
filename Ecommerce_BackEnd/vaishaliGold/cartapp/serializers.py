@@ -32,7 +32,8 @@ class CartItemSerializer(serializers.ModelSerializer):
             "description": product.description,
             "category": product.category.name if product.category else None,
             "gold_color": product.gold_color,
-            "images": images
+            "images": images,
+            "is_active":product.is_active
         }
 
     def get_subtotal(self, obj):
@@ -564,7 +565,9 @@ class WishlistItemSerializer(serializers.ModelSerializer):
             "description": product.description,
             "category": product.category.name if product.category else None,
             "gold_color": product.gold_color,
-            "images": images
+            "images": images,
+            'is_active':product.is_active,
+            'available':product.available
         }
 
     def get_primary_image(self, obj):

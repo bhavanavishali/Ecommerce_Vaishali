@@ -1770,11 +1770,11 @@ const SalesReport = () => {
                   <TableCell>₹ {Number(row.orderMrp).toFixed(2)}</TableCell>
                   <TableCell>₹ {Number(row.itemDiscount).toFixed(2)}</TableCell>
                   <TableCell>₹ {Number(row.itemTax).toFixed(2)}</TableCell>
-                  <TableCell>₹ {Number(row.orderSubtotal).toFixed(2)}</TableCell>
+                  <TableCell>₹ {Number(row.totalAmount).toFixed(2)}</TableCell>
                   <TableCell>₹ {Number(row.refund_amount).toFixed(2)}</TableCell>
                   <TableCell>₹ {Number(row.couponDiscount).toFixed(2)}</TableCell>
                   <TableCell>₹ {Number(row.shippingCharge).toFixed(2)}</TableCell>
-                  <TableCell className="font-semibold">₹ {Number(row.totalAmount).toFixed(2)}</TableCell>
+                  <TableCell className="font-semibold">₹ {Number(row.orderSubtotal).toFixed(2)}</TableCell>
                   <TableCell>{row.paymentMethod}</TableCell>
                 </TableRow>
               ))

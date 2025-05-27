@@ -1,6 +1,5 @@
 
 
-
 "use client"
 
 import { useState } from "react"
@@ -13,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner"
 import api from "../../api"
 import { useNavigate } from "react-router-dom"
-import { Home, Building, MapPin, ArrowLeft, Save } from "lucide-react"
+import { Home, Building, ArrowLeft, Save } from "lucide-react"
 import addressSchema from "@/validators/addressValidation.js"
 
 const AddAddress = () => {
@@ -54,6 +53,10 @@ const AddAddress = () => {
       ...prev,
       [name]: value,
     }))
+   
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: null }))
+    }
   }
 
   const handleSelectChange = (value, name) => {
@@ -61,6 +64,10 @@ const AddAddress = () => {
       ...prev,
       [name]: value,
     }))
+    
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: null }))
+    }
   }
 
   const handleRadioChange = (value) => {
@@ -68,24 +75,29 @@ const AddAddress = () => {
       ...prev,
       address_type: value,
     }))
+    
+    if (errors.address_type) {
+      setErrors((prev) => ({ ...prev, address_type: null }))
+    }
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setErrors({})
-    const { error } = addressSchema.validate(formData, { abortEarly: false })
+    setError(null)
 
-    if (error) {
+    const { error: validationError } = addressSchema.validate(formData, { abortEarly: false })
+    if (validationError) {
       const formattedErrors = {}
-      error.details.forEach((err) => {
+      validationError.details.forEach((err) => {
         formattedErrors[err.path[0]] = err.message
       })
       setErrors(formattedErrors)
+      console.log("Frontend validation errors:", formattedErrors)
       return
     }
 
     setIsSubmitting(true)
-    setError(null)
     setSuccess(false)
 
     try {
@@ -97,11 +109,30 @@ const AddAddress = () => {
         description: "Your address has been saved successfully",
       })
     } catch (error) {
-      toast({
-        title: "Error",
-        description: error.response?.data?.message || "Failed to save address. Please try again.",
-        variant: "destructive",
-      })
+      console.log("Raw backend error response:", error.response?.data)
+      const backendErrors = error.response?.data
+      if (backendErrors && typeof backendErrors === "object") {
+        const formattedBackendErrors = {}
+        Object.keys(backendErrors).forEach((key) => {
+          if (Array.isArray(backendErrors[key]) && backendErrors[key].length > 0) {
+            formattedBackendErrors[key] = backendErrors[key][0]
+          } else if (typeof backendErrors[key] === "string") {
+            formattedBackendErrors[key] = backendErrors[key]
+          } else {
+            formattedBackendErrors[key] = "Invalid input"
+          }
+        })
+        setErrors(formattedBackendErrors)
+        console.log("Formatted backend errors:", formattedBackendErrors)
+      } else {
+        const generalError = error.response?.data?.message || "Failed to save address. Please try again."
+        setError(generalError)
+        toast({
+          title: "Error",
+          description: generalError,
+          variant: "destructive",
+        })
+      }
       console.error("Error saving address:", error)
     } finally {
       setIsSubmitting(false)
@@ -122,8 +153,36 @@ const AddAddress = () => {
 
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-8 pt-8">
+          
+            {error && (
+              <div className="bg-[#7a2828]/10 border border-[#7a2828] p-4 rounded-md">
+                <p className="text-[#7a2828] text-sm">{error}</p>
+              </div>
+            )}
+
             {/* Address Type Selection */}
-            
+            <div className="space-y-2">
+              <Label className="text-[#7a2828] font-medium">Address Type <span className="text-[#7a2828]">*</span></Label>
+              <RadioGroup
+                value={formData.address_type}
+                onValueChange={handleRadioChange}
+                className="flex space-x-4"
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="home" id="home" />
+                  <Label htmlFor="home" className="flex items-center text-[#7a2828]">
+                    <Home className="w-4 h-4 mr-1" /> Home
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="work" id="work" />
+                  <Label htmlFor="work" className="flex items-center text-[#7a2828]">
+                    <Building className="w-4 h-4 mr-1" /> Work
+                  </Label>
+                </div>
+              </RadioGroup>
+              {errors?.address_type && <p className="text-[#7a2828] text-sm mt-1">{errors.address_type}</p>}
+            </div>
 
             {/* Contact Information */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -137,7 +196,7 @@ const AddAddress = () => {
                   placeholder="Enter your full name"
                   value={formData.name}
                   onChange={handleChange}
-                  className="border-[#e9d9b6] focus:border-[#7a2828] focus:ring-[#7a2828]/20 transition-all duration-300 hover:border-[#d4b78c]"
+                  className={`border-[#e9d9b6] focus:border-[#7a2828] focus:ring-[#7a2828]/20 transition-all duration-300 hover:border-[#d4b78c] ${errors.name ? 'border-[#7a2828]' : ''}`}
                 />
                 {errors?.name && <p className="text-[#7a2828] text-sm mt-1">{errors.name}</p>}
               </div>
@@ -152,7 +211,7 @@ const AddAddress = () => {
                   placeholder="10-digit mobile number"
                   value={formData.mobile_number}
                   onChange={handleChange}
-                  className="border-[#e9d9b6] focus:border-[#7a2828] focus:ring-[#7a2828]/20 transition-all duration-300 hover:border-[#d4b78c]"
+                  className={`border-[#e9d9b6] focus:border-[#7a2828] focus:ring-[#7a2828]/20 transition-all duration-300 hover:border-[#d4b78c] ${errors.mobile_number ? 'border-[#7a2828]' : ''}`}
                 />
                 {errors?.mobile_number && <p className="text-[#7a2828] text-sm mt-1">{errors.mobile_number}</p>}
               </div>
@@ -169,7 +228,7 @@ const AddAddress = () => {
                 placeholder="Alternate contact number"
                 value={formData.alternate_number}
                 onChange={handleChange}
-                className="border-[#e9d9b6] focus:border-[#7a2828] focus:ring-[#7a2828]/20 transition-all duration-300 hover:border-[#d4b78c]"
+                className={`border-[#e9d9b6] focus:border-[#7a2828] focus:ring-[#7a2828]/20 transition-all duration-300 hover:border-[#d4b78c] ${errors.alternate_number ? 'border-[#7a2828]' : ''}`}
               />
               {errors?.alternate_number && <p className="text-[#7a2828] text-sm mt-1">{errors.alternate_number}</p>}
             </div>
@@ -185,7 +244,7 @@ const AddAddress = () => {
                 placeholder="House no., Floor, Building name"
                 value={formData.house_no}
                 onChange={handleChange}
-                className="border-[#e9d9b6] focus:border-[#7a2828] focus:ring-[#7a2828]/20 transition-all duration-300 hover:border-[#d4b78c]"
+                className={`border-[#e9d9b6] focus:border-[#7a2828] focus:ring-[#7a2828]/20 transition-all duration-300 hover:border-[#d4b78c] ${errors.house_no ? 'border-[#7a2828]' : ''}`}
               />
               {errors?.house_no && <p className="text-[#7a2828] text-sm mt-1">{errors.house_no}</p>}
             </div>
@@ -200,8 +259,9 @@ const AddAddress = () => {
                 placeholder="Nearby landmark for easy navigation"
                 value={formData.landmark}
                 onChange={handleChange}
-                className="border-[#e9d9b6] focus:border-[#7a2828] focus:ring-[#7a2828]/20 transition-all duration-300 hover:border-[#d4b78c]"
+                className={`border-[#e9d9b6] focus:border-[#7a2828] focus:ring-[#7a2828]/20 transition-all duration-300 hover:border-[#d4b78c] ${errors.landmark ? 'border-[#7a2828]' : ''}`}
               />
+              {errors?.landmark && <p className="text-[#7a2828] text-sm mt-1">{errors.landmark}</p>}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -215,7 +275,7 @@ const AddAddress = () => {
                   placeholder="Enter your city"
                   value={formData.city}
                   onChange={handleChange}
-                  className="border-[#e9d9b6] focus:border-[#7a2828] focus:ring-[#7a2828]/20 transition-all duration-300 hover:border-[#d4b78c]"
+                  className={`border-[#e9d9b6] focus:border-[#7a2828] focus:ring-[#7a2828]/20 transition-all duration-300 hover:border-[#d4b78c] ${errors.city ? 'border-[#7a2828]' : ''}`}
                 />
                 {errors?.city && <p className="text-[#7a2828] text-sm mt-1">{errors.city}</p>}
               </div>
@@ -227,7 +287,7 @@ const AddAddress = () => {
                 <Select value={formData.state} onValueChange={(value) => handleSelectChange(value, "state")}>
                   <SelectTrigger
                     id="state"
-                    className="border-[#e9d9b6] focus:border-[#7a2828] focus:ring-[#7a2828]/20 transition-all duration-300 hover:border-[#d4b78c]"
+                    className={`border-[#e9d9b6] focus:border-[#7a2828] focus:ring-[#7a2828]/20 transition-all duration-300 hover:border-[#d4b78c] ${errors.state ? 'border-[#7a2828]' : ''}`}
                   >
                     <SelectValue placeholder="Select state" />
                   </SelectTrigger>
@@ -257,7 +317,7 @@ const AddAddress = () => {
                 placeholder="6-digit PIN code"
                 value={formData.pin_code}
                 onChange={handleChange}
-                className="border-[#e9d9b6] focus:border-[#7a2828] focus:ring-[#7a2828]/20 transition-all duration-300 hover:border-[#d4b78c]"
+                className={`border-[#e9d9b6] focus:border-[#7a2828] focus:ring-[#7a2828]/20 transition-all duration-300 hover:border-[#d4b78c] ${errors.pin_code ? 'border-[#7a2828]' : ''}`}
               />
               {errors?.pin_code && <p className="text-[#7a2828] text-sm mt-1">{errors.pin_code}</p>}
             </div>

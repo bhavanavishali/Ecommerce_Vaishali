@@ -215,6 +215,9 @@
 //   );
 // }
 
+
+
+
 "use client"
 
 import { useEffect } from "react"
@@ -251,6 +254,11 @@ export default function ShoppingCartComponent() {
       fetchCart()
     }
   }, [cart, fetchCart])
+
+  // Check if any item is unavailable
+  const isAnyItemUnavailable = cart?.items?.some(
+    (item) => !item.product.is_active || !item.variant.available || !item.variant.is_active || item.variant.stock <= 0
+  )
 
   // Loading state with skeleton
   if (loading) {
@@ -389,6 +397,7 @@ export default function ShoppingCartComponent() {
     })
   }
 
+  console.log("222222222222222222222222",cart)
   return (
     <div className="container mx-auto px-4 py-8 max-w-6xl">
       {/* Header Section */}
@@ -418,120 +427,130 @@ export default function ShoppingCartComponent() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Cart Items */}
         <div className="lg:col-span-2 space-y-6">
-          {cart.items.map((item) => (
-            <Card
-              key={item.id}
-              className="overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-white rounded-2xl"
-            >
-              <CardContent className="p-0">
-                <div className="flex flex-col lg:flex-row">
-                  {/* Product Image */}
-                  <div className="w-full lg:w-48 h-48 lg:h-auto bg-gray-50 flex items-center justify-center p-4">
-                    <img
-                      src={
-                        item.primary_image
-                          ? `${BASE_URL}${item.primary_image}`
-                          : "/placeholder.svg?height=200&width=200"
-                      }
-                      alt={item.product.name}
-                      className="w-full h-full object-contain rounded-lg hover:scale-105 transition-transform duration-300"
-                      onError={(e) => (e.target.src = "/placeholder.svg?height=200&width=200")}
-                    />
-                  </div>
+          {cart.items.map((item) => {
+            const isItemUnavailable = !item.product.is_active || !item.variant.available || !item.variant.is_active || item.variant.stock <= 0
+            return (
+              <Card
+                key={item.id}
+                className="overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-white rounded-2xl"
+              >
+                <CardContent className="p-0">
+                  <div className="flex flex-col lg:flex-row">
+                    {/* Product Image */}
+                    <div className="w-full lg:w-48 h-48 lg:h-auto bg-gray-50 flex items-center justify-center p-4">
+                      <img
+                        src={
+                          item.primary_image
+                            ? `${BASE_URL}${item.primary_image}`
+                            : "/placeholder.svg?height=200&width=200"
+                        }
+                        alt={item.product.name}
+                        className="w-full h-full object-contain rounded-lg hover:scale-105 transition-transform duration-300"
+                        onError={(e) => (e.target.src = "/placeholder.svg?height=200&width=200")}
+                      />
+                    </div>
 
-                  {/* Product Details */}
-                  <div className="flex-grow p-6">
-                    <div className="flex flex-col h-full">
-                      <div className="flex-grow">
-                        <h3 className="text-xl font-semibold text-gray-900 mb-3 line-clamp-2">{item.product.name}</h3>
+                    {/* Product Details */}
+                    <div className="flex-grow p-6">
+                      <div className="flex flex-col h-full">
+                        <div className="flex-grow">
+                          <div className="flex items-center gap-2 mb-3">
+                            <h3 className="text-xl font-semibold text-gray-900 line-clamp-2">{item.product.name}</h3>
+                            {isItemUnavailable && (
+                              <Badge variant="destructive" className="bg-red-600 text-white px-2 py-1 text-xs">
+                                Unavailable
+                              </Badge>
+                            )}
+                          </div>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
-                          <div className="flex items-center gap-2 text-sm text-gray-600">
-                            <Weight className="w-4 h-4" />
-                            <span>Weight: {item.variant.gross_weight}g</span>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+                            <div className="flex items-center gap-2 text-sm text-gray-600">
+                              <Weight className="w-4 h-4" />
+                              <span>Weight: {item.variant.gross_weight}g</span>
+                            </div>
+                            <div className="flex items-center gap-2 text-sm text-gray-600">
+                              <Tag className="w-4 h-4" />
+                              <span>Gold: {item.product.gold_color}</span>
+                            </div>
+                            <div className="flex items-center gap-2 text-sm text-gray-600 sm:col-span-2">
+                              <Package className="w-4 h-4" />
+                              <span>Category: {item.product.category || "N/A"}</span>
+                            </div>
                           </div>
-                          <div className="flex items-center gap-2 text-sm text-gray-600">
-                            <Tag className="w-4 h-4" />
-                            <span>Gold: {item.product.gold_color}</span>
+
+                          {/* Quantity Control */}
+                          <div className="mb-4">
+                            <span className="text-sm text-gray-600 mb-2 block">Quantity:</span>
+                            <div className="flex items-center border-2 border-gray-200 rounded-lg overflow-hidden bg-white w-fit">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-10 w-10 rounded-none hover:bg-gray-100 disabled:opacity-50"
+                                onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                                disabled={loading || item.quantity <= 1 || isItemUnavailable}
+                              >
+                                <Minus className="w-4 h-4" />
+                              </Button>
+                              <div className="h-10 w-16 flex items-center justify-center border-x border-gray-200 font-medium bg-gray-50">
+                                {item.quantity}
+                              </div>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-10 w-10 rounded-none hover:bg-gray-100 disabled:opacity-50"
+                                onClick={() => handleIncreaseQuantity(item.id, item.quantity, item.variant.stock)}
+                                disabled={loading || item.quantity >= item.variant.stock || isItemUnavailable}
+                              >
+                                <Plus className="w-4 h-4" />
+                              </Button>
+                            </div>
+                            <p className="text-xs text-gray-500 mt-1">{item.variant.stock} items available</p>
                           </div>
-                          <div className="flex items-center gap-2 text-sm text-gray-600 sm:col-span-2">
-                            <Package className="w-4 h-4" />
-                            <span>Category: {item.product.category || "N/A"}</span>
+
+                          {/* Price Breakdown */}
+                          <div className="bg-gray-50 rounded-lg p-4 mb-4">
+                            <div className="space-y-2 text-sm">
+                              <div className="flex justify-between">
+                                <span className="text-gray-600">Subtotal:</span>
+                                <span className="font-medium">₹{item.variant.base_price.toLocaleString("en-IN")}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-gray-600">Discount:</span>
+                                <span className="font-medium text-green-600">
+                                  -₹{item.variant.discount_amount.toLocaleString("en-IN")}
+                                </span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-gray-600">Tax:</span>
+                                <span className="font-medium">₹{item.variant.tax_amount.toLocaleString("en-IN")}</span>
+                              </div>
+                            </div>
                           </div>
                         </div>
 
-                        {/* Quantity Control */}
-                        <div className="mb-4">
-                          <span className="text-sm text-gray-600 mb-2 block">Quantity:</span>
-                          <div className="flex items-center border-2 border-gray-200 rounded-lg overflow-hidden bg-white w-fit">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-10 w-10 rounded-none hover:bg-gray-100 disabled:opacity-50"
-                              onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                              disabled={loading || item.quantity <= 1}
-                            >
-                              <Minus className="w-4 h-4" />
-                            </Button>
-                            <div className="h-10 w-16 flex items-center justify-center border-x border-gray-200 font-medium bg-gray-50">
-                              {item.quantity}
-                            </div>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-10 w-10 rounded-none hover:bg-gray-100 disabled:opacity-50"
-                              onClick={() => handleIncreaseQuantity(item.id, item.quantity, item.variant.stock)}
-                              disabled={loading || item.quantity >= item.variant.stock}
-                            >
-                              <Plus className="w-4 h-4" />
-                            </Button>
+                        {/* Price and Remove Button */}
+                        <div className="flex justify-between items-center">
+                          <div className="text-2xl font-bold text-green-600">
+                            ₹{item.variant.total_price.toLocaleString("en-IN")}
                           </div>
-                          <p className="text-xs text-gray-500 mt-1">{item.variant.stock} items available</p>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="bg-red-600 text-white border border-red-600 hover:bg-red-700 hover:text-white rounded-lg transition-all duration-200"
+                            onClick={() => handleRemoveItem(item.id, item.product.name)}
+                            disabled={loading}
+                          >
+                            <Trash2 className="w-4 h-4 mr-2" />
+                            Remove
+                          </Button>
                         </div>
-
-                        {/* Price Breakdown */}
-                        <div className="bg-gray-50 rounded-lg p-4 mb-4">
-                          <div className="space-y-2 text-sm">
-                            <div className="flex justify-between">
-                              <span className="text-gray-600">Subtotal:</span>
-                              <span className="font-medium">₹{item.variant.base_price.toLocaleString("en-IN")}</span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span className="text-gray-600">Discount:</span>
-                              <span className="font-medium text-green-600">
-                                -₹{item.variant.discount_amount.toLocaleString("en-IN")}
-                              </span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span className="text-gray-600">Tax:</span>
-                              <span className="font-medium">₹{item.variant.tax_amount.toLocaleString("en-IN")}</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Price and Remove Button */}
-                      <div className="flex justify-between items-center">
-                        <div className="text-2xl font-bold text-green-600">
-                          ₹{item.variant.total_price.toLocaleString("en-IN")}
-                        </div>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="bg-red-600 text-white border border-red-600 hover:bg-red-700 hover:text-white rounded-lg transition-all duration-200"
-                          onClick={() => handleRemoveItem(item.id, item.product.name)}
-                          disabled={loading}
-                        >
-                          <Trash2 className="w-4 h-4 mr-2" />
-                          Remove
-                        </Button>
                       </div>
                     </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                </CardContent>
+              </Card>
+            )
+          })}
         </div>
 
         {/* Order Summary */}
@@ -582,10 +601,10 @@ export default function ShoppingCartComponent() {
                 <Button
                   className="w-full mt-6 bg-[#8c2a2a] hover:bg-[#7a2424] text-white font-medium py-3 rounded-xl transition-all duration-200 transform hover:scale-105 disabled:opacity-50"
                   onClick={() => navigate("/checkoutpage")}
-                  disabled={loading || cart.items.length === 0}
+                  disabled={loading || cart.items.length === 0 || isAnyItemUnavailable}
                 >
                   <CreditCard className="w-5 h-5 mr-2" />
-                  Place Order
+                  {isAnyItemUnavailable ? "Can't place order" : "Place Order"}
                 </Button>
               </div>
             </CardContent>
@@ -617,3 +636,4 @@ export default function ShoppingCartComponent() {
     </div>
   )
 }
+

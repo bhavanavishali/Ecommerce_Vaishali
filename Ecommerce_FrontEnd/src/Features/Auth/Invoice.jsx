@@ -527,13 +527,13 @@ export default function InvoicePage() {
                   <span>₹ {invoice.total_amount.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-500">Total Order Discount</span>
+                  <span className="text-gray-500">Product Discount</span>
                   <span className="text-red-600">- ₹ {invoice.total_discount.toFixed(2)}</span>
                 </div>
                  
                  <div className="flex justify-between text-sm">
                   <span className="text-gray-500">Tax</span>
-                 <span className="text-red-600">
+                 <span>
                 ₹ {invoice?.total_tax ? invoice.total_tax.toFixed(2) : '0.00'}
               </span>
                 </div>

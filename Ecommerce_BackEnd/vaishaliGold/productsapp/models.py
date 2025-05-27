@@ -82,24 +82,42 @@ class ProductVariant(models.Model):
             logger.error(f"Error in calculate_base_price: {e}")
             raise ValidationError(f"Error calculating base price: {e}")
 
+
     def calculate_discount_amount(self):
         try:
             total_price = self.get_total_price_before_discount()
-            discount = self.product.discount if (self.product.product_offer_Isactive and self.product.is_active) else 0
-            category_offer = (self.product.category.category_offer if (self.product.category and
-                            self.product.category.category_offer_Isactive and self.product.category.is_active) else 0)
-
+            
+            # Initialize defaults
+            discount = Decimal(0)
+            category_offer = Decimal(0)
+            
+            # Check product discount
+            if self.product.product_offer_Isactive and self.product.is_active:
+                discount = Decimal(self.product.discount)
+            
+            # Check category discount
+            if self.product.category and self.product.category.category_offer_Isactive and self.product.category.is_active:
+                category_offer = Decimal(self.product.category.category_offer)
+            
+            # Determine the maximum offer
             max_offer = max(discount, category_offer)
-            discount_amount = (total_price * Decimal(max_offer) / 100) if max_offer > 0 else Decimal(0)
-
+            discount_amount = (total_price * max_offer / 100) if max_offer > 0 else Decimal(0)
+            
+            # Assign values to instance
             self.discount_amount = discount_amount
             self.applied_offer_percentage = max_offer
             self.applied_offer_type = 'product' if discount >= category_offer else 'category' if category_offer > 0 else 'none'
-            logger.info(f"Calculated discount_amount: {self.discount_amount}, applied_offer_percentage: {self.applied_offer_percentage}, applied_offer_type: {self.applied_offer_type}")
-            return discount_amount
-        except Exception as e:
+            
+            logger.info(f"Calculated discount_amount: {self.discount_amount}, "
+                        f"applied_offer_percentage: {self.applied_offer_percentage}, "
+                        f"applied_offer_type: {self.applied_offer_type}")
+            
+            return self.discount_amount, self.applied_offer_percentage, self.applied_offer_type
+        
+        except (InvalidOperation, TypeError, AttributeError) as e:
             logger.error(f"Error in calculate_discount_amount: {e}")
             raise ValidationError(f"Error calculating discount amount: {e}")
+        
 
     def calculate_tax_per_product(self):
         try:

@@ -644,7 +644,7 @@ class AddressDetailsView(APIView):
         return Response(serializer.data)
     def patch(self,request,id):
         address=self.get_object(id)
-        serializer=AddressSerializer(address,data=request.data,partial=True)
+        serializer=AddressSerializer(address,data=request.data,partial=True,context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)

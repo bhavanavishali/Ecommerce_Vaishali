@@ -2415,7 +2415,7 @@ export default function CheckoutPage() {
                     </div>
                   ) : (
                     <div className="flex items-center justify-center">
-                      <span>Complete Order {formatPrice(total)}</span>
+                      <span>Places Order {formatPrice(total)}</span>
                       <ChevronRight className="ml-2 h-5 w-5" />
                     </div>
                   )}

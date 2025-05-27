@@ -236,16 +236,24 @@ class AddressSerializer(serializers.ModelSerializer):
         model=Address
         fields=[
             'id','name','house_no','city','state','pin_code','address_type','landmark','mobile_number','alternate_number'  ,'isDefault'   ]
-        
-        def validate_isDefault(self, value):
-            if value:
+    def validate_name(self, value):
+        if not re.match(r'^[A-Za-z0-9 ]+$', value):
+            raise serializers.ValidationError("Name must contain only letters, digits, and spaces.")
+        return value
+
+    def validate_landmark(self, value):
+        if not re.match(r'^[A-Za-z0-9 ]+$', value):
+            raise serializers.ValidationError("Landmark must contain only letters, digits, and spaces.")
+        return value
+    def validate_isDefault(self, value):
+        if value:
                 
-                request = self.context.get('request')
-                user = request.user
-                existing_default = Address.objects.filter(user=user, isDefault=True).exclude(id=self.instance.id if self.instance else None)
-                if existing_default.exists():
-                    existing_default.update(isDefault=False)
-            return value
+            request = self.context.get('request')
+            user = request.user
+            existing_default = Address.objects.filter(user=user, isDefault=True).exclude(id=self.instance.id if self.instance else None)
+            if existing_default.exists():
+                existing_default.update(isDefault=False)
+        return value
 
 
     

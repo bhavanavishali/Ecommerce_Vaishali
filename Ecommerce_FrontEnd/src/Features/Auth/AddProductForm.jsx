@@ -1256,7 +1256,7 @@ const AddProductForm = () => {
         setImageFiles((prev) => [...prev, croppedImage.file]);
         setImagePreviews((prev) => [...prev, croppedImage.url]);
       }
-      // Remove the processed image from pendingImages and move to the next
+      
       setPendingImages((prev) => {
         const remaining = prev.slice(1);
         if (remaining.length > 0) {

@@ -126,7 +126,7 @@ function OrderTable() {
                             <TableHead className="font-medium">Customer</TableHead>
                             <TableHead className="font-medium">Date</TableHead>
                             <TableHead className="font-medium">Total Amount</TableHead>
-                            
+                           
                             <TableHead className="font-medium">Actions</TableHead>
                         </TableRow>
                     </TableHeader>
