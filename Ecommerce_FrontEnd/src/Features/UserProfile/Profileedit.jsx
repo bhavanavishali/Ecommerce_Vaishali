@@ -10,7 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Separator } from "@/components/ui/separator"
 import { User, Phone, Mail, Calendar, Save, Loader2, Copy, Share2, Ticket } from "lucide-react"
 
-const ProfileInfo = () => {
+const ProfileEdit = () => {
   const [user, setUser] = useState({
     firstName: "",
     lastName: "",
@@ -426,4 +426,4 @@ const fetchUser = async () => {
   )
 }
 
-export default ProfileInfo
+export default ProfileEdit

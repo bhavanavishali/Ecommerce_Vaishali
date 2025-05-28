@@ -43,3 +43,35 @@ class CouponSerializer(serializers.ModelSerializer):
                 
         return data
     
+# ==================== Dashboard =====================================
+
+class SalesDataSerializer(serializers.Serializer):
+    period = serializers.CharField(source='month', allow_null=True)
+    week = serializers.CharField(required=False)
+    day = serializers.CharField(required=False)
+    hour = serializers.CharField(required=False)
+    sales = serializers.FloatField()
+
+    class Meta:
+        fields = ['month', 'week', 'day', 'hour', 'sales']
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+       
+        if 'month' in instance:
+            representation['month'] = instance['month']
+        elif 'week' in instance:
+            representation['week'] = instance['week']
+        elif 'day' in instance:
+            representation['day'] = instance['day']
+        elif 'hour' in instance:
+            representation['hour'] = instance['hour']
+        return representation
+
+class TopProductSerializer(serializers.Serializer):
+    name = serializers.CharField()
+    sales = serializers.IntegerField()
+
+class TopCategorySerializer(serializers.Serializer):
+    name = serializers.CharField()
+    sales = serializers.IntegerField()

@@ -677,8 +677,9 @@ class SalesReportSerializer(serializers.ModelSerializer):
     def get_refund_amount(self, obj):
         return sum((item.final_price for item in obj.items.filter(payment_status__in=['refunded', 'partially_refunded'])), 0)
     
-    # def get_refund_amount(self, obj):
-    #     refund = sum(item.final_price for item in obj.items.filter(status='returned'))
-    #     if obj.items.filter(status='active').count() == 0 and obj.items.filter(status='returned').exists():
-    #         refund += obj.shipping
-    #     return refund
+# Tax
+
+class TaxSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tax
+        fields = ['id', 'name', 'percentage']

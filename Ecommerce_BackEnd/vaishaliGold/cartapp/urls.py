@@ -54,4 +54,10 @@ urlpatterns = [
     # Salesreport
 
     path('sales-report/', SalesReportView.as_view(), name='sales-report'),
+
+
+    # tax
+
+    path('taxes/', TaxListCreateView.as_view(), name='tax-list-create'),
+    path('taxes/<int:pk>/', TaxDetailView.as_view(), name='tax-detail'),
 ]

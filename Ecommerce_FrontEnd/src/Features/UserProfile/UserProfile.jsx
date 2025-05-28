@@ -3,9 +3,10 @@
 import { useState } from "react"
 import { User, Package, MapPin, Wallet, Camera } from "lucide-react"
 import { cn } from "@/lib/utils"
-import ProfileInfo from './ProfileInfo'
+import ProfileEdit from './Profileedit'
 import MyOrders from "./Myorders"
 import ManageAddresses from "./manage-address"
+import ProfileInfo from './Profile'
 
 import WalletPage from "./wallets"
 
@@ -15,7 +16,8 @@ const UserProfile= () => {
   const [activePage, setActivePage] = useState("profile")
 
   const menuItems = [
-    { id: "profile", label: "Profile Information", icon: User },
+    { id: "profile information", label: "Profile Information", icon: User },
+    { id: "profile edit", label: "Profile Edit", icon: User },
     { id: "myorders", label: "My Orders", icon: Package },
     { id: "addresses", label: "Manage Addresses", icon: MapPin },
     { id: "wallet", label: "Wallet", icon: Wallet },
@@ -23,8 +25,10 @@ const UserProfile= () => {
 
   const renderPage = () => {
     switch (activePage) {
-      case "profile":
+      case "profile information":
         return <ProfileInfo />
+      case "profile edit":
+        return <ProfileEdit />
       case "myorders":
         return <MyOrders />
       case "addresses":

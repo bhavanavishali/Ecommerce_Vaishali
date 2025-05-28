@@ -11,6 +11,23 @@ from django.shortcuts import get_object_or_404
 from rest_framework import status, permissions
 from datetime import datetime
 
+from django.db.models import Sum, Value, DecimalField
+from django.db.models.functions import Coalesce
+from decimal import Decimal
+
+
+
+
+
+
+logger = logging.getLogger(__name__)
+
+
+from django.core.paginator import Paginator
+from django.db.models import Sum, Value, DecimalField, Q
+
+
+
 # ==========================  Cart related views   ============================
 
 
@@ -38,41 +55,6 @@ class CartDetailView(APIView):
         return Response(serializer.data)
 
 
-# class AddToCartView(APIView):
-#     permission_classes = [IsAuthenticated]
-    
-#     def post(self, request):
-#         cart, created = Cart.objects.get_or_create(user=request.user)
-#         variant_id = request.data.get('variant_id')
-#         if not variant_id or not str(variant_id).isdigit():
-#             return Response({'error': 'Valid variant_id is required'}, 
-#                           status=status.HTTP_400_BAD_REQUEST)
-        
-#         try:
-#             quantity = int(request.data.get('quantity', 1))
-#             if quantity <= 0:
-#                 return Response({'error': 'Quantity must be positive'}, 
-#                               status=status.HTTP_400_BAD_REQUEST)
-#         except ValueError:
-#             return Response({'error': 'Invalid quantity'}, 
-#                           status=status.HTTP_400_BAD_REQUEST)
-        
-#         try:
-#             variant = ProductVariant.objects.get(id=variant_id, available=True, is_active=True)
-#         except ProductVariant.DoesNotExist:
-#             return Response({'error': 'Variant not found or not available'}, status=status.HTTP_404_NOT_FOUND)
-        
-#         cart_item, created = CartItem.objects.get_or_create(cart=cart,variant=variant,defaults={'quantity': quantity})
-        
-#         if not created:
-#             cart_item.quantity += quantity
-        
-#         if cart_item.quantity > variant.stock:
-#             return Response({'error': 'Insufficient stock'}, status=status.HTTP_400_BAD_REQUEST)
-        
-#         cart_item.save() # Triggers cart.update_totals()
-#         serializer = CartSerializer(cart)
-#         return Response(serializer.data)
 
 class AddToCartView(APIView):
     permission_classes = [IsAuthenticated]
@@ -882,321 +864,6 @@ class RetryRazorpayPaymentView(APIView):
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 #========================= Sales Report=======================================
-from django.db.models import Sum, Value, DecimalField
-from django.db.models.functions import Coalesce
-from decimal import Decimal
-
-
-
-# class SalesReportView(APIView):
-#     permission_classes = [IsAdminUser]
-
-#     def get(self, request):
-#         try:
-#             # Get filter parameters
-#             print("ssssssssssssssss",request.user)
-#             filter_type = request.query_params.get('filter_type', 'thisYear')
-#             from_date = request.query_params.get('from_date')
-#             to_date = request.query_params.get('to_date')
-
-#             # Initialize date range
-#             today = timezone.now().date()
-#             if filter_type == 'today':
-#                 from_date = to_date = today
-#             elif filter_type == 'thisWeek':
-#                 from_date = today - timezone.timedelta(days=today.weekday())
-#                 to_date = today
-#             elif filter_type == 'thisMonth':
-#                 from_date = today.replace(day=1)
-#                 to_date = today
-#             elif filter_type == 'thisYear':
-#                 from_date = today.replace(month=1, day=1)
-#                 to_date = today
-#             elif filter_type == 'custom':
-#                 if not (from_date and to_date):
-#                     return Response(
-#                         {"error": "Both from_date and to_date are required for custom filter"},
-#                         status=status.HTTP_400_BAD_REQUEST
-#                     )
-#             else:
-#                 return Response(
-#                     {"error": f"Invalid filter_type: {filter_type}"},
-#                     status=status.HTTP_400_BAD_REQUEST
-#                 )
-
-           
-#             if filter_type == 'custom':
-#                 try:
-#                     if from_date and not isinstance(from_date, datetime.date):
-#                         from_date = datetime.strptime(from_date, '%Y-%m-%d').date()
-#                     if to_date and not isinstance(to_date, datetime.date):
-#                         to_date = datetime.strptime(to_date, '%Y-%m-%d').date()
-#                 except ValueError:
-#                     return Response(
-#                         {"error": "Invalid date format. Use YYYY-MM-DD"},
-#                         status=status.HTTP_400_BAD_REQUEST
-#                     )
-
-#                 # Ensure to_date is not before from_date
-#                 if from_date and to_date and to_date < from_date:
-#                     return Response(
-#                         {"error": "To date cannot be before from date"},
-#                         status=status.HTTP_400_BAD_REQUEST
-#                     )
-
-#             # Query orders
-#             queryset = Order.objects.all()
-#             if from_date:
-#                 queryset = queryset.filter(created_at__date__gte=from_date)
-#             if to_date:
-#                 queryset = queryset.filter(created_at__date__lte=to_date)
-
-#             # Calculate summary using database aggregations
-#             summary = queryset.aggregate(
-#                 total_sales=Coalesce(Sum('total_amount'), Value(0.00, output_field=DecimalField())),
-#                 total_discount=Coalesce(Sum('total_discount'), Value(0.00, output_field=DecimalField())),
-#                 coupon_discount=Coalesce(Sum('coupon_discount'), Value(0.00, output_field=DecimalField())),
-#             )
-
-#             # Serialize data
-#             serializer = SalesReportSerializer(queryset, many=True)
-
-#             return Response({
-#                 'salesData': serializer.data,
-#                 'summary': {
-#                     'totalSales': float(summary['total_sales']),
-#                     'totalDiscount': float(summary['total_discount']),
-#                 }
-#             }, status=status.HTTP_200_OK)
-
-#         except Exception as e:
-#             logger.error(f"Error generating sales report: {str(e)}", exc_info=True)
-#             return Response(
-#                 {"error": f"Failed to generate sales report: {str(e)}"},
-#                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
-#             )
-
-
-
-
-logger = logging.getLogger(__name__)
-
-# class SalesReportView(APIView):
-#     permission_classes = [IsAdminUser]
-
-#     def get(self, request):
-#         try:
-#             filter_type = request.query_params.get('filter_type', 'thisYear')
-#             from_date = request.query_params.get('from_date')
-#             to_date = request.query_params.get('to_date')
-
-#             # Initialize date range
-#             today = timezone.now().date()
-
-#             # Handle filter types
-#             if filter_type == 'today':
-#                 from_date = to_date = today
-#             elif filter_type == 'thisWeek':
-#                 from_date = today - timezone.timedelta(days=today.weekday())
-#                 to_date = today
-#             elif filter_type == 'thisMonth':
-#                 from_date = today.replace(day=1)
-#                 to_date = today
-#             elif filter_type == 'thisYear':
-#                 from_date = today.replace(month=1, day=1)
-#                 to_date = today
-#             elif filter_type == 'custom':
-#                 # Validate presence of from_date and to_date
-#                 if not (from_date and to_date):
-#                     logger.warning(f"Missing date parameters: from_date={from_date}, to_date={to_date}")
-#                     return Response(
-#                         {"error": "Both from_date and to_date are required for custom filter"},
-#                         status=status.HTTP_400_BAD_REQUEST
-#                     )
-#                 # Parse dates
-#                 try:
-#                     from_date = datetime.strptime(from_date, '%Y-%m-%d').date()  # Fixed
-#                     to_date = datetime.strptime(to_date, '%Y-%m-%d').date()      # Fixed
-#                 except ValueError as e:
-#                     logger.warning(f"Invalid date format: from_date={from_date}, to_date={to_date}, error={str(e)}")
-#                     return Response(
-#                         {"error": "Invalid date format. Use YYYY-MM-DD"},
-#                         status=status.HTTP_400_BAD_REQUEST
-#                     )
-#                 # Validate date range
-#                 if to_date < from_date:
-#                     logger.warning(f"Invalid date range: to_date={to_date} is before from_date={from_date}")
-#                     return Response(
-#                         {"error": "To date cannot be before from date"},
-#                         status=status.HTTP_400_BAD_REQUEST
-#                     )
-#             else:
-#                 logger.warning(f"Invalid filter_type: {filter_type}")
-#                 return Response(
-#                     {"error": f"Invalid filter_type: {filter_type}"},
-#                     status=status.HTTP_400_BAD_REQUEST
-#                 )
-
-#             # Build queryset with explicit date filtering
-#             queryset = Order.objects.all()
-#             if from_date and to_date:
-#                 # Ensure timezone-aware filtering
-#                 queryset = queryset.filter(
-#                     created_at__date__gte=from_date,
-#                     created_at__date__lte=to_date
-#                 )
-#                 logger.debug(
-#                     f"Custom filter applied: from_date={from_date}, to_date={to_date}, "
-#                     f"queryset_count={queryset.count()}"
-#                 )
-
-#             # Aggregate summary
-#             summary = queryset.aggregate(
-#                 total_sales=Coalesce(Sum('total_amount'), Value(0.00, output_field=DecimalField())),
-#                 total_discount=Coalesce(Sum('total_discount'), Value(0.00, output_field=DecimalField())),
-#                 coupon_discount=Coalesce(Sum('coupon_discount'), Value(0.00, output_field=DecimalField())),
-#             )
-
-#             # Serialize data
-#             serializer = SalesReportSerializer(queryset, many=True)
-
-#             # Log response details for debugging
-#             logger.debug(
-#                 f"Filter Type: {filter_type}, From: {from_date}, To: {to_date}, "
-#                 f"Results: {queryset.count()}, Sales Data Length: {len(serializer.data)}"
-#             )
-
-#             # Return response
-#             response_data = {
-#                 'salesData': serializer.data,
-#                 'summary': {
-#                     'totalSales': float(summary['total_sales']),
-#                     'totalDiscount': float(summary['total_discount']),
-#                     'couponDiscount': float(summary['coupon_discount']),
-#                 }
-#             }
-
-#             # Add debug message if no data
-#             if not queryset.exists():
-#                 response_data['message'] = "No orders found in the specified date range"
-
-#             return Response(response_data, status=status.HTTP_200_OK)
-
-#         except Exception as e:
-#             logger.error(f"Error generating sales report: {str(e)}", exc_info=True)
-#             return Response(
-#                 {"error": f"Failed to generate sales report: {str(e)}"},
-#                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
-#             )
-
-
-from django.core.paginator import Paginator
-from django.db.models import Sum, Value, DecimalField, Q
-# class SalesReportView(APIView):
-#     permission_classes = [IsAdminUser]
-
-#     def get(self, request):
-#         try:
-#             filter_type = request.query_params.get('filter_type', 'thisYear')
-#             from_date = request.query_params.get('from_date')
-#             to_date = request.query_params.get('to_date')
-#             page = int(request.query_params.get('page', 1))
-#             page_size = int(request.query_params.get('page_size', 10))
-
-#             today = timezone.now().date()
-
-#             if filter_type == 'today':
-#                 from_date = to_date = today
-#             elif filter_type == 'thisWeek':
-#                 from_date = today - timezone.timedelta(days=today.weekday())
-#                 to_date = today
-#             elif filter_type == 'thisMonth':
-#                 from_date = today.replace(day=1)
-#                 to_date = today
-#             elif filter_type == 'thisYear':
-#                 from_date = today.replace(month=1, day=1)
-#                 to_date = today
-#             elif filter_type == 'custom':
-#                 if not (from_date and to_date):
-#                     logger.warning(f"Missing date parameters: from_date={from_date}, to_date={to_date}")
-#                     return Response(
-#                         {"error": "Both from_date and to_date are required for custom filter"},
-#                         status=status.HTTP_400_BAD_REQUEST
-#                     )
-#                 try:
-#                     from_date = datetime.strptime(from_date, '%Y-%m-%d').date()
-#                     to_date = datetime.strptime(to_date, '%Y-%m-%d').date()
-#                 except ValueError as e:
-#                     logger.warning(f"Invalid date format: from_date={from_date}, to_date={to_date}, error={str(e)}")
-#                     return Response(
-#                         {"error": "Invalid date format. Use YYYY-MM-DD"},
-#                         status=status.HTTP_400_BAD_REQUEST
-#                     )
-#                 if to_date < from_date:
-#                     logger.warning(f"Invalid date range: to_date={to_date} is before from_date={from_date}")
-#                     return Response(
-#                         {"error": "To date cannot be before from date"},
-#                         status=status.HTTP_400_BAD_REQUEST
-#                     )
-#             else:
-#                 logger.warning(f"Invalid filter_type: {filter_type}")
-#                 return Response(
-#                     {"error": f"Invalid filter_type: {filter_type}"},
-#                     status=status.HTTP_400_BAD_REQUEST
-#                 )
-
-#             queryset = Order.objects.all()
-#             if from_date and to_date:
-#                 # Use inclusive range for dates
-#                 start_datetime = timezone.make_aware(datetime.combine(from_date, datetime.min.time()))
-#                 end_datetime = timezone.make_aware(datetime.combine(to_date, datetime.max.time()))
-#                 queryset = queryset.filter(
-#                     created_at__range=(start_datetime, end_datetime)
-#                 )
-
-#             # Paginate queryset
-#             paginator = Paginator(queryset, page_size)
-#             page_obj = paginator.get_page(page)
-
-#             # Aggregate summary
-#             summary = queryset.aggregate(
-#                 total_sales=Coalesce(Sum('final_total'), Value(0.00, output_field=DecimalField())),
-#                 total_discount=Coalesce(Sum('total_discount'), Value(0.00, output_field=DecimalField())),
-#                 coupon_discount=Coalesce(Sum('coupon_discount'), Value(0.00, output_field=DecimalField())),
-#                 total_refunded=Coalesce(Sum('total_refunded'), Value(0.00, output_field=DecimalField())),
-#             )
-
-#             serializer = SalesReportSerializer(page_obj.object_list, many=True)
-
-#             logger.debug(
-#                 f"Filter Type: {filter_type}, From: {from_date}, To: {to_date}, "
-#                 f"Page: {page}, Page Size: {page_size}, Results: {page_obj.object_list.count()}, "
-#                 f"Sales Data Length: {len(serializer.data)}"
-#             )
-
-#             response_data = {
-#                 'salesData': serializer.data,
-#                 'summary': {
-#                     'totalSales': float(summary['total_sales']),
-#                     'totalDiscount': float(summary['total_discount']),
-#                     'couponDiscount': float(summary['coupon_discount']),
-#                     'totalRefund': float(summary['total_refunded']),
-#                 },
-#                 'total_pages': paginator.num_pages,
-#                 'current_page': page_obj.number,
-#             }
-
-#             if not page_obj.object_list.exists():
-#                 response_data['message'] = "No orders found in the specified date range"
-
-#             return Response(response_data, status=status.HTTP_200_OK)
-
-#         except Exception as e:
-#             logger.error(f"Error generating sales report: {str(e)}", exc_info=True)
-#             return Response(
-#                 {"error": f"Failed to generate sales report: {str(e)}"},
-#                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
-#             )
 
 
 class SalesReportView(APIView):
@@ -1276,7 +943,7 @@ class SalesReportView(APIView):
             )
 
             serializer = SalesReportSerializer(page_obj.object_list, many=True)
-            print("55555555555555555",summary)
+            
             logger.debug(
                 f"Filter Type: {filter_type}, From: {from_date}, To: {to_date}, "
                 f"Page: {page}, Page Size: {page_size}, Results: {page_obj.object_list.count()}, "
@@ -1306,3 +973,50 @@ class SalesReportView(APIView):
                 {"error": f"Failed to generate sales report: {str(e)}"},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+        
+#====================== Tax related view ===========================
+
+
+class TaxListCreateView(APIView):
+    def get(self, request):
+        taxes = Tax.objects.all()
+        serializer = TaxSerializer(taxes, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = TaxSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class TaxDetailView(APIView):
+    def get_object(self, pk):
+        try:
+            return Tax.objects.get(pk=pk)
+        except Tax.DoesNotExist:
+            return None
+
+    def get(self, request, pk):
+        tax = self.get_object(pk)
+        if tax is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = TaxSerializer(tax)
+        return Response(serializer.data)
+
+    def patch(self, request, pk):
+        tax = self.get_object(pk)
+        if tax is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = TaxSerializer(tax, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        tax = self.get_object(pk)
+        if tax is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        tax.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
