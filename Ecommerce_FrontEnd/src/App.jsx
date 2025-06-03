@@ -34,7 +34,7 @@ import Wishlist from './Features/Auth/Wishlist';
 import Invoice from './Features/Auth/Invoice';
 import ProtectedRoute from './protected_route/protected_user';
 import AdminProtectedRoute from './protected_route/protected_admin';
-
+import BannerManagement from './Features/Banner/Banner';
 import Report from './Features/SalesReport/Report';
 
 function App() {

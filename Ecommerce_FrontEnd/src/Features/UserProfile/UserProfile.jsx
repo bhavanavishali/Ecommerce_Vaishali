@@ -1,13 +1,13 @@
 "use client"
 
 import { useState } from "react"
-import { User, Package, MapPin, Wallet, Camera } from "lucide-react"
+import { User, Package, MapPin, Wallet, Camera,KeyRound, } from "lucide-react"
 import { cn } from "@/lib/utils"
 import ProfileEdit from './Profileedit'
 import MyOrders from "./Myorders"
 import ManageAddresses from "./manage-address"
 import ProfileInfo from './Profile'
-
+import ChangePassword from "./Changepassword"
 import WalletPage from "./wallets"
 
 
@@ -21,6 +21,7 @@ const UserProfile= () => {
     { id: "myorders", label: "My Orders", icon: Package },
     { id: "addresses", label: "Manage Addresses", icon: MapPin },
     { id: "wallet", label: "Wallet", icon: Wallet },
+    { id: "resetpassword", label: "Reset Password", icon: KeyRound },
   ]
 
   const renderPage = () => {
@@ -35,6 +36,8 @@ const UserProfile= () => {
         return <ManageAddresses />
       case "wallet":
         return <WalletPage />
+      case "resetpassword":
+        return <ChangePassword />
       default:
         return <ProfileInfo />
     }

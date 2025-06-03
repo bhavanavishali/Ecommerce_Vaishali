@@ -1,10 +1,9 @@
 
 
-
 // "use client"
 
 // import { useState, useEffect, useRef } from "react"
-// import { Heart, ShoppingCart, ChevronLeft, ChevronRight, Star, Filter, X } from "lucide-react"
+// import { Heart, ShoppingCart, ChevronLeft, ChevronRight, Star, Filter, X, Search } from "lucide-react"
 // import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 // import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 // import { Button } from "@/components/ui/button"
@@ -12,6 +11,7 @@
 // import { Label } from "@/components/ui/label"
 // import { Badge } from "@/components/ui/badge"
 // import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+// import { Input } from "@/components/ui/input"
 // import api from "../../api"
 // import { useNavigate } from "react-router-dom"
 // import banner2 from "/banner2.jpeg"
@@ -39,7 +39,7 @@
 
 // const bannerImages = [banner2, banner3]
 
-// // Helper function to show toast notifications
+
 // const showToast = (message, type = "success") => {
 //   const toast = document.createElement("div")
 //   const isError = type === "error"
@@ -81,6 +81,9 @@
 //   const { addToCart } = useCart()
 //   const { addToWishlist } = useWishlist()
 //   const [showMobileFilters, setShowMobileFilters] = useState(false)
+//   const [searchQuery, setSearchQuery] = useState("")
+//   const [currentPage, setCurrentPage] = useState(1)
+//   const [productsPerPage] = useState(12) 
 
 //   const handleAddToCart = async (variantId, quantity, event) => {
 //     if (event) {
@@ -88,17 +91,14 @@
 //       event.stopPropagation()
 //     }
 
-//     // Find the variant to check stock
 //     const product = displayedProducts.find((p) => p.variants && p.variants.some((v) => v.id === variantId))
 //     const variant = product?.variants.find((v) => v.id === variantId)
 
-//     // Check if variant exists and stock is 0
 //     if (variant && variant.stock === 0) {
 //       showToast("This item is out of stock", "error")
 //       return
 //     }
 
-//     // Check if stock is sufficient
 //     if (variant && variant.stock !== undefined && quantity > variant.stock) {
 //       showToast(`Insufficient stock! Only ${variant.stock} items available.`, "error")
 //       return
@@ -110,7 +110,7 @@
 //     } catch (error) {
 //       console.error("Add to cart failed:", error)
 //       const errorMessage =
-//         error.response?.data?.error ||  // Match backend error field
+//         error.response?.data?.error ||
 //         error.response?.data?.message ||
 //         "Failed to add item to cart. Please try again."
 //       showToast(errorMessage, "error")
@@ -216,7 +216,7 @@
 
 //   useEffect(() => {
 //     applyFiltersAndSort()
-//   }, [filters, sortBy, allProducts])
+//   }, [filters, sortBy, allProducts, searchQuery])
 
 //   const fetchProducts = async () => {
 //     setLoading(true)
@@ -241,6 +241,15 @@
 
 //   const applyFiltersAndSort = () => {
 //     let filteredProducts = [...allProducts]
+
+//     // Apply search filter
+//     if (searchQuery) {
+//       filteredProducts = filteredProducts.filter((product) =>
+//         product.name.toLowerCase().includes(searchQuery.toLowerCase())
+//       )
+//     }
+
+//     // Apply category filters
 //     if (filters.gender.length > 0) {
 //       filteredProducts = filteredProducts.filter((p) => filters.gender.includes(p.gender))
 //     }
@@ -249,9 +258,11 @@
 //     }
 //     if (filters.category_name.length > 0) {
 //       filteredProducts = filteredProducts.filter((p) =>
-//         filters.category_name.includes(p.productCategory || p.category_name),
+//         filters.category_name.includes(p.productCategory || p.category_name)
 //       )
 //     }
+
+//     // Apply sorting
 //     if (sortBy) {
 //       filteredProducts.sort((a, b) => {
 //         switch (sortBy) {
@@ -270,7 +281,9 @@
 //         }
 //       })
 //     }
+
 //     setDisplayedProducts(filteredProducts)
+//     setCurrentPage(1) // Reset to first page when filters or search change
 //   }
 
 //   const handleFilterChange = (category, value) => {
@@ -287,6 +300,8 @@
 //   const clearFilters = () => {
 //     setFilters({ gender: [], occasion: [], category_name: [] })
 //     setSortBy("")
+//     setSearchQuery("")
+//     setCurrentPage(1)
 //   }
 
 //   const toggleWishlist = (productId) => {
@@ -299,12 +314,12 @@
 //   }
 
 //   const hasActiveFilters = () => {
-//     return Object.values(filters).some((arr) => arr.length > 0)
+//     return Object.values(filters).some((arr) => arr.length > 0) || searchQuery !== ""
 //   }
 
 //   const changeBanner = (direction) => {
 //     setCurrentBanner((prev) =>
-//       direction === "next" ? (prev + 1) % bannerImages.length : (prev - 1 + bannerImages.length) % bannerImages.length,
+//       direction === "next" ? (prev + 1) % bannerImages.length : (prev - 1 + bannerImages.length) % bannerImages.length
 //     )
 //     if (bannerIntervalRef.current) {
 //       clearInterval(bannerIntervalRef.current)
@@ -315,7 +330,49 @@
 //   }
 
 //   const getActiveFilterCount = () => {
-//     return Object.values(filters).reduce((count, filterArray) => count + filterArray.length, 0)
+//     return Object.values(filters).reduce((count, filterArray) => count + filterArray.length, 0) + (searchQuery ? 1 : 0)
+//   }
+
+//   // Pagination logic
+//   const indexOfLastProduct = currentPage * productsPerPage
+//   const indexOfFirstProduct = indexOfLastProduct - productsPerPage
+//   const currentProducts = displayedProducts.slice(indexOfFirstProduct, indexOfLastProduct)
+//   const totalPages = Math.ceil(displayedProducts.length / productsPerPage)
+
+//   const handlePageChange = (pageNumber) => {
+//     setCurrentPage(pageNumber)
+//     window.scrollTo({ top: 0, behavior: "smooth" })
+//   }
+
+//   const handlePrevPage = () => {
+//     if (currentPage > 1) {
+//       setCurrentPage(currentPage - 1)
+//       window.scrollTo({ top: 0, behavior: "smooth" })
+//     }
+//   }
+
+//   const handleNextPage = () => {
+//     if (currentPage < totalPages) {
+//       setCurrentPage(currentPage + 1)
+//       window.scrollTo({ top: 0, behavior: "smooth" })
+//     }
+//   }
+
+//   // Generate page numbers for display
+//   const getPageNumbers = () => {
+//     const pageNumbers = []
+//     const maxPagesToShow = 5
+//     let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2))
+//     let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1)
+
+//     if (endPage - startPage + 1 < maxPagesToShow) {
+//       startPage = Math.max(1, endPage - maxPagesToShow + 1)
+//     }
+
+//     for (let i = startPage; i <= endPage; i++) {
+//       pageNumbers.push(i)
+//     }
+//     return pageNumbers
 //   }
 
 //   return (
@@ -374,7 +431,7 @@
 //         <span className="text-[#7a2828] font-medium">Jewellery</span>
 //       </div>
 
-//       {/* Title and Sort */}
+//       {/* Title, Search, and Sort */}
 //       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
 //         <div>
 //           <h1 className="text-2xl md:text-3xl font-semibold text-gray-900 flex items-center">
@@ -395,6 +452,17 @@
 //         </div>
 
 //         <div className="flex items-center gap-3 w-full md:w-auto">
+//           <div className="relative flex-1 md:flex-none">
+//             <Input
+//               type="text"
+//               placeholder="Search products..."
+//               value={searchQuery}
+//               onChange={(e) => setSearchQuery(e.target.value)}
+//               className="pl-10 border-gray-300 focus:ring-[#7a2828] focus:border-[#7a2828] w-full md:w-[200px]"
+//             />
+//             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+//           </div>
+
 //           <Sheet open={showMobileFilters} onOpenChange={setShowMobileFilters}>
 //             <SheetTrigger asChild>
 //               <Button
@@ -451,7 +519,7 @@
 //                           </div>
 //                         </AccordionContent>
 //                       </AccordionItem>
-//                     ) : null,
+//                     ) : null
 //                   )}
 //                 </Accordion>
 //               </div>
@@ -517,7 +585,7 @@
 //                       </div>
 //                     </AccordionContent>
 //                   </AccordionItem>
-//                 ) : null,
+//                 ) : null
 //               )}
 //             </Accordion>
 //           </div>
@@ -529,7 +597,7 @@
 //             <div className="flex justify-center items-center h-64">
 //               <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#7a2828]"></div>
 //             </div>
-//           ) : displayedProducts.length === 0 ? (
+//           ) : currentProducts.length === 0 ? (
 //             <div className="flex flex-col justify-center items-center h-64 bg-white rounded-lg shadow-sm p-8">
 //               <div className="text-[#7a2828] mb-4">
 //                 <X className="h-12 w-12 mx-auto" />
@@ -545,7 +613,7 @@
 //             </div>
 //           ) : (
 //             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-//               {displayedProducts.map((product) => {
+//               {currentProducts.map((product) => {
 //                 const { priceDisplay, basePrice, offerPercentage, variant } = getPriceDisplay(product)
 //                 const selectedVariantId = variant
 //                   ? variant.id
@@ -673,41 +741,45 @@
 //             </div>
 //           )}
 
-//           {/* Pagination placeholder */}
+//           {/* Pagination */}
 //           {displayedProducts.length > 0 && (
-//             <div className="mt-12 flex justify-center">
-//               <div className="flex items-center gap-2">
+//             <div className="mt-12 flex justify-center items-center gap-2">
+//               <Button
+//                 variant="outline"
+//                 size="icon"
+//                 className="border-gray-300 hover:border-[#7a2828] hover:text-[#7a2828]"
+//                 onClick={handlePrevPage}
+//                 disabled={currentPage === 1}
+//               >
+//                 <ChevronLeft className="h-4 w-4" />
+//               </Button>
+//               {getPageNumbers().map((pageNumber) => (
 //                 <Button
-//                   variant="outline"
-//                   size="icon"
-//                   className="border-gray-300 hover:border-[#7a2828] hover:text-[#7a2828]"
+//                   key={pageNumber}
+//                   variant={currentPage === pageNumber ? "default" : "outline"}
+//                   className={
+//                     currentPage === pageNumber
+//                       ? "border-gray-300 bg-[#7a2828] text-white hover:bg-[#5a1d1d]"
+//                       : "border-gray-300 hover:border-[#7a2828] hover:text-[#7a2828]"
+//                   }
+//                   onClick={() => handlePageChange(pageNumber)}
 //                 >
-//                   <ChevronLeft className="h-4 w-4" />
+//                   {pageNumber}
 //                 </Button>
-//                 <Button variant="outline" className="border-gray-300 bg-[#7a2828] text-white hover:bg-[#5a1d1d]">
-//                   1
-//                 </Button>
-//                 <Button variant="outline" className="border-gray-300 hover:border-[#7a2828] hover:text-[#7a2828]">
-//                   2
-//                 </Button>
-//                 <Button variant="outline" className="border-gray-300 hover:border-[#7a2828] hover:text-[#7a2828]">
-//                   3
-//                 </Button>
-//                 <Button
-//                   variant="outline"
-//                   size="icon"
-//                   className="border-gray-300 hover:border-[#7a2828] hover:text-[#7a2828]"
-//                 >
-//                   <ChevronRight className="h-4 w-4" />
-//                 </Button>
-//               </div>
+//               ))}
+//               <Button
+//                 variant="outline"
+//                 size="icon"
+//                 className="border-gray-300 hover:border-[#7a2828] hover:text-[#7a2828]"
+//                 onClick={handleNextPage}
+//                 disabled={currentPage === totalPages}
+//               >
+//                 <ChevronRight className="h-4 w-4" />
+//               </Button>
 //             </div>
 //           )}
 //         </div>
 //       </div>
-
-
-
 //     </div>
 //   )
 // }
@@ -717,7 +789,7 @@
 
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useCallback } from "react"
 import { Heart, ShoppingCart, ChevronLeft, ChevronRight, Star, Filter, X, Search } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
@@ -733,6 +805,7 @@ import banner2 from "/banner2.jpeg"
 import banner3 from "/banner3.png"
 import { useCart } from "@/Context/CartContext"
 import { useWishlist } from "@/Context/WishlistContext"
+import debounce from "lodash/debounce"
 
 const sortOptions = [
   { label: "Price: High to Low", value: "price-desc" },
@@ -754,7 +827,6 @@ const formatPrice = (price) => {
 
 const bannerImages = [banner2, banner3]
 
-// Helper function to show toast notifications
 const showToast = (message, type = "success") => {
   const toast = document.createElement("div")
   const isError = type === "error"
@@ -788,6 +860,7 @@ function UserHome() {
   const [sortBy, setSortBy] = useState("")
   const [wishlist, setWishlist] = useState([])
   const [loading, setLoading] = useState(true)
+  const [searchLoading, setSearchLoading] = useState(false)
   const [currentBanner, setCurrentBanner] = useState(0)
   const [hoveredProduct, setHoveredProduct] = useState(null)
   const bannerIntervalRef = useRef(null)
@@ -798,7 +871,8 @@ function UserHome() {
   const [showMobileFilters, setShowMobileFilters] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
   const [currentPage, setCurrentPage] = useState(1)
-  const [productsPerPage] = useState(12) // Number of products per page
+  const [productsPerPage] = useState(12)
+  const [goToPageInput, setGoToPageInput] = useState("")
 
   const handleAddToCart = async (variantId, quantity, event) => {
     if (event) {
@@ -929,10 +1003,6 @@ function UserHome() {
     }
   }, [])
 
-  useEffect(() => {
-    applyFiltersAndSort()
-  }, [filters, sortBy, allProducts, searchQuery])
-
   const fetchProducts = async () => {
     setLoading(true)
     try {
@@ -954,52 +1024,66 @@ function UserHome() {
     }
   }
 
-  const applyFiltersAndSort = () => {
-    let filteredProducts = [...allProducts]
+  const debouncedApplyFiltersAndSort = useCallback(
+    debounce(() => {
+      setSearchLoading(true)
+      let filteredProducts = [...allProducts]
 
-    // Apply search filter
-    if (searchQuery) {
-      filteredProducts = filteredProducts.filter((product) =>
-        product.name.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    }
+      // Apply search filter (product name and categories)
+      if (searchQuery) {
+        const query = searchQuery.toLowerCase()
+        filteredProducts = filteredProducts.filter((product) => {
+          const matchesName = product.name.toLowerCase().includes(query)
+          const matchesGender = product.gender?.toLowerCase().includes(query)
+          const matchesOccasion = product.occasion?.toLowerCase().includes(query)
+          const matchesCategory = (product.productCategory || product.category_name)?.toLowerCase().includes(query)
+          return matchesName || matchesGender || matchesOccasion || matchesCategory
+        })
+      }
 
-    // Apply category filters
-    if (filters.gender.length > 0) {
-      filteredProducts = filteredProducts.filter((p) => filters.gender.includes(p.gender))
-    }
-    if (filters.occasion.length > 0) {
-      filteredProducts = filteredProducts.filter((p) => filters.occasion.includes(p.occasion))
-    }
-    if (filters.category_name.length > 0) {
-      filteredProducts = filteredProducts.filter((p) =>
-        filters.category_name.includes(p.productCategory || p.category_name)
-      )
-    }
+      // Apply category filters
+      if (filters.gender.length > 0) {
+        filteredProducts = filteredProducts.filter((p) => filters.gender.includes(p.gender))
+      }
+      if (filters.occasion.length > 0) {
+        filteredProducts = filteredProducts.filter((p) => filters.occasion.includes(p.occasion))
+      }
+      if (filters.category_name.length > 0) {
+        filteredProducts = filteredProducts.filter((p) =>
+          filters.category_name.includes(p.productCategory || p.category_name)
+        )
+      }
 
-    // Apply sorting
-    if (sortBy) {
-      filteredProducts.sort((a, b) => {
-        switch (sortBy) {
-          case "price-desc":
-            return getEffectivePrice(b) - getEffectivePrice(a)
-          case "price-asc":
-            return getEffectivePrice(a) - getEffectivePrice(b)
-          case "name-asc":
-            return a.name.localeCompare(b.name)
-          case "name-desc":
-            return b.name.localeCompare(a.name)
-          case "new":
-            return new Date(b.created_at || 0) - new Date(a.created_at || 0)
-          default:
-            return 0
-        }
-      })
-    }
+      // Apply sorting
+      if (sortBy) {
+        filteredProducts.sort((a, b) => {
+          switch (sortBy) {
+            case "price-desc":
+              return getEffectivePrice(b) - getEffectivePrice(a)
+            case "price-asc":
+              return getEffectivePrice(a) - getEffectivePrice(b)
+            case "name-asc":
+              return a.name.localeCompare(b.name)
+            case "name-desc":
+              return b.name.localeCompare(a.name)
+            case "new":
+              return new Date(b.created_at || 0) - new Date(a.created_at || 0)
+            default:
+              return 0
+          }
+        })
+      }
 
-    setDisplayedProducts(filteredProducts)
-    setCurrentPage(1) // Reset to first page when filters or search change
-  }
+      setDisplayedProducts(filteredProducts)
+      setCurrentPage(1) // Reset to first page when filters or search change
+      setSearchLoading(false)
+    }, 300),
+    [allProducts, filters, sortBy, searchQuery]
+  )
+
+  useEffect(() => {
+    debouncedApplyFiltersAndSort()
+  }, [filters, sortBy, allProducts, searchQuery, debouncedApplyFiltersAndSort])
 
   const handleFilterChange = (category, value) => {
     const apiCategory = category === "productCategory" ? "category_name" : category
@@ -1010,6 +1094,7 @@ function UserHome() {
         : [...currentValues, value]
       return { ...prev, [apiCategory]: newValues }
     })
+    setCurrentPage(1) // Reset page when filters change
   }
 
   const clearFilters = () => {
@@ -1017,6 +1102,7 @@ function UserHome() {
     setSortBy("")
     setSearchQuery("")
     setCurrentPage(1)
+    setGoToPageInput("")
   }
 
   const toggleWishlist = (productId) => {
@@ -1055,13 +1141,17 @@ function UserHome() {
   const totalPages = Math.ceil(displayedProducts.length / productsPerPage)
 
   const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber)
-    window.scrollTo({ top: 0, behavior: "smooth" })
+    if (pageNumber >= 1 && pageNumber <= totalPages) {
+      setCurrentPage(pageNumber)
+      setGoToPageInput(pageNumber.toString())
+      window.scrollTo({ top: 0, behavior: "smooth" })
+    }
   }
 
   const handlePrevPage = () => {
     if (currentPage > 1) {
       setCurrentPage(currentPage - 1)
+      setGoToPageInput((currentPage - 1).toString())
       window.scrollTo({ top: 0, behavior: "smooth" })
     }
   }
@@ -1069,11 +1159,24 @@ function UserHome() {
   const handleNextPage = () => {
     if (currentPage < totalPages) {
       setCurrentPage(currentPage + 1)
+      setGoToPageInput((currentPage + 1).toString())
       window.scrollTo({ top: 0, behavior: "smooth" })
     }
   }
 
-  // Generate page numbers for display
+  const handleGoToPage = (e) => {
+    e.preventDefault()
+    const pageNumber = parseInt(goToPageInput, 10)
+    if (!isNaN(pageNumber) && pageNumber >= 1 && pageNumber <= totalPages) {
+      setCurrentPage(pageNumber)
+      window.scrollTo({ top: 0, behavior: "smooth" })
+    } else {
+      showToast("Please enter a valid page number", "error")
+      setGoToPageInput(currentPage.toString())
+    }
+  }
+
+  // Generate page numbers for display with ellipses
   const getPageNumbers = () => {
     const pageNumbers = []
     const maxPagesToShow = 5
@@ -1084,9 +1187,24 @@ function UserHome() {
       startPage = Math.max(1, endPage - maxPagesToShow + 1)
     }
 
+    if (startPage > 1) {
+      pageNumbers.push(1)
+      if (startPage > 2) {
+        pageNumbers.push("...")
+      }
+    }
+
     for (let i = startPage; i <= endPage; i++) {
       pageNumbers.push(i)
     }
+
+    if (endPage < totalPages) {
+      if (endPage < totalPages - 1) {
+        pageNumbers.push("...")
+      }
+      pageNumbers.push(totalPages)
+    }
+
     return pageNumbers
   }
 
@@ -1170,7 +1288,7 @@ function UserHome() {
           <div className="relative flex-1 md:flex-none">
             <Input
               type="text"
-              placeholder="Search products..."
+              placeholder="Search by name or category..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10 border-gray-300 focus:ring-[#7a2828] focus:border-[#7a2828] w-full md:w-[200px]"
@@ -1308,7 +1426,7 @@ function UserHome() {
 
         {/* Product Grid */}
         <div className="flex-1">
-          {loading ? (
+          {loading || searchLoading ? (
             <div className="flex justify-center items-center h-64">
               <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#7a2828]"></div>
             </div>
@@ -1317,7 +1435,7 @@ function UserHome() {
               <div className="text-[#7a2828] mb-4">
                 <X className="h-12 w-12 mx-auto" />
               </div>
-              <p className="text-lg text-gray-700 text-center">No products match your filters.</p>
+              <p className="text-lg text-gray-700 text-center">No products match your filters or search.</p>
               <Button
                 variant="outline"
                 className="mt-4 border-[#7a2828] text-[#7a2828] hover:bg-[#7a2828] hover:text-white transition-all duration-300"
@@ -1393,10 +1511,7 @@ function UserHome() {
                             {product.name}
                           </h3>
                         </div>
-                        <div className="flex items-center">
-                          <Star className="w-4 h-4 fill-[#7a2828] stroke-[#7a2828]" />
-                          <span className="text-sm font-medium ml-1">4.8</span>
-                        </div>
+                        
                       </div>
 
                       <div className="mt-2 flex justify-between items-end">
@@ -1458,39 +1573,63 @@ function UserHome() {
 
           {/* Pagination */}
           {displayedProducts.length > 0 && (
-            <div className="mt-12 flex justify-center items-center gap-2">
-              <Button
-                variant="outline"
-                size="icon"
-                className="border-gray-300 hover:border-[#7a2828] hover:text-[#7a2828]"
-                onClick={handlePrevPage}
-                disabled={currentPage === 1}
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-              {getPageNumbers().map((pageNumber) => (
+            <div className="mt-12 flex flex-col sm:flex-row justify-center items-center gap-4">
+              <div className="flex items-center gap-2">
                 <Button
-                  key={pageNumber}
-                  variant={currentPage === pageNumber ? "default" : "outline"}
-                  className={
-                    currentPage === pageNumber
-                      ? "border-gray-300 bg-[#7a2828] text-white hover:bg-[#5a1d1d]"
-                      : "border-gray-300 hover:border-[#7a2828] hover:text-[#7a2828]"
-                  }
-                  onClick={() => handlePageChange(pageNumber)}
+                  variant="outline"
+                  size="icon"
+                  className="border-gray-300 hover:border-[#7a2828] hover:text-[#7a2828]"
+                  onClick={handlePrevPage}
+                  disabled={currentPage === 1}
                 >
-                  {pageNumber}
+                  <ChevronLeft className="h-4 w-4" />
                 </Button>
-              ))}
-              <Button
-                variant="outline"
-                size="icon"
-                className="border-gray-300 hover:border-[#7a2828] hover:text-[#7a2828]"
-                onClick={handleNextPage}
-                disabled={currentPage === totalPages}
-              >
-                <ChevronRight className="h-4 w-4" />
-              </Button>
+                {getPageNumbers().map((page, index) =>
+                  page === "..." ? (
+                    <span key={`ellipsis-${index}`} className="px-2 text-gray-500">
+                      ...
+                    </span>
+                  ) : (
+                    <Button
+                      key={page}
+                      variant={currentPage === page ? "default" : "outline"}
+                      className={
+                        currentPage === page
+                          ? "border-gray-300 bg-[#7a2828] text-white hover:bg-[#5a1d1d]"
+                          : "border-gray-300 hover:border-[#7a2828] hover:text-[#7a2828]"
+                      }
+                      onClick={() => handlePageChange(page)}
+                    >
+                      {page}
+                    </Button>
+                  )
+                )}
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="border-gray-300 hover:border-[#7a2828] hover:text-[#7a2828]"
+                  onClick={handleNextPage}
+                  disabled={currentPage === totalPages}
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
+              <div className="flex items-center gap-2">
+                <Input
+                  type="text"
+                  placeholder="Page"
+                  value={goToPageInput}
+                  onChange={(e) => setGoToPageInput(e.target.value)}
+                  className="w-20 border-gray-300 focus:ring-[#7a2828] focus:border-[#7a2828]"
+                />
+                <Button
+                  variant="outline"
+                  className="border-[#7a2828] text-[#7a2828] hover:bg-[#7a2828] hover:text-white"
+                  onClick={handleGoToPage}
+                >
+                  Go
+                </Button>
+              </div>
             </div>
           )}
         </div>

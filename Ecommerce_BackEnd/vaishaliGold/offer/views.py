@@ -10,12 +10,28 @@ from .serializers import *
 from django.shortcuts import get_object_or_404
 from .models import *
 from cartapp.serializers import *
+from django.core.paginator import Paginator
+from django.db.models import Sum, Value, DecimalField, Q
+from rest_framework.permissions import IsAdminUser
+from django.db.models import Sum, Count, F
+from django.db.models.functions import TruncYear, TruncMonth, TruncWeek, TruncDay, TruncHour
+from datetime import datetime, timedelta
+from authenticationapp.pagination import CustomPagination
 
 class CouponListCreateView(APIView):
+    pagination_class = CustomPagination
+    
     def get(self, request):
+        search_query=request.query_params.get('search','')
         coupons = Coupon.objects.all()
-        serializer = CouponSerializer(coupons, many=True)
-        return Response(serializer.data)
+        if search_query:
+            coupons=coupons.filter(
+                coupon_name__icontains=search_query) | coupons.filter(coupon_code__icontains=search_query)
+        coupons=coupons.order_by('-created_at')
+        Paginator =self.pagination_class()
+        page=Paginator.paginate_queryset(coupons,request)
+        serializer = CouponSerializer(page, many=True)
+        return Paginator.get_paginated_response(serializer.data)
 
     def post(self, request):
         serializer = CouponSerializer(data=request.data)
@@ -105,10 +121,7 @@ class AvailableCouponsView(APIView):
 
 #==================== Dashboard ===========================
 
-from rest_framework.permissions import IsAdminUser
-from django.db.models import Sum, Count, F
-from django.db.models.functions import TruncYear, TruncMonth, TruncWeek, TruncDay, TruncHour
-from datetime import datetime, timedelta
+
 
 
 class SalesDataView(APIView):
@@ -179,7 +192,7 @@ class TopProductsView(APIView):
             sales=Sum('quantity')
         ).order_by('-sales')[:10]
 
-        # Map to the frontend's expected format
+       
         top_products_data = [
             {
                 'name': item['product_name'],
@@ -202,7 +215,7 @@ class TopCategoriesView(APIView):
             sales=Sum('quantity')
         ).order_by('-sales')[:10]
 
-        # Map to the frontend's expected format
+       
         top_categories_data = [
             {
                 'name': item['variant__product__category__name'],
@@ -213,3 +226,62 @@ class TopCategoriesView(APIView):
 
         serializer = TopCategorySerializer(top_categories_data, many=True)
         return Response(serializer.data)
+    
+
+
+#=================== bANNER MANAGEMENT ===========================
+
+from rest_framework.parsers import MultiPartParser
+class BannerListView(APIView):
+    parser_classes = (MultiPartParser,)
+
+    def get(self, request):
+        """Retrieve all banners."""
+        banners = Banner.objects.all()
+        serializer = BannerSerializer(banners, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        """Create a new banner."""
+        serializer = BannerSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class BannerDetailView(APIView):
+    parser_classes = (MultiPartParser,)
+
+    def get_object(self, pk):
+        """Helper method to get a banner by ID."""
+        try:
+            return Banner.objects.get(pk=pk)
+        except Banner.DoesNotExist:
+            return None
+
+    def get(self, request, pk):
+        """Retrieve a single banner by ID."""
+        banner = self.get_object(pk)
+        if banner is None:
+            return Response({"error": "Banner not found"}, status=status.HTTP_404_NOT_FOUND)
+        serializer = BannerSerializer(banner)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def patch(self, request, pk):
+        """Update an existing banner."""
+        banner = self.get_object(pk)
+        if banner is None:
+            return Response({"error": "Banner not found"}, status=status.HTTP_404_NOT_FOUND)
+        serializer = BannerSerializer(banner, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        """Delete a banner."""
+        banner = self.get_object(pk)
+        if banner is None:
+            return Response({"error": "Banner not found"}, status=status.HTTP_404_NOT_FOUND)
+        banner.delete()
+        return Response({"message": "Banner deleted successfully"}, status=status.HTTP_204_NO_CONTENT)

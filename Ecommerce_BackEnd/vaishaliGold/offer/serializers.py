@@ -75,3 +75,17 @@ class TopProductSerializer(serializers.Serializer):
 class TopCategorySerializer(serializers.Serializer):
     name = serializers.CharField()
     sales = serializers.IntegerField()
+
+
+class BannerSerializer(serializers.ModelSerializer):
+    image_url = serializers.ReadOnlyField()
+    
+    class Meta:
+        model = Banner
+        fields = ['id', 'description', 'banner_image', 'image_url', 'created_at']
+    
+    def to_representation(self, instance):
+        """Remove the banner_image field from response, keep image_url."""
+        representation = super().to_representation(instance)
+        representation.pop('banner_image', None)
+        return representation

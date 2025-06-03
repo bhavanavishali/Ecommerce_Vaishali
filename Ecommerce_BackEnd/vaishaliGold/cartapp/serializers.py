@@ -31,6 +31,7 @@ class CartItemSerializer(serializers.ModelSerializer):
             "name": product.name,
             "description": product.description,
             "category": product.category.name if product.category else None,
+            "category_IsActive":product.category.is_active,
             "gold_color": product.gold_color,
             "images": images,
             "is_active":product.is_active
@@ -246,6 +247,16 @@ class OrderSerializer(serializers.ModelSerializer):
                             f"Insufficient stock for {variant.product.name}. "
                             f"Available: {variant.stock}, Requested: {cart_item.quantity}"
                         )
+                    if not variant.product.is_active:
+                        raise serializers.ValidationError(
+                            f"Product {variant.product.name} is not active."
+                        )
+                
+                    if not variant.product.category.is_active:
+                        raise serializers.ValidationError(
+                            f"Category for product {variant.product.name} is not active."
+                        )
+                    
 
                 total_amount = cart.get_final_subtotal()
                 total_discount = cart.get_final_discount()
@@ -334,15 +345,24 @@ class OrderSerializer(serializers.ModelSerializer):
                     
                     
 
-                    ProductVariant.objects.filter(id=variant.id).update(
-                        stock=F('stock') - cart_item.quantity
-                    )
-                    variant.refresh_from_db()
-                    if variant.stock < 0:
+                    # ProductVariant.objects.filter(id=variant.id).update(
+                    #     stock=F('stock') - cart_item.quantity
+                    # )
+                    # variant.refresh_from_db()
+                    # if variant.stock < 0:
+                    #     raise serializers.ValidationError(
+                    #         f"Stock for {variant.product.name} cannot go negative."
+                    #     )
+
+                    original_stock = variant.stock
+                    expected_stock = original_stock - cart_item.quantity
+                    if expected_stock < 0:
                         raise serializers.ValidationError(
                             f"Stock for {variant.product.name} cannot go negative."
                         )
-
+                    variant.stock = expected_stock
+                    variant.save()
+                variant.refresh_from_db()
                 if payment_method == 'wallet':
                     WalletTransaction.objects.filter(
                         wallet__user=user,

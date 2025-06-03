@@ -635,7 +635,7 @@ const ViewOrderDetails = () => {
                   ></span>
                   {order.payment_status === "pending" ? "Payment Pending" : "Waiting"}
                 </Badge> */}
-                {/* <Badge
+                <Badge
                   variant="outline"
                   className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold transition-all duration-300 transform hover:scale-105 shadow-sm
                     ${order.status === "pending"
@@ -653,7 +653,7 @@ const ViewOrderDetails = () => {
                 >
                   {getStatusIcon(order.status)}
                   <span>{capitalize(order.status.replace("_", " "))}</span>
-                </Badge> */}
+                </Badge>
                 {canCancel && (
                   <Dialog open={isCancelModalOpen} onOpenChange={setIsCancelModalOpen}>
                     <DialogTrigger asChild>
@@ -831,7 +831,7 @@ const ViewOrderDetails = () => {
         </Card>
 
         {/* Payment Failed Alert */}
-        {order.payment_status === "pending" && (
+        {order.payment_status === "pending" && order.payment_method === "card" && (
           <Card className="mb-8 border-none shadow-lg hover:shadow-xl transition-all duration-500 overflow-hidden relative">
             <div className="absolute inset-0 bg-gradient-to-r from-[#b8860b] to-[#7a2828] opacity-10"></div>
             <CardContent className="p-8 relative z-10">

@@ -727,6 +727,34 @@ class PasswordResetConfirmView(APIView):
     
 
 
+class PasswordChangeView(APIView):
+    permission_classes = [IsAuthenticated]
+    def post(self, request):
+        serializer = PasswordChangeSerializer(data=request.data)
+        if serializer.is_valid():
+            user = request.user
+            current_password = serializer.validated_data['current_password']
+            new_password = serializer.validated_data['new_password']
+            
+            # Verify current password
+            if not user.check_password(current_password):
+                return Response(
+                    {"error": "Current password is incorrect."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            # Set new password
+            user.set_password(new_password)
+            user.save()
+            
+            return Response(
+                {"message": "Password has been changed successfully."},
+                status=status.HTTP_200_OK
+            )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+
 
 class TokenRefreshFromCookieView(APIView):
     authentication_classes = []

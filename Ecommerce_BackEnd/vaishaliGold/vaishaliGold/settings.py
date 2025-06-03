@@ -57,10 +57,11 @@ INSTALLED_APPS = [
     
 ]
 
-CLOUDINARY = {
-    'cloud_name': 'your_cloud_name',
-    'api_key': 'your_api_key',
-    'api_secret': 'your_api_secret',
+# Cloudinary configuration
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': os.getenv('CLOUDINARY_STORAGE_CLOUD_NAME'),
+    'API_KEY': os.getenv('CLOUDINARY_STORAGE_API_KEY'),
+    'API_SECRET': os.getenv('CLOUDINARY_STORAGE_API_SECRET'),
 }
 
 CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS').split(',')
@@ -97,7 +98,11 @@ REST_FRAMEWORK = {
         
     ),
     'DEFAULT_PAGINATION_CLASS': 'authenticationapp.pagination.CustomPagination',
-    'PAGE_SIZE': 10
+    'PAGE_SIZE': 10,
+    'DEFAULT_PARSER_CLASSES': [
+        'rest_framework.parsers.MultiPartParser',
+        'rest_framework.parsers.JSONParser',
+    ]
     
    
 }
@@ -123,9 +128,9 @@ SIMPLE_JWT = {
 GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
 GOOGLE_CLIENT_SECRET = os.getenv('GOOGLE_CLIENT_SECRET')
 
-RAZORPAY_KEY_ID = 'rzp_test_3vUY6ni0f6MZjo'  
-RAZORPAY_KEY_SECRET = '5TJanIZHdQvzf9VExaxstRxf'
-RAZORPAY_WEBHOOK_SECRET = 'mywebhooksecret'
+RAZORPAY_KEY_ID = os.getenv('RAZORPAY_KEY_ID')
+RAZORPAY_KEY_SECRET = os.getenv('RAZORPAY_KEY_SECRET')
+# RAZORPAY_WEBHOOK_SECRET = 'mywebhooksecret'
 
 
 TEMPLATES = [

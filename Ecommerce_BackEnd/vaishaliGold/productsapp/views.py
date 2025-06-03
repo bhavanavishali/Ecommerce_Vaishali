@@ -106,6 +106,73 @@ class ProductFilter(APIView):
         serializer = ProductSerializer(products, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+# class ProductFilter(APIView):
+#     permission_classes = [IsAuthenticated]
+#     pagination_class = CustomPagination
+
+#     def get(self, request):
+#         # Base queryset
+#         products = Product.objects.filter(is_active=True, category__is_active=True)
+        
+#         # Debug: Print all query params
+#         print(f"All query params: {request.query_params}")
+        
+#         # Search functionality
+#         search_query = request.query_params.get('search', None)
+#         if search_query:
+#             print(f"Searching for: {search_query}")
+#             products = products.filter(
+#                 Q(name__icontains=search_query) |
+#                 Q(description__icontains=search_query) |
+#                 Q(category__name__icontains=search_query)
+#             )
+#             print(f"After search filter, count: {products.count()}")
+
+#         # Gender filter
+#         gender = request.query_params.get('gender')
+#         if gender:
+#             print(f"Attempting to filter by gender: {gender}")
+#             all_genders = list(Product.objects.values_list('gender', flat=True).distinct())
+#             print(f"Available gender values in database: {all_genders}")
+#             products = products.filter(gender__iexact=gender)
+#             print(f"After gender filter, count: {products.count()}")
+
+#         # Occasion filter
+#         occasion = request.query_params.get('occasion')
+#         if occasion:
+#             print(f"Attempting to filter by occasion: {occasion}")
+#             products = products.filter(occasion__iexact=occasion)
+#             print(f"After occasion filter, count: {products.count()}")
+
+#         # Category filter
+#         category_name = request.query_params.get('category_name')
+#         if category_name:
+#             print(f"Attempting to filter by category_name: {category_name}")
+#             matching_categories = Category.objects.filter(name__iexact=category_name)
+#             print(f"Matching categories: {list(matching_categories.values('id', 'name'))}")
+
+#             if matching_categories.exists():
+#                 products = products.filter(category__in=matching_categories)
+#             else:
+#                 matching_categories = Category.objects.filter(name__icontains=category_name)
+#                 print(f"Partial matching categories: {list(matching_categories.values('id', 'name'))}")
+#                 if matching_categories.exists():
+#                     products = products.filter(category__in=matching_categories)
+#                 else:
+#                     products = products.none()
+#             print(f"After category_name filter, count: {products.count()}")
+
+#         # Apply pagination
+#         paginator = self.pagination_class()
+#         paginated_products = paginator.paginate_queryset(products, request)
+        
+#         # Serialize the paginated data
+#         serializer = ProductSerializer(paginated_products, many=True)
+        
+#         # Return paginated response
+#         return paginator.get_paginated_response(serializer.data)
+    
+
 class UserCategoryList(APIView):
     
     def get(self, request):

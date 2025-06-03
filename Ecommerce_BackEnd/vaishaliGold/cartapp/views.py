@@ -10,15 +10,9 @@ from productsapp.models import ProductVariant
 from django.shortcuts import get_object_or_404
 from rest_framework import status, permissions
 from datetime import datetime
-
 from django.db.models import Sum, Value, DecimalField
 from django.db.models.functions import Coalesce
 from decimal import Decimal
-
-
-
-
-
 
 logger = logging.getLogger(__name__)
 
@@ -75,13 +69,24 @@ class AddToCartView(APIView):
             return Response({'error': 'Invalid quantity'}, 
                           status=status.HTTP_400_BAD_REQUEST)
         
+        
         try:
             variant = ProductVariant.objects.get(id=variant_id, available=True, is_active=True)
+            if not variant.product.is_active:
+                return Response({'error': 'Product is not active'}, 
+                              status=status.HTTP_400_BAD_REQUEST)
+
+            if not variant.product.category.is_active:
+                return Response({'error': 'Product category is not active'}, 
+                              status=status.HTTP_400_BAD_REQUEST)
         except ProductVariant.DoesNotExist:
             return Response({'error': 'Variant not found or not available'}, 
                           status=status.HTTP_404_NOT_FOUND)
+        except AttributeError:
+            return Response({'error': 'Product or category not properly configured'}, 
+                          status=status.HTTP_400_BAD_REQUEST)
         
-        # Check if stock is 0
+       
         if variant.stock == 0:
             return Response({'error': 'This item is out of stock'}, 
                           status=status.HTTP_400_BAD_REQUEST)
@@ -474,8 +479,13 @@ class OrderUpdateView(APIView):
                 
                 with transaction.atomic():
                     for item in order.items.filter(status='active'):
-                        item.status = 'delivered'
-                        item.save()
+                        for item in order.items.filter(status='active'):
+                            item.status = 'delivered'
+                            if order.payment_method == 'cod':
+                                item.payment_status = 'completed'
+                            item.save()
+                        if order.payment_method == 'cod':
+                            order.payment_status = 'completed'
 
             order.save()
             serializer = OrderSerializer(order)

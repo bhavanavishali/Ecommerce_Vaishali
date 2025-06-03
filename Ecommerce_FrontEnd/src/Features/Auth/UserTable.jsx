@@ -636,12 +636,7 @@ export default function UserTable() {
               </Button>
             )}
           </div>
-          <Button
-            onClick={() => setShowSignupDialog(true)}
-            className="bg-[#8c2a2a] hover:bg-[#7a2424] text-white"
-          >
-            Add User
-          </Button>
+      
         </div>
       </div>
 

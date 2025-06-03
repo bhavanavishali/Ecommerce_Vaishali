@@ -16,6 +16,7 @@ import OrderTable from "./OrderTable"
 import CouponManagement from "./CouponAddTable"
 import SalesReport from "../SalesReport/SalesReport"
 import AdminDashboard from '../Dashboard/Dashboardchart';
+// import BannerManagement from "../Banner/Banner"
 import Logo from "/logo 1.png"
 import api from '../../api'
 import {
@@ -53,7 +54,7 @@ const Sidebar = ({ activeItem, setActiveItem }) => {
    
     // { id: "notifications", label: "Notifications", icon: Bell },
      { id: "taxConfig", label: "Tax Config", icon: Settings },
-    { id: "bannerManagement", label: "Banner management",  icon: ImageIcon },
+    // { id: "bannerManagement", label: "Banner management",  icon: ImageIcon },
   ]
 
   return (
@@ -126,7 +127,8 @@ function Dashboard() {
           return <SalesReport/>
       case "taxConfig":
           return <TaxConfiguration/>
-
+      // case "bannerManagement":
+      //     return <BannerManagement/>
       default:
         return <div>Select a menu item</div>
     }

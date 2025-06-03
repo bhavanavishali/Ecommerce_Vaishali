@@ -15,4 +15,9 @@ urlpatterns = [
     path('api/sales-data/', SalesDataView.as_view(), name='sales-data'),
     path('api/top-products/', TopProductsView.as_view(), name='top-products'),
     path('api/top-categories/', TopCategoriesView.as_view(), name='top-categories'),
+
+    # banner 
+
+    path('banners/', BannerListView.as_view(), name='banner-list'),
+    path('banners/<int:pk>/', BannerDetailView.as_view(), name='banner-detail'),
 ]

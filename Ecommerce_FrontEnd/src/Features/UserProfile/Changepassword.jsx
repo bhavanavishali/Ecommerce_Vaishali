@@ -1,28 +1,26 @@
-
 "use client"
 
 import { useState } from "react"
-import { useParams, useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import api from "../../api"
 import { Eye, EyeOff, KeyRound, Loader2 } from "lucide-react"
 
-const ResetPassword = () => {
+const ChangePassword = () => {
+  const [currentPassword, setCurrentPassword] = useState("")
   const [newPassword, setNewPassword] = useState("")
-  const [confirmPassword, setConfirmPassword] = useState("")
   const [message, setMessage] = useState("")
   const [error, setError] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
-  const { uidb64, token } = useParams()
   const navigate = useNavigate()
 
   const validatePassword = () => {
-    if (newPassword.length < 8) {
-      setError("Password must be at least 8 characters long")
+    if (currentPassword.length < 8) {
+      setError("Current password must be at least 8 characters long")
       return false
     }
-    if (newPassword !== confirmPassword) {
-      setError("Passwords do not match")
+    if (newPassword.length < 8) {
+      setError("New password must be at least 8 characters long")
       return false
     }
     return true
@@ -34,14 +32,15 @@ const ResetPassword = () => {
 
     setIsLoading(true)
     setError("")
+    setMessage("")
 
     try {
-      await api.post("password/reset/confirm/", {
+      await api.post("password-change/", {
+        current_password: currentPassword,
         new_password: newPassword,
-        token,
-        uidb64,
       })
-      setMessage("Password reset successful! Redirecting to login...")
+      setMessage("Password changed successfully! Redirecting to profile...")
+      await api.post("/logout/");
       setTimeout(() => navigate("/login"), 2000)
     } catch (err) {
       setError(err.response?.data?.error || "Something went wrong. Please try again.")
@@ -58,28 +57,25 @@ const ResetPassword = () => {
     <div className="flex min-h-screen items-center justify-center bg-red-100 px-4 py-12 sm:px-6 lg:px-8">
       <div className="w-full max-w-md bg-white space-y-8">
         <div className="text-center">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-            <KeyRound className="h-6 w-6 text-primary" />
-          </div>
-          <h2 className="mt-6 text-3xl font-bold tracking-tight text-gray-900">Reset your password</h2>
-          <p className="mt-2 text-sm text-gray-600">Please enter your new password below</p>
+         
+          <h2 className="mt-6 text-3xl font-bold tracking-tight text-gray-900">Change Your Password</h2>
+          <p className="mt-2 text-sm text-gray-600">Enter your current and new password below</p>
         </div>
 
         <div className="mt-8 rounded-lg bg-white p-6 shadow sm:p-8">
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                New Password
+              <label htmlFor="current-password" className="block text-sm font-medium text-gray-700">
+                Current Password
               </label>
               <div className="relative mt-1">
                 <input
-                  id="password"
-                  name="password"
+                  id="current-password"
+                  name="current-password"
                   type={showPassword ? "text" : "password"}
-                  autoComplete="new-password"
-                  
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
+                  autoComplete="current-password"
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
                   className="block w-full rounded-md border border-gray-300 px-3 py-2 pr-10 shadow-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
                   placeholder="••••••••"
                 />
@@ -91,21 +87,21 @@ const ResetPassword = () => {
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
+              <p className="mt-1 text-xs text-gray-500">Enter your current password</p>
             </div>
 
             <div>
-              <label htmlFor="confirm-password" className="block text-sm font-medium text-gray-700">
-                Confirm Password
+              <label htmlFor="new-password" className="block text-sm font-medium text-gray-700">
+                New Password
               </label>
               <div className="relative mt-1">
                 <input
-                  id="confirm-password"
-                  name="confirm-password"
+                  id="new-password"
+                  name="new-password"
                   type={showPassword ? "text" : "password"}
                   autoComplete="new-password"
-                  
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
                   className="block w-full rounded-md border border-gray-300 px-3 py-2 pr-10 shadow-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
                   placeholder="••••••••"
                 />
@@ -129,10 +125,10 @@ const ResetPassword = () => {
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Resetting...
+                    Changing Password...
                   </>
                 ) : (
-                  "Reset Password"
+                  "Change Password"
                 )}
               </button>
             </div>
@@ -193,4 +189,4 @@ const ResetPassword = () => {
   )
 }
 
-export default ResetPassword
+export default ChangePassword

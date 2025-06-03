@@ -2,7 +2,8 @@ from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils import timezone
 from decimal import Decimal
-
+from cloudinary.models import CloudinaryField
+from django.conf import settings
 
 class Coupon(models.Model):
     COUPON_TYPE=(
@@ -47,3 +48,17 @@ class Coupon(models.Model):
         return True
     def __str__(self):
         return self.coupon_code
+
+class Banner(models.Model):
+    description = models.TextField(blank=True, help_text="Description of the banner")
+    banner_image = CloudinaryField('image', blank=False, help_text="Banner image stored in Cloudinary")
+    created_at = models.DateTimeField(default=timezone.now, help_text="Timestamp when the banner was created")
+
+    def __str__(self):
+        return f"Banner: {self.description[:50]}"
+    
+    @property
+    def image_url(self):
+        """Return the Cloudinary image URL."""
+        from django.conf import settings
+        return f"https://res.cloudinary.com/{settings.CLOUDINARY_STORAGE['CLOUD_NAME']}/{self.banner_image}"

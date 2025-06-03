@@ -229,9 +229,7 @@ class Order(models.Model):
     razorpay_signature = models.CharField(max_length=100, null=True, blank=True)
 
     def apply_coupon(self, coupon):
-        """
-        Apply a coupon to the order, validate its applicability, and update totals.
-        """
+        
         if not coupon:
             self.coupon = None
             self.coupon_discount = 0.00
@@ -244,11 +242,11 @@ class Order(models.Model):
             raise ValueError("Invalid or inapplicable coupon")
 
         self.coupon = coupon
-        # Calculate coupon discount based on coupon type
+        
         if coupon.discount_type == 'percentage':
             self.coupon_discount = (coupon.discount_value / 100) * self.total_amount
-        else:  # fixed amount
-            self.coupon_discount = min(coupon.discount_value, self.total_amount)  # Ensure discount doesn't exceed total
+        else: 
+            self.coupon_discount = min(coupon.discount_value, self.total_amount)  
         self.recalculate_totals()
         self.save()
 
@@ -260,18 +258,24 @@ class Order(models.Model):
             self.cancel_reason = cancel_reason
             self.cancelled_at = timezone.now()
             
-            # Handle payment status and wallet refund
+            
             if self.payment_status == 'completed':
                 self.payment_status = 'refunded'
                 if self.payment_method in ['card', 'wallet']:
                     wallet, _ = Wallet.objects.get_or_create(user=self.user)
-                    wallet.add_funds(self.final_total, order_number=self.order_number)
+                    refund_amount = sum(item.final_price for item in self.items.filter(status='active'))
+                    wallet.add_funds(refund_amount, order_number=self.order_number)
 
             else:
                 self.payment_status = 'cancelled'
 
             for item in self.items.filter(status='active'):
-                item.cancel_item(cancel_reason)
+                item.status = 'cancelled'
+                item.cancel_reason = cancel_reason
+                item.cancelled_at = timezone.now()
+                # Set item payment_status to match order
+                item.payment_status = 'refunded' if self.payment_method in ['card', 'wallet'] else 'cancelled'
+                item.save()
             
             self.save()
             if self.cart:

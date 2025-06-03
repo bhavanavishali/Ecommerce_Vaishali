@@ -257,7 +257,7 @@ export default function ShoppingCartComponent() {
 
   // Check if any item is unavailable
   const isAnyItemUnavailable = cart?.items?.some(
-    (item) => !item.product.is_active || !item.variant.available || !item.variant.is_active || item.variant.stock <= 0
+    (item) => !item.product.is_active || !item.variant.available || !item.variant.is_active ||!item.product.category_IsActive || item.variant.stock <= 0
   )
 
   // Loading state with skeleton
@@ -428,7 +428,7 @@ export default function ShoppingCartComponent() {
         {/* Cart Items */}
         <div className="lg:col-span-2 space-y-6">
           {cart.items.map((item) => {
-            const isItemUnavailable = !item.product.is_active || !item.variant.available || !item.variant.is_active || item.variant.stock <= 0
+            const isItemUnavailable = !item.product.is_active || !item.variant.available || !item.product.category_IsActive || !item.variant.is_active || item.variant.stock <= 0
             return (
               <Card
                 key={item.id}

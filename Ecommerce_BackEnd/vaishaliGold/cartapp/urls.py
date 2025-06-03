@@ -20,7 +20,7 @@ urlpatterns = [
     # order cancled
     path('orders/<int:id>/cancel/', OrderCancelView.as_view(), name='order-cancel'),
     path('orderitems/<int:id>/cancel/',OrderItemCancelView.as_view(),name='order-item-cancel'),
-    path('orderitems/<int:id>/', views.OrderItemDetailView.as_view(), name='order-item-detail'),
+    path('orderitems/<int:id>/', OrderItemDetailView.as_view(), name='order-item-detail'),
 
     #user returned order
     path('orders/<int:pk>/return/', OrderReturnRequestView.as_view(), name='order-return-request'),
