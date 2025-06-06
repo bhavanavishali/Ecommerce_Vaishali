@@ -13,12 +13,21 @@ from datetime import datetime
 from django.db.models import Sum, Value, DecimalField
 from django.db.models.functions import Coalesce
 from decimal import Decimal
-
-logger = logging.getLogger(__name__)
-
-
+import razorpay
+from django.conf import settings
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from django.shortcuts import get_object_or_404
+from .models import Cart, Order, OrderAddress, OrderItem
+from .serializers import OrderSerializer
+from decimal import Decimal
+import logging
 from django.core.paginator import Paginator
 from django.db.models import Sum, Value, DecimalField, Q
+
+
+logger = logging.getLogger(__name__)
 
 
 
@@ -175,7 +184,7 @@ class CouponApplyView(APIView):
 
     def post(self, request):
         code = request.data.get('code')
-        logger.debug("Applying coupon code: %s for user: %s", code, request.user.username)
+       
         if not code:
             return Response({'error': 'Coupon code is required'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -556,7 +565,7 @@ class AddToWishlistView(APIView):
             return Response({'error': 'Valid variant_id is required'}, 
                            status=status.HTTP_400_BAD_REQUEST)
 
-        if wishlist.items.count() >= 50:  # Maximum wishlist size
+        if wishlist.items.count() >= 50: 
             return Response({'error': 'Wishlist cannot exceed 50 items'}, 
                            status=status.HTTP_400_BAD_REQUEST)
         
@@ -601,20 +610,6 @@ class RemoveFromWishlistView(APIView):
 # ======================RazorPay setting for order=======================
 
 
-import razorpay
-from django.conf import settings
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
-from django.shortcuts import get_object_or_404
-from .models import Cart, Order, OrderAddress, OrderItem
-from .serializers import OrderSerializer
-from decimal import Decimal
-
-
-
-import logging
-logger = logging.getLogger(__name__)
 
 # Utility function to create OrderAddress
 def create_order_address(order, address):

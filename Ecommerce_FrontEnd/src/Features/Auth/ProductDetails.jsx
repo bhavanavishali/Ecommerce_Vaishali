@@ -309,15 +309,15 @@ const ProductDetails = () => {
                   </div>
                   <h1 className="text-3xl font-bold text-gray-900 mb-1">{product.name}</h1>
                   <div className="flex items-center mt-2">
-                    <div className="flex">
+                    {/* <div className="flex">
                       {[...Array(5)].map((_, i) => (
                         <Star
                           key={i}
                           className={`h-4 w-4 ${i < 4 ? "fill-amber-400 text-amber-400" : "text-gray-300"}`}
                         />
                       ))}
-                    </div>
-                    <span className="ml-2 text-sm text-gray-500">4.0 (24 reviews)</span>
+                    </div> */}
+                    
                   </div>
                 </div>
                 <button
@@ -425,12 +425,16 @@ const ProductDetails = () => {
                   <SelectContent className="bg-white">
                     {product.variants.map((variant) => (
                       <SelectItem key={variant.id} value={variant.gross_weight}>
-                        {variant.gross_weight} gm {variant.stock === 0 && "(Out of Stock)"}
+                        {variant.gross_weight} gm {variant.stock === 0 && variant.available ===true && variant.is_active === true && "(Out of Stock)"}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
+
+
+
+              
 
               {/* Price Breakdown Card */}
               {selectedVariant && (
@@ -504,36 +508,9 @@ const ProductDetails = () => {
                 </Card>
               )}
 
-              {/* Quantity Selector
-              {selectedVariant && selectedVariant.stock > 0 && (
-                <div className="flex flex-col space-y-2">
-                  <label className="text-sm font-medium">Quantity</label>
-                  <div className="flex items-center">
-                    <button
-                      onClick={decrementQuantity}
-                      className="p-2 border border-[#e6d2b3] rounded-l-md bg-white hover:bg-[#fff8f0] transition-colors"
-                      disabled={quantity <= 1}
-                    >
-                      <Minus className="h-4 w-4 text-gray-600" />
-                    </button>
-                    <div className="px-4 py-2 border-t border-b border-[#e6d2b3] bg-white text-center min-w-[3rem]">
-                      {quantity}
-                    </div>
-                    <button
-                      onClick={incrementQuantity}
-                      className="p-2 border border-[#e6d2b3] rounded-r-md bg-white hover:bg-[#fff8f0] transition-colors"
-                      disabled={quantity >= selectedVariant.stock}
-                    >
-                      <Plus className="h-4 w-4 text-gray-600" />
-                    </button>
-                    <span className="ml-3 text-sm text-gray-500">{selectedVariant.stock} available</span>
-                  </div>
-                </div>
-              )} */}
-
-              {/* Stock Status */}
+      
               <div className="flex items-center space-x-2">
-                {selectedVariant && selectedVariant.stock > 0 ? (
+                {selectedVariant && selectedVariant.stock > 0  && selectedVariant.available ===true && selectedVariant.is_active === true ? (
                   <>
                     <div className="flex items-center justify-center w-5 h-5 rounded-full bg-green-100">
                       <Check className="h-3 w-3 text-green-600" />
@@ -558,7 +535,9 @@ const ProductDetails = () => {
                   isAddingToCart ? "opacity-90" : "hover:shadow-md"
                 }`}
                 size="lg"
-                disabled={!selectedVariant || selectedVariant.stock === 0 || isAddingToCart}
+                disabled={!selectedVariant || selectedVariant.stock === 0  ||  selectedVariant.available ===false|| selectedVariant.is_active ===false || product.is_active=== false|| product.
+category_Isactive ===false || product.available===false
+ ||isAddingToCart}
                 onClick={handleAddToCart}
               >
                 {isAddingToCart ? (
@@ -777,3 +756,4 @@ const ProductDetails = () => {
 }
 
 export default ProductDetails
+

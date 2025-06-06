@@ -87,15 +87,15 @@ class ProductVariant(models.Model):
         try:
             total_price = self.get_total_price_before_discount()
             
-            # Initialize defaults
+            
             discount = Decimal(0)
             category_offer = Decimal(0)
             
-            # Check product discount
+            
             if self.product.product_offer_Isactive and self.product.is_active:
                 discount = Decimal(self.product.discount)
             
-            # Check category discount
+            
             if self.product.category and self.product.category.category_offer_Isactive and self.product.category.is_active:
                 category_offer = Decimal(self.product.category.category_offer)
             
@@ -103,7 +103,7 @@ class ProductVariant(models.Model):
             max_offer = max(discount, category_offer)
             discount_amount = (total_price * max_offer / 100) if max_offer > 0 else Decimal(0)
             
-            # Assign values to instance
+            
             self.discount_amount = discount_amount
             self.applied_offer_percentage = max_offer
             self.applied_offer_type = 'product' if discount >= category_offer else 'category' if category_offer > 0 else 'none'
@@ -164,3 +164,15 @@ class ProductImage(models.Model):
 
     def __str__(self):
         return f"image for {self.product.name}"
+    
+
+
+# class GoldPrice(models.Model):
+#     gold_price=models.DecimalField(max_digits=10, decimal_places=2)
+#     description = models.TextField(blank=True, null=True)
+#     created_at = models.DateTimeField(default=timezone.now)
+#     updated_at = models.DateTimeField(auto_now=True)
+
+#     def __str__(self):
+#         return f"Today gold price {self.gold_price}"
+    

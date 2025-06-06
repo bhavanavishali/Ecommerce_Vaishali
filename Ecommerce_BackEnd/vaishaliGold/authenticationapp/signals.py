@@ -3,7 +3,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.core.mail import send_mail
 from django.core.cache import cache
-from authenticationapp.models import User  # Custom User model
+from authenticationapp.models import User  
 from django.utils import timezone
 from datetime import timedelta
 import random
@@ -49,8 +49,8 @@ def create_referral(sender, instance, created, **kwargs):
         if referral_code:
             try:
                 referrer = User.objects.get(referral_code=referral_code)
-                if referrer != instance:  # Ensure user can't refer themselves
-                    # Create referral record
+                if referrer != instance:  
+                    
                     referral = Referral.objects.create(
                         referrer=referrer,
                         referred_user=instance,
@@ -61,7 +61,7 @@ def create_referral(sender, instance, created, **kwargs):
                     referrer_coupon = Coupon.objects.create(
                         coupon_name=f"Referral Reward for {referrer.email}",
                         coupon_code=f"REF{referrer.id}{instance.id}",
-                        discount=10.00,  # $10 discount
+                        discount=10.00, 
                         valid_from=timezone.now().date(),
                         valid_to=(timezone.now() + timedelta(days=30)).date(),
                         is_active=True,
@@ -75,7 +75,7 @@ def create_referral(sender, instance, created, **kwargs):
                     referred_coupon = Coupon.objects.create(
                         coupon_name=f"Welcome Coupon for {instance.email}",
                         coupon_code=f"WELCOME{instance.id}",
-                        discount=5.00,  # $5 welcome discount
+                        discount=5.00,  
                         valid_from=timezone.now().date(),
                         valid_to=(timezone.now() + timedelta(days=30)).date(),
                         is_active=True,
@@ -85,7 +85,7 @@ def create_referral(sender, instance, created, **kwargs):
                         user=instance
                     )
                     
-                    # Link both coupons to the referral and mark as rewarded
+                   
                     referral.referrer_coupon = referrer_coupon
                     referral.referred_coupon = referred_coupon
                     referral.rewarded = True
@@ -98,3 +98,4 @@ def create_referral(sender, instance, created, **kwargs):
                 logger.warning(f"No referrer found for referral_code: {referral_code}")
             except Exception as e:
                 logger.error(f"Error creating referral for {instance.email}: {str(e)}")
+

@@ -21,18 +21,17 @@ load_dotenv()
 
 from pathlib import Path
 from datetime import timedelta
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY=os.getenv('SECRET_KEY')
-# SECURITY WARNING: don't run with debug turned on in production!
+
 DEBUG = os.getenv('DEBUG') == 'True'
 
 ALLOWED_HOSTS = []
-# Application definition
+
 
 INSTALLED_APPS = [
     'corsheaders',
@@ -57,7 +56,9 @@ INSTALLED_APPS = [
     
 ]
 
-# Cloudinary configuration
+
+
+
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': os.getenv('CLOUDINARY_STORAGE_CLOUD_NAME'),
     'API_KEY': os.getenv('CLOUDINARY_STORAGE_API_KEY'),
@@ -80,9 +81,9 @@ CORS_ALLOWED_ORIGINS =  os.getenv('CORS_ALLOWED_ORIGINS').split(',')
 
 CORS_ALLOW_ALL_ORIGINS=True
 CORS_ALLOW_CREDENTIALS = True
-CSRF_COOKIE_HTTPONLY = False  # CSRF cookie should be accessible via JavaScript
-CSRF_COOKIE_SAMESITE = "Lax"  # Allow CSRF cookie with cross-origin requests
-CSRF_COOKIE_SECURE = False  # Set to True in production (HTTPS)
+CSRF_COOKIE_HTTPONLY = False  
+CSRF_COOKIE_SAMESITE = "Lax"  
+CSRF_COOKIE_SECURE = False 
 
 AUTH_USER_MODEL = 'authenticationapp.User'
 
@@ -183,8 +184,12 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 # Cache settings
 CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",  # DB 1 in Redis
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
     }
 }
 EMAIL_BACKEND ='django.core.mail.backends.smtp.EmailBackend'
@@ -193,6 +198,7 @@ EMAIL_PORT=os.getenv('EMAIL_PORT')
 EMAIL_USE_TLS=os.getenv('EMAIL_USE_TLS')
 EMAIL_HOST_USER=os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD=os.getenv('EMAIL_HOST_PASSWORD')
+
 
 
 # Internationalization

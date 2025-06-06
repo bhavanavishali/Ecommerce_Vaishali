@@ -15,7 +15,7 @@ export const WishlistProvider = ({ children }) => {
 
       setWishlist(response.data);
      
-      console.log("datas cart",response.data)
+      console.log("wishlist cart",response.data)
     } catch (error) {
       console.error('Error fetching cart:', error);
     }

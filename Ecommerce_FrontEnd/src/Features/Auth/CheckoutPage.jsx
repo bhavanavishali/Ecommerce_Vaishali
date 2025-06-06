@@ -1,4 +1,5 @@
 
+
 // "use client"
 
 // import { useState, useEffect } from "react"
@@ -8,13 +9,11 @@
 // import { Button } from "@/components/ui/button"
 // import { Input } from "@/components/ui/input"
 // import { Label } from "@/components/ui/label"
-// import { Textarea } from "@/components/ui/textarea"
 // import { Separator } from "@/components/ui/separator"
 // import { Badge } from "@/components/ui/badge"
 // import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 // import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 // import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-// import { Checkbox } from "@/components/ui/checkbox"
 // import {
 //   ArrowLeft,
 //   MapPin,
@@ -33,9 +32,10 @@
 //   Truck,
 //   Star,
 // } from "lucide-react"
+// import AddressDialog from "./AddressDialog"
 
 // export default function CheckoutPage() {
-//   const { cart, fetchCart, removeFromCart, clearCart, loading: cartLoading, error: cartError, setCart } = useCart()
+//   const { cart, fetchCart, clearCart, loading: cartLoading, error: cartError, setCart } = useCart()
 //   const navigate = useNavigate()
 //   const BASE_URL = "http://127.0.0.1:8000"
 
@@ -54,11 +54,13 @@
 //   const [newAddress, setNewAddress] = useState({
 //     name: "",
 //     type: "home",
-//     street: "",
+//     house_no: "",
+//     landmark: "",
 //     city: "",
 //     state: "",
 //     pincode: "",
 //     phone: "",
+//     alternate_number: "",
 //     isDefault: false,
 //   })
 //   const [showCouponsDialog, setShowCouponsDialog] = useState(false)
@@ -73,11 +75,7 @@
 //   const handleApiError = (err, defaultMessage) => {
 //     const message = err.response?.data?.message || err.response?.data?.error || defaultMessage
 //     setError(message)
-//     toast({
-//       title: "Error",
-//       description: message,
-//       variant: "destructive",
-//     })
+//     console.log(`Error: ${message}`)
 //   }
 
 //   useEffect(() => {
@@ -123,8 +121,6 @@
 //     }
 //   }, [cart])
 
-//   console.log("couponApplied:", couponApplied)
-
 //   useEffect(() => {
 //     fetchAddress()
 //   }, [])
@@ -133,7 +129,7 @@
 //     if (addresses.length > 0 && !selectedAddress) {
 //       setSelectedAddress(addresses.find((addr) => addr.isDefault)?.id || addresses[0].id)
 //     }
-//   }, [addresses, selectedAddress])
+//   }, [addresses])
 
 //   const fetchAddress = async () => {
 //     setLoading(true)
@@ -143,11 +139,13 @@
 //         id: addr.id,
 //         name: addr.name,
 //         type: addr.address_type,
-//         street: `${addr.house_no || ""}${addr.landmark ? `, ${addr.landmark}` : ""}`.trim(),
+//         house_no: addr.house_no,
+//         landmark: addr.landmark || "",
 //         city: addr.city,
 //         state: addr.state,
 //         pincode: addr.pin_code,
 //         phone: addr.mobile_number,
+//         alternate_number: addr.alternate_number || "",
 //         isDefault: addr.isDefault || false,
 //       }))
 //       setAddresses(mappedAddresses)
@@ -212,7 +210,7 @@
 //   const totalDiscount = cart?.final_discount || 0
 //   const total = cart?.final_total || 0
 //   const shipping = cart?.shipping || 0
-//   const final_coupon_discount = cart?.final_coupon_discount || 0
+//   const isCodDisabled = total > 1000
 
 //   const formatPrice = (price) => {
 //     return new Intl.NumberFormat("en-IN", {
@@ -225,11 +223,13 @@
 //   const validateAddress = (address) => {
 //     const errors = []
 //     if (!address.name.trim()) errors.push("Full name is required")
-//     if (!address.street.trim()) errors.push("Street address is required")
+//     if (!address.house_no.trim()) errors.push("House number is required")
 //     if (!address.city.trim()) errors.push("City is required")
 //     if (!address.state.trim()) errors.push("State is required")
 //     if (!address.pincode || !/^\d{6}$/.test(address.pincode)) errors.push("Valid 6-digit PIN code is required")
 //     if (!address.phone || !/^\d{10}$/.test(address.phone)) errors.push("Valid 10-digit phone number is required")
+//     if (address.alternate_number && !/^\d{10}$/.test(address.alternate_number))
+//       errors.push("Valid 10-digit alternate number is required")
 //     return errors
 //   }
 
@@ -244,7 +244,6 @@
 //       setCouponError(null)
 //       setError(null)
 //       await fetchCart()
-//       console.log("applied", response.data)
 //     } catch (err) {
 //       setCouponError(err.response?.data?.error || "Invalid coupon code")
 //       setCouponApplied(null)
@@ -270,16 +269,16 @@
 //       return
 //     }
 //     try {
-//       const [house_no = "", landmark = ""] = newAddress.street.split(",").map((s) => s.trim())
 //       const response = await api.post("address/", {
 //         name: newAddress.name.trim(),
-//         house_no,
+//         house_no: newAddress.house_no.trim(),
 //         address_type: newAddress.type,
 //         city: newAddress.city.trim(),
 //         state: newAddress.state.trim(),
 //         pin_code: newAddress.pincode,
 //         mobile_number: newAddress.phone,
-//         landmark,
+//         landmark: newAddress.landmark || null,
+//         alternate_number: newAddress.alternate_number || null,
 //         isDefault: newAddress.isDefault,
 //       })
 //       const newId = response.data.id
@@ -289,9 +288,16 @@
 //       setAddresses([
 //         ...updatedAddresses,
 //         {
-//           ...newAddress,
 //           id: newId,
-//           street: `${house_no}${landmark ? `, ${landmark}` : ""}`.trim(),
+//           name: newAddress.name,
+//           type: newAddress.type,
+//           house_no: newAddress.house_no,
+//           landmark: newAddress.landmark || "",
+//           city: newAddress.city,
+//           state: newAddress.state,
+//           pincode: newAddress.pincode,
+//           phone: newAddress.phone,
+//           alternate_number: newAddress.alternate_number || "",
 //           isDefault: newAddress.isDefault,
 //         },
 //       ])
@@ -299,11 +305,13 @@
 //       setNewAddress({
 //         name: "",
 //         type: "home",
-//         street: "",
+//         house_no: "",
+//         landmark: "",
 //         city: "",
 //         state: "",
 //         pincode: "",
 //         phone: "",
+//         alternate_number: "",
 //         isDefault: false,
 //       })
 //       setShowAddressDialog(false)
@@ -320,23 +328,25 @@
 //       return
 //     }
 //     try {
-//       const [house_no = "", landmark = ""] = editingAddress.street.split(",").map((s) => s.trim())
 //       const response = await api.patch(`address/${editingAddress.id}/`, {
 //         name: editingAddress.name.trim(),
-//         house_no,
+//         house_no: editingAddress.house_no.trim(),
 //         address_type: editingAddress.type,
 //         city: editingAddress.city.trim(),
 //         state: editingAddress.state.trim(),
 //         pin_code: editingAddress.pincode,
 //         mobile_number: editingAddress.phone,
-//         landmark,
+//         landmark: editingAddress.landmark || null,
+//         alternate_number: editingAddress.alternate_number || null,
 //         isDefault: editingAddress.isDefault,
 //       })
 //       const updatedAddresses = addresses.map((addr) => {
 //         if (addr.id === editingAddress.id) {
 //           return {
 //             ...editingAddress,
-//             street: `${house_no}${landmark ? `, ${landmark}` : ""}`.trim(),
+//             house_no: editingAddress.house_no,
+//             landmark: editingAddress.landmark || "",
+//             alternate_number: editingAddress.alternate_number || "",
 //           }
 //         }
 //         return { ...addr, isDefault: editingAddress.isDefault ? false : addr.isDefault }
@@ -385,7 +395,9 @@
 //   const startEditAddress = (address) => {
 //     setEditingAddress({
 //       ...address,
-//       street: address.street,
+//       house_no: address.house_no,
+//       landmark: address.landmark || "",
+//       alternate_number: address.alternate_number || "",
 //     })
 //     setShowAddressDialog(true)
 //   }
@@ -402,12 +414,16 @@
 //       )
 //       return
 //     }
+//     if (selectedPayment === "cod" && isCodDisabled) {
+//       handleApiError(
+//         new Error("Cash on Delivery is not available"),
+//         "Cash on Delivery is not available for orders above ₹1000.",
+//       )
+//       return
+//     }
 //     setIsPlacingOrder(true)
 //     try {
 //       const couponData = couponApplied && couponApplied.code ? { coupon_code: couponApplied.code } : {}
-//       console.log("couponApplied:", couponApplied)
-//       console.log("couponData:", couponData)
-
 //       if (selectedPayment === "card") {
 //         if (!window.Razorpay) {
 //           handleApiError(
@@ -423,8 +439,6 @@
 //           payment_method: "card",
 //           ...couponData,
 //         })
-//         console.log("Full Razorpay create response:", response)
-
 //         if (!response.data.order_id || !response.data.amount) {
 //           throw new Error("Invalid Razorpay response: missing order_id or amount")
 //         }
@@ -444,7 +458,6 @@
 //                 razorpay_payment_id: response.razorpay_payment_id,
 //                 razorpay_signature: response.razorpay_signature,
 //               })
-//               console.log("Payment verification response:", verifyResponse.data)
 //               if (verifyResponse.data.order_id) {
 //                 navigate(`/order-details/${verifyResponse.data.order_id}`, {
 //                   state: { paymentStatus: "success", order: verifyResponse.data.order_id },
@@ -525,7 +538,6 @@
 //           payment_method: selectedPayment,
 //           ...couponData,
 //         })
-//         console.log("Order create response:", response.data)
 //         if (response.data.cart) {
 //           setCart(response.data.cart)
 //         } else {
@@ -543,168 +555,12 @@
 //     }
 //   }
 
-//   const AddressDialog = () => {
-//     if (!showAddressDialog) return null
-
-//     const isEditing = !!editingAddress
-//     const addressData = isEditing ? editingAddress : newAddress
-//     const setAddressData = isEditing
-//       ? (data) => setEditingAddress({ ...editingAddress, ...data })
-//       : (data) => setNewAddress({ ...newAddress, ...data })
-
-//     return (
-//       <Dialog open={showAddressDialog} onOpenChange={setShowAddressDialog}>
-//         <DialogContent className="max-w-2xl bg-white">
-//           <DialogHeader>
-//             <DialogTitle className="text-xl font-semibold text-[#8B2131]">
-//               {isEditing ? "Edit Address" : "Add New Address"}
-//             </DialogTitle>
-//           </DialogHeader>
-//           {error && (
-//             <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-//               <p className="text-red-600 text-sm">{error}</p>
-//             </div>
-//           )}
-//           <div className="grid gap-6 py-4">
-//             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-//               <div className="md:col-span-2">
-//                 <Label htmlFor="name" className="text-sm font-medium">
-//                   Full Name *
-//                 </Label>
-//                 <Input
-//                   id="name"
-//                   value={addressData.name}
-//                   onChange={(e) => setAddressData({ name: e.target.value })}
-//                   placeholder="Enter your full name"
-//                   className="mt-1"
-//                 />
-//               </div>
-//               <div className="md:col-span-2">
-//                 <Label className="text-sm font-medium">Address Type *</Label>
-//                 <RadioGroup
-//                   value={addressData.type}
-//                   onValueChange={(value) => setAddressData({ type: value })}
-//                   className="flex gap-6 mt-2"
-//                 >
-//                   <div className="flex items-center space-x-2">
-//                     <RadioGroupItem value="home" id="home" />
-//                     <Label htmlFor="home" className="cursor-pointer flex items-center">
-//                       <Home className="h-4 w-4 mr-1" />
-//                       Home
-//                     </Label>
-//                   </div>
-//                   <div className="flex items-center space-x-2">
-//                     <RadioGroupItem value="office" id="office" />
-//                     <Label htmlFor="office" className="cursor-pointer flex items-center">
-//                       <Building className="h-4 w-4 mr-1" />
-//                       Office
-//                     </Label>
-//                   </div>
-//                 </RadioGroup>
-//               </div>
-//               <div className="md:col-span-2">
-//                 <Label htmlFor="street" className="text-sm font-medium">
-//                   Street Address *
-//                 </Label>
-//                 <Textarea
-//                   id="street"
-//                   value={addressData.street}
-//                   onChange={(e) => setAddressData({ street: e.target.value })}
-//                   placeholder="Enter your street address (e.g., House No, Landmark)"
-//                   className="mt-1 resize-none"
-//                   rows={3}
-//                 />
-//               </div>
-//               <div>
-//                 <Label htmlFor="city" className="text-sm font-medium">
-//                   City *
-//                 </Label>
-//                 <Input
-//                   id="city"
-//                   value={addressData.city}
-//                   onChange={(e) => setAddressData({ city: e.target.value })}
-//                   placeholder="City"
-//                   className="mt-1"
-//                 />
-//               </div>
-//               <div>
-//                 <Label htmlFor="state" className="text-sm font-medium">
-//                   State *
-//                 </Label>
-//                 <Input
-//                   id="state"
-//                   value={addressData.state}
-//                   onChange={(e) => setAddressData({ state: e.target.value })}
-//                   placeholder="State"
-//                   className="mt-1"
-//                 />
-//               </div>
-//               <div>
-//                 <Label htmlFor="pincode" className="text-sm font-medium">
-//                   PIN Code *
-//                 </Label>
-//                 <Input
-//                   id="pincode"
-//                   value={addressData.pincode}
-//                   onChange={(e) => setAddressData({ pincode: e.target.value })}
-//                   placeholder="PIN Code"
-//                   className="mt-1"
-//                 />
-//               </div>
-//               <div>
-//                 <Label htmlFor="phone" className="text-sm font-medium">
-//                   Phone Number *
-//                 </Label>
-//                 <Input
-//                   id="phone"
-//                   value={addressData.phone}
-//                   onChange={(e) => setAddressData({ phone: e.target.value })}
-//                   placeholder="Phone Number"
-//                   className="mt-1"
-//                 />
-//               </div>
-//               <div className="md:col-span-2 flex items-center space-x-2">
-//                 <Checkbox
-//                   id="default"
-//                   checked={addressData.isDefault}
-//                   onCheckedChange={(checked) => setAddressData({ isDefault: checked })}
-//                 />
-//                 <Label htmlFor="default" className="cursor-pointer text-sm">
-//                   Set as default address
-//                 </Label>
-//               </div>
-//             </div>
-//           </div>
-//           <div className="flex justify-end gap-3 pt-4 border-t">
-//             <Button
-//               variant="outline"
-//               onClick={() => {
-//                 setShowAddressDialog(false)
-//                 setEditingAddress(null)
-//                 setError(null)
-//               }}
-//             >
-//               Cancel
-//             </Button>
-//             <Button
-//               className="bg-[#8B2131] hover:bg-[#6d1926]"
-//               onClick={isEditing ? handleEditAddress : handleAddAddress}
-//               disabled={!addressData.name.trim()}
-//             >
-//               {isEditing ? "Update Address" : "Save Address"}
-//             </Button>
-//           </div>
-//         </DialogContent>
-//       </Dialog>
-//     )
-//   }
-
 //   const CouponsDialog = () => {
 //     if (!showCouponsDialog) return null
 
 //     return (
 //       <Dialog open={showCouponsDialog} onOpenChange={setShowCouponsDialog}>
-//         <DialogContent className="max-w-2xl bg-white">
+//         <DialogContent className="max-w-2xl bg-white max-h-[90vh] overflow-y-auto">
 //           <DialogHeader>
 //             <DialogTitle className="text-xl font-semibold text-[#8B2131] flex items-center">
 //               <Gift className="h-5 w-5 mr-2" />
@@ -731,19 +587,19 @@
 //               availableCoupons.map((coupon) => (
 //                 <Card key={coupon.id} className="border-l-4 border-l-[#8B2131]">
 //                   <CardContent className="p-4">
-//                     <div className="flex justify-between items-start mb-3">
-//                       <div>
+//                     <div className="flex flex-col sm:flex-row justify-between items-start mb-3 gap-3">
+//                       <div className="flex-1">
 //                         <h3 className="font-semibold text-[#8B2131] text-lg">{coupon.coupon_code}</h3>
 //                         <p className="text-sm text-gray-600 mt-1">
 //                           Save {formatPrice(coupon.discount)} on orders above {formatPrice(coupon.min_amount)}
 //                         </p>
 //                       </div>
-//                       <div className="flex gap-2">
+//                       <div className="flex gap-2 w-full sm:w-auto">
 //                         <Button
 //                           variant="ghost"
 //                           size="sm"
 //                           onClick={() => handleCopyCoupon(coupon.coupon_code)}
-//                           className="text-[#8B2131] hover:text-[#6d1926] hover:bg-[#f8ece9]"
+//                           className="text-[#8B2131] hover:text-[#6d1926] hover:bg-[#f8ece9] flex-1 sm:flex-none"
 //                         >
 //                           <Copy className="h-4 w-4 mr-1" />
 //                           Copy
@@ -751,14 +607,14 @@
 //                         <Button
 //                           size="sm"
 //                           onClick={() => handleApplyCouponFromModal(coupon.coupon_code)}
-//                           className="bg-[#8B2131] hover:bg-[#6d1926]"
+//                           className="bg-[#8B2131] hover:bg-[#6d1926] flex-1 sm:flex-none"
 //                           disabled={couponApplied?.code === coupon.coupon_code}
 //                         >
 //                           {couponApplied?.code === coupon.coupon_code ? "Applied" : "Apply"}
 //                         </Button>
 //                       </div>
 //                     </div>
-//                     <div className="grid grid-cols-2 gap-4 text-sm">
+//                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
 //                       <div>
 //                         <span className="text-gray-500">Min Purchase:</span>
 //                         <span className="ml-1 font-medium">{formatPrice(coupon.min_amount)}</span>
@@ -792,7 +648,6 @@
 //   return (
 //     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50">
 //       <div className="container mx-auto px-4 py-8 max-w-7xl">
-//         {/* Header */}
 //         <div className="mb-8">
 //           <Link
 //             to="/cart"
@@ -801,25 +656,19 @@
 //             <ArrowLeft className="h-4 w-4 mr-2 group-hover:-translate-x-1 transition-transform" />
 //             <span>Back to Cart</span>
 //           </Link>
-//           <div className="flex items-center justify-between">
+//           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
 //             <div>
-//               <h1 className="text-4xl font-bold text-[#8B2131] mb-2">Secure Checkout</h1>
+//               <h1 className="text-3xl sm:text-4xl font-bold text-[#8B2131] mb-2">Secure Checkout</h1>
 //               <p className="text-gray-600">Complete your purchase with confidence</p>
-//             </div>
-//             <div className="hidden md:flex items-center space-x-2 text-sm text-gray-500">
-//               <ShieldCheck className="h-4 w-4 text-green-600" />
-              
 //             </div>
 //           </div>
 //         </div>
 
 //         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-//           {/* Main Content */}
 //           <div className="lg:col-span-2 space-y-6">
-//             {/* Shipping Address Section */}
 //             <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
 //               <CardHeader className="pb-4">
-//                 <CardTitle className="flex items-center justify-between">
+//                 <CardTitle className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
 //                   <div className="flex items-center">
 //                     <div className="bg-[#8B2131] text-white rounded-full p-2 mr-3">
 //                       <MapPin className="h-5 w-5" />
@@ -828,8 +677,8 @@
 //                   </div>
 //                   <Button
 //                     variant="outline"
-//                     className="border-[#8B2131] text-[#8B2131] hover:bg-[#8B2131] hover:text-white"
-//                     onClick={() => navigate('/addaddress')}
+//                     className="border-[#8B2131] text-[#8B2131] hover:bg-[#8B2131] hover:text-white w-full sm:w-auto"
+//                     onClick={() => setShowAddressDialog(true)}
 //                     disabled={showAddressDialog}
 //                   >
 //                     <Plus className="h-4 w-4 mr-2" />
@@ -879,7 +728,7 @@
 //                               className="mt-1"
 //                             />
 //                             <div className="flex-1">
-//                               <div className="flex items-center gap-2 mb-2">
+//                               <div className="flex flex-wrap items-center gap-2 mb-2">
 //                                 <Label
 //                                   htmlFor={`address-${address.id}`}
 //                                   className="font-semibold text-gray-900 cursor-pointer"
@@ -904,18 +753,23 @@
 //                                   ) : (
 //                                     <>
 //                                       <Building className="h-3 w-3 mr-1" />
-//                                       Office
+//                                       Work
 //                                     </>
 //                                   )}
 //                                 </Badge>
 //                               </div>
-//                               <p className="text-gray-600 text-sm mb-1">{address.street}</p>
+//                               <p className="text-gray-600 text-sm mb-1">
+//                                 {address.house_no}
+//                                 {address.landmark ? `, ${address.landmark}` : ""}
+//                               </p>
 //                               <p className="text-gray-600 text-sm mb-1">
 //                                 {address.city}, {address.state} - {address.pincode}
 //                               </p>
 //                               <p className="text-gray-600 text-sm">Phone: {address.phone}</p>
-
-//                               <div className="flex items-center gap-3 mt-3">
+//                               {address.alternate_number && (
+//                                 <p className="text-gray-600 text-sm">Alternate: {address.alternate_number}</p>
+//                               )}
+//                               <div className="flex flex-wrap items-center gap-3 mt-3">
 //                                 <Button
 //                                   variant="ghost"
 //                                   size="sm"
@@ -965,7 +819,6 @@
 //               </CardContent>
 //             </Card>
 
-//             {/* Payment Method Section */}
 //             <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
 //               <CardHeader className="pb-4">
 //                 <CardTitle className="flex items-center">
@@ -1025,20 +878,29 @@
 //                     </div>
 
 //                     <div
-//                       className={`relative border rounded-xl p-4 transition-all duration-200 cursor-pointer ${
-//                         selectedPayment === "cod"
-//                           ? "border-[#8B2131] bg-gradient-to-r from-[#8B2131]/5 to-orange-50 shadow-md"
-//                           : "border-gray-200 hover:border-gray-300 hover:shadow-sm"
+//                       className={`relative border rounded-xl p-4 transition-all duration-200 ${
+//                         isCodDisabled
+//                           ? "opacity-50 cursor-not-allowed"
+//                           : selectedPayment === "cod"
+//                             ? "border-[#8B2131] bg-gradient-to-r from-[#8B2131]/5 to-orange-50 shadow-md"
+//                             : "border-gray-200 hover:border-gray-300 hover:shadow-sm cursor-pointer"
 //                       }`}
 //                     >
 //                       <div className="flex items-center space-x-4">
-//                         <RadioGroupItem value="cod" id="cod" />
+//                         <RadioGroupItem value="cod" id="cod" disabled={isCodDisabled} />
 //                         <div className="flex-1">
-//                           <Label htmlFor="cod" className="font-medium cursor-pointer flex items-center">
+//                           <Label
+//                             htmlFor="cod"
+//                             className={`font-medium flex items-center ${isCodDisabled ? "cursor-not-allowed" : "cursor-pointer"}`}
+//                           >
 //                             <Truck className="h-5 w-5 mr-2 text-[#8B2131]" />
 //                             Cash on Delivery
 //                           </Label>
-//                           <p className="text-sm text-gray-500 mt-1">Pay when you receive your order</p>
+//                           <p className="text-sm text-gray-500 mt-1">
+//                             {isCodDisabled
+//                               ? "Cash on Delivery is not available for orders above ₹1000"
+//                               : "Pay when you receive your order"}
+//                           </p>
 //                         </div>
 //                       </div>
 //                     </div>
@@ -1048,14 +910,12 @@
 //             </Card>
 //           </div>
 
-//           {/* Order Summary Sidebar */}
 //           <div className="lg:col-span-1">
 //             <Card className="shadow-xl border-0 bg-white/90 backdrop-blur-sm sticky top-6">
 //               <CardHeader className="pb-4">
 //                 <CardTitle className="text-xl font-semibold text-[#8B2131]">Order Summary</CardTitle>
 //               </CardHeader>
 //               <CardContent className="space-y-6">
-//                 {/* Cart Items */}
 //                 <div className="space-y-4 max-h-64 overflow-y-auto">
 //                   {cart?.items?.length > 0 ? (
 //                     cart.items.map((item) => (
@@ -1104,7 +964,6 @@
 //                   )}
 //                 </div>
 
-//                 {/* Coupon Section */}
 //                 <div className="space-y-3">
 //                   <div className="flex gap-2">
 //                     <Input
@@ -1118,7 +977,7 @@
 //                       <Button
 //                         variant="ghost"
 //                         onClick={handleRemoveCoupon}
-//                         className="text-red-600 hover:text-red-700 hover:bg-red-50"
+//                         className="text-red-600 hover:text-red-700 hover:bg-red-50 shrink-0"
 //                       >
 //                         Remove
 //                       </Button>
@@ -1126,7 +985,7 @@
 //                       <Button
 //                         onClick={handleApplyCoupon}
 //                         disabled={!couponCode.trim()}
-//                         className="bg-[#8B2131] hover:bg-[#6d1926]"
+//                         className="bg-[#8B2131] hover:bg-[#6d1926] shrink-0"
 //                       >
 //                         Apply
 //                       </Button>
@@ -1154,7 +1013,6 @@
 //                   )}
 //                 </div>
 
-//                 {/* Price Breakdown */}
 //                 <div className="space-y-3 text-sm">
 //                   <div className="flex justify-between">
 //                     <span className="text-gray-600">Subtotal</span>
@@ -1196,7 +1054,6 @@
 //                   </div>
 //                 </div>
 
-//                 {/* Place Order Button */}
 //                 <Button
 //                   className="w-full bg-gradient-to-r from-[#8B2131] to-[#a02a3a] hover:from-[#6d1926] hover:to-[#8B2131] text-white py-3 text-lg font-semibold shadow-lg"
 //                   disabled={
@@ -1214,15 +1071,14 @@
 //                     </div>
 //                   ) : (
 //                     <div className="flex items-center justify-center">
-//                       <span>Places Order {formatPrice(total)}</span>
+//                       <span>Place Order {formatPrice(total)}</span>
 //                       <ChevronRight className="ml-2 h-5 w-5" />
 //                     </div>
 //                   )}
 //                 </Button>
 
-//                 {/* Security Badge */}
 //                 <div className="flex items-center justify-center text-xs text-gray-500 pt-2">
-//                   <ShieldCheck className="h-4 w-4 mr-1 text-green-600" />
+//                   <ShieldCheck className="h-4 w-1 mr-1 text-green-600" />
 //                   <span>Secured by 256-bit SSL encryption</span>
 //                 </div>
 //               </CardContent>
@@ -1230,14 +1086,23 @@
 //           </div>
 //         </div>
 
-//         {/* Dialogs */}
-//         <AddressDialog />
+//         <AddressDialog
+//           showAddressDialog={showAddressDialog}
+//           setShowAddressDialog={setShowAddressDialog}
+//           editingAddress={editingAddress}
+//           setEditingAddress={setEditingAddress}
+//           newAddress={newAddress}
+//           setNewAddress={setNewAddress}
+//           error={error}
+//           setError={setError}
+//           handleAddAddress={handleAddAddress}
+//           handleEditAddress={handleEditAddress}
+//         />
 //         <CouponsDialog />
 //       </div>
 //     </div>
 //   )
 // }
-
 
 "use client"
 
@@ -1248,13 +1113,11 @@ import api from "../../api"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
 import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Checkbox } from "@/components/ui/checkbox"
 import {
   ArrowLeft,
   MapPin,
@@ -1272,10 +1135,13 @@ import {
   Gift,
   Truck,
   Star,
+  XCircle,
+  AlertTriangle,
 } from "lucide-react"
+import AddressDialog from "./AddressDialog"
 
 export default function CheckoutPage() {
-  const { cart, fetchCart, removeFromCart, clearCart, loading: cartLoading, error: cartError, setCart } = useCart()
+  const { cart, fetchCart, clearCart, loading: cartLoading, error: cartError, setCart } = useCart()
   const navigate = useNavigate()
   const BASE_URL = "http://127.0.0.1:8000"
 
@@ -1294,16 +1160,26 @@ export default function CheckoutPage() {
   const [newAddress, setNewAddress] = useState({
     name: "",
     type: "home",
-    street: "",
+    house_no: "",
+    landmark: "",
     city: "",
     state: "",
     pincode: "",
     phone: "",
+    alternate_number: "",
     isDefault: false,
   })
   const [showCouponsDialog, setShowCouponsDialog] = useState(false)
   const [availableCoupons, setAvailableCoupons] = useState([])
   const [couponLoading, setCouponLoading] = useState(false)
+
+  // Payment failure modal states
+  const [showPaymentFailedModal, setShowPaymentFailedModal] = useState(false)
+  const [paymentFailureData, setPaymentFailureData] = useState({
+    orderId: null,
+    errorMessage: "",
+    errorDescription: "",
+  })
 
   const toast = ({ title, description, variant }) => {
     console.log(`Toast: ${title} - ${description} (${variant})`)
@@ -1313,11 +1189,7 @@ export default function CheckoutPage() {
   const handleApiError = (err, defaultMessage) => {
     const message = err.response?.data?.message || err.response?.data?.error || defaultMessage
     setError(message)
-    toast({
-      title: "Error",
-      description: message,
-      variant: "destructive",
-    })
+    console.log(`Error: ${message}`)
   }
 
   useEffect(() => {
@@ -1363,8 +1235,6 @@ export default function CheckoutPage() {
     }
   }, [cart])
 
-  console.log("couponApplied:", couponApplied)
-
   useEffect(() => {
     fetchAddress()
   }, [])
@@ -1373,7 +1243,7 @@ export default function CheckoutPage() {
     if (addresses.length > 0 && !selectedAddress) {
       setSelectedAddress(addresses.find((addr) => addr.isDefault)?.id || addresses[0].id)
     }
-  }, [addresses, selectedAddress])
+  }, [addresses])
 
   const fetchAddress = async () => {
     setLoading(true)
@@ -1383,11 +1253,13 @@ export default function CheckoutPage() {
         id: addr.id,
         name: addr.name,
         type: addr.address_type,
-        street: `${addr.house_no || ""}${addr.landmark ? `, ${addr.landmark}` : ""}`.trim(),
+        house_no: addr.house_no,
+        landmark: addr.landmark || "",
         city: addr.city,
         state: addr.state,
         pincode: addr.pin_code,
         phone: addr.mobile_number,
+        alternate_number: addr.alternate_number || "",
         isDefault: addr.isDefault || false,
       }))
       setAddresses(mappedAddresses)
@@ -1452,7 +1324,6 @@ export default function CheckoutPage() {
   const totalDiscount = cart?.final_discount || 0
   const total = cart?.final_total || 0
   const shipping = cart?.shipping || 0
-  const final_coupon_discount = cart?.final_coupon_discount || 0
   const isCodDisabled = total > 1000
 
   const formatPrice = (price) => {
@@ -1466,11 +1337,13 @@ export default function CheckoutPage() {
   const validateAddress = (address) => {
     const errors = []
     if (!address.name.trim()) errors.push("Full name is required")
-    if (!address.street.trim()) errors.push("Street address is required")
+    if (!address.house_no.trim()) errors.push("House number is required")
     if (!address.city.trim()) errors.push("City is required")
     if (!address.state.trim()) errors.push("State is required")
     if (!address.pincode || !/^\d{6}$/.test(address.pincode)) errors.push("Valid 6-digit PIN code is required")
     if (!address.phone || !/^\d{10}$/.test(address.phone)) errors.push("Valid 10-digit phone number is required")
+    if (address.alternate_number && !/^\d{10}$/.test(address.alternate_number))
+      errors.push("Valid 10-digit alternate number is required")
     return errors
   }
 
@@ -1485,7 +1358,6 @@ export default function CheckoutPage() {
       setCouponError(null)
       setError(null)
       await fetchCart()
-      console.log("applied", response.data)
     } catch (err) {
       setCouponError(err.response?.data?.error || "Invalid coupon code")
       setCouponApplied(null)
@@ -1511,16 +1383,16 @@ export default function CheckoutPage() {
       return
     }
     try {
-      const [house_no = "", landmark = ""] = newAddress.street.split(",").map((s) => s.trim())
       const response = await api.post("address/", {
         name: newAddress.name.trim(),
-        house_no,
+        house_no: newAddress.house_no.trim(),
         address_type: newAddress.type,
         city: newAddress.city.trim(),
         state: newAddress.state.trim(),
         pin_code: newAddress.pincode,
         mobile_number: newAddress.phone,
-        landmark,
+        landmark: newAddress.landmark || null,
+        alternate_number: newAddress.alternate_number || null,
         isDefault: newAddress.isDefault,
       })
       const newId = response.data.id
@@ -1530,9 +1402,16 @@ export default function CheckoutPage() {
       setAddresses([
         ...updatedAddresses,
         {
-          ...newAddress,
           id: newId,
-          street: `${house_no}${landmark ? `, ${landmark}` : ""}`.trim(),
+          name: newAddress.name,
+          type: newAddress.type,
+          house_no: newAddress.house_no,
+          landmark: newAddress.landmark || "",
+          city: newAddress.city,
+          state: newAddress.state,
+          pincode: newAddress.pincode,
+          phone: newAddress.phone,
+          alternate_number: newAddress.alternate_number || "",
           isDefault: newAddress.isDefault,
         },
       ])
@@ -1540,11 +1419,13 @@ export default function CheckoutPage() {
       setNewAddress({
         name: "",
         type: "home",
-        street: "",
+        house_no: "",
+        landmark: "",
         city: "",
         state: "",
         pincode: "",
         phone: "",
+        alternate_number: "",
         isDefault: false,
       })
       setShowAddressDialog(false)
@@ -1561,23 +1442,25 @@ export default function CheckoutPage() {
       return
     }
     try {
-      const [house_no = "", landmark = ""] = editingAddress.street.split(",").map((s) => s.trim())
       const response = await api.patch(`address/${editingAddress.id}/`, {
         name: editingAddress.name.trim(),
-        house_no,
+        house_no: editingAddress.house_no.trim(),
         address_type: editingAddress.type,
         city: editingAddress.city.trim(),
         state: editingAddress.state.trim(),
         pin_code: editingAddress.pincode,
         mobile_number: editingAddress.phone,
-        landmark,
+        landmark: editingAddress.landmark || null,
+        alternate_number: editingAddress.alternate_number || null,
         isDefault: editingAddress.isDefault,
       })
       const updatedAddresses = addresses.map((addr) => {
         if (addr.id === editingAddress.id) {
           return {
             ...editingAddress,
-            street: `${house_no}${landmark ? `, ${landmark}` : ""}`.trim(),
+            house_no: editingAddress.house_no,
+            landmark: editingAddress.landmark || "",
+            alternate_number: editingAddress.alternate_number || "",
           }
         }
         return { ...addr, isDefault: editingAddress.isDefault ? false : addr.isDefault }
@@ -1626,9 +1509,30 @@ export default function CheckoutPage() {
   const startEditAddress = (address) => {
     setEditingAddress({
       ...address,
-      street: address.street,
+      house_no: address.house_no,
+      landmark: address.landmark || "",
+      alternate_number: address.alternate_number || "",
     })
     setShowAddressDialog(true)
+  }
+
+  const handlePaymentFailure = (orderId, errorMessage, errorDescription) => {
+    setPaymentFailureData({
+      orderId,
+      errorMessage,
+      errorDescription,
+    })
+    setShowPaymentFailedModal(true)
+    setIsPlacingOrder(false)
+  }
+
+  const handleGoToOrderDetails = () => {
+    setShowPaymentFailedModal(false)
+    if (paymentFailureData.orderId) {
+      navigate(`/order-details/${paymentFailureData.orderId}`, {
+        state: { paymentStatus: "failed", order: paymentFailureData.orderId },
+      })
+    }
   }
 
   const handlePlaceOrder = async () => {
@@ -1653,9 +1557,6 @@ export default function CheckoutPage() {
     setIsPlacingOrder(true)
     try {
       const couponData = couponApplied && couponApplied.code ? { coupon_code: couponApplied.code } : {}
-      console.log("couponApplied:", couponApplied)
-      console.log("couponData:", couponData)
-
       if (selectedPayment === "card") {
         if (!window.Razorpay) {
           handleApiError(
@@ -1671,8 +1572,6 @@ export default function CheckoutPage() {
           payment_method: "card",
           ...couponData,
         })
-        console.log("Full Razorpay create response:", response)
-
         if (!response.data.order_id || !response.data.amount) {
           throw new Error("Invalid Razorpay response: missing order_id or amount")
         }
@@ -1692,7 +1591,6 @@ export default function CheckoutPage() {
                 razorpay_payment_id: response.razorpay_payment_id,
                 razorpay_signature: response.razorpay_signature,
               })
-              console.log("Payment verification response:", verifyResponse.data)
               if (verifyResponse.data.order_id) {
                 navigate(`/order-details/${verifyResponse.data.order_id}`, {
                   state: { paymentStatus: "success", order: verifyResponse.data.order_id },
@@ -1703,14 +1601,12 @@ export default function CheckoutPage() {
               setIsPlacingOrder(false)
             } catch (err) {
               console.error("Payment verification error:", err.response?.data, err.message)
-              handleApiError(err, "Payment verification failed. Please contact support.")
-              if (err.response?.data?.order_id) {
-                navigate(`/order-details/${err.response.data.order_id}`, {
-                  state: { paymentStatus: "failed", order: err.response?.data?.order_id },
-                })
-              }
-            } finally {
-              setIsPlacingOrder(false)
+              const orderId = err.response?.data?.order_id || order.id
+              handlePaymentFailure(
+                orderId,
+                "Payment Verification Failed",
+                "Payment verification failed. Please contact support if amount was deducted.",
+              )
             }
           },
           prefill: {
@@ -1728,13 +1624,11 @@ export default function CheckoutPage() {
           modal: {
             ondismiss: async () => {
               setIsPlacingOrder(false)
-              handleApiError(new Error("Payment cancelled"), "Payment cancelled by user.")
               try {
                 await api.post("cartapp/orders/cancel/", { order_id: response.data.order.id })
                 console.log("Pending order cancelled")
               } catch (err) {
                 console.error("Failed to cancel order:", err)
-                handleApiError(err, "Payment cancelled, but failed to update order status. Please contact support.")
               }
             },
           },
@@ -1744,28 +1638,34 @@ export default function CheckoutPage() {
           const rzp = new window.Razorpay(options)
           rzp.on("payment.failed", async (response) => {
             console.error("Razorpay payment failed:", response.error)
-            handleApiError(new Error(response.error.description), `Payment failed: ${response.error.description}`)
-            setIsPlacingOrder(false)
             try {
-              await api.post("cartapp/orders/cancel/", { order_id: response.data.order.id })
-              console.log("Pending order cancelled")
+              await api.post("cartapp/orders/cancel/", { order_id: order.id })
+              console.log("Failed order cancelled")
             } catch (err) {
               console.error("Failed to cancel order:", err)
-              handleApiError(err, "Payment failed, but failed to update order status. Please contact support.")
             }
+
+            handlePaymentFailure(
+              order.id,
+              "Payment Failed",
+              response.error.description || "Your payment could not be processed. Please try again.",
+            )
           })
           rzp.open()
         } catch (err) {
           console.error("Razorpay modal error:", err)
-          handleApiError(err, "Failed to initialize payment. Please try again.")
           setIsPlacingOrder(false)
           try {
-            await api.post("cartapp/orders/cancel/", { order_id: response.data.order.id })
+            await api.post("cartapp/orders/cancel/", { order_id: order.id })
             console.log("Pending order cancelled")
           } catch (cancelErr) {
             console.error("Failed to cancel order:", cancelErr)
-            handleApiError(cancelErr, "Failed to cancel order. Please contact support.")
           }
+          handlePaymentFailure(
+            order.id,
+            "Payment Initialization Failed",
+            "Failed to initialize payment. Please try again.",
+          )
         }
       } else {
         const response = await api.post("cartapp/orders/create/", {
@@ -1773,7 +1673,6 @@ export default function CheckoutPage() {
           payment_method: selectedPayment,
           ...couponData,
         })
-        console.log("Order create response:", response.data)
         if (response.data.cart) {
           setCart(response.data.cart)
         } else {
@@ -1791,155 +1690,48 @@ export default function CheckoutPage() {
     }
   }
 
-  const AddressDialog = () => {
-    if (!showAddressDialog) return null
-
-    const isEditing = !!editingAddress
-    const addressData = isEditing ? editingAddress : newAddress
-    const setAddressData = isEditing
-      ? (data) => setEditingAddress({ ...editingAddress, ...data })
-      : (data) => setNewAddress({ ...newAddress, ...data })
+  const PaymentFailedModal = () => {
+    if (!showPaymentFailedModal) return null
 
     return (
-      <Dialog open={showAddressDialog} onOpenChange={setShowAddressDialog}>
-        <DialogContent className="max-w-2xl bg-white">
+      <Dialog open={showPaymentFailedModal} onOpenChange={setShowPaymentFailedModal}>
+        <DialogContent className="max-w-md bg-white">
           <DialogHeader>
-            <DialogTitle className="text-xl font-semibold text-[#8B2131]">
-              {isEditing ? "Edit Address" : "Add New Address"}
+            <DialogTitle className="text-xl font-semibold text-red-600 flex items-center">
+              <XCircle className="h-6 w-6 mr-2" />
+              Payment Failed
             </DialogTitle>
           </DialogHeader>
-          {error && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-              <p className="text-red-600 text-sm">{error}</p>
+          <div className="space-y-4 py-4">
+            <div className="flex items-center justify-center">
+              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
+                <AlertTriangle className="h-8 w-8 text-red-600" />
+              </div>
             </div>
-          )}
-          <div className="grid gap-6 py-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="md:col-span-2">
-                <Label htmlFor="name" className="text-sm font-medium">
-                  Full Name *
-                </Label>
-                <Input
-                  id="name"
-                  value={addressData.name}
-                  onChange={(e) => setAddressData({ name: e.target.value })}
-                  placeholder="Enter your full name"
-                  className="mt-1"
-                />
-              </div>
-              <div className="md:col-span-2">
-                <Label className="text-sm font-medium">Address Type *</Label>
-                <RadioGroup
-                  value={addressData.type}
-                  onValueChange={(value) => setAddressData({ type: value })}
-                  className="flex gap-6 mt-2"
-                >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="home" id="home" />
-                    <Label htmlFor="home" className="cursor-pointer flex items-center">
-                      <Home className="h-4 w-4 mr-1" />
-                      Home
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="office" id="office" />
-                    <Label htmlFor="office" className="cursor-pointer flex items-center">
-                      <Building className="h-4 w-4 mr-1" />
-                      Office
-                    </Label>
-                  </div>
-                </RadioGroup>
-              </div>
-              <div className="md:col-span-2">
-                <Label htmlFor="street" className="text-sm font-medium">
-                  Street Address *
-                </Label>
-                <Textarea
-                  id="street"
-                  value={addressData.street}
-                  onChange={(e) => setAddressData({ street: e.target.value })}
-                  placeholder="Enter your street address (e.g., House No, Landmark)"
-                  className="mt-1 resize-none"
-                  rows={3}
-                />
-              </div>
-              <div>
-                <Label htmlFor="city" className="text-sm font-medium">
-                  City *
-                </Label>
-                <Input
-                  id="city"
-                  value={addressData.city}
-                  onChange={(e) => setAddressData({ city: e.target.value })}
-                  placeholder="City"
-                  className="mt-1"
-                />
-              </div>
-              <div>
-                <Label htmlFor="state" className="text-sm font-medium">
-                  State *
-                </Label>
-                <Input
-                  id="state"
-                  value={addressData.state}
-                  onChange={(e) => setAddressData({ state: e.target.value })}
-                  placeholder="State"
-                  className="mt-1"
-                />
-              </div>
-              <div>
-                <Label htmlFor="pincode" className="text-sm font-medium">
-                  PIN Code *
-                </Label>
-                <Input
-                  id="pincode"
-                  value={addressData.pincode}
-                  onChange={(e) => setAddressData({ pincode: e.target.value })}
-                  placeholder="PIN Code"
-                  className="mt-1"
-                />
-              </div>
-              <div>
-                <Label htmlFor="phone" className="text-sm font-medium">
-                  Phone Number *
-                </Label>
-                <Input
-                  id="phone"
-                  value={addressData.phone}
-                  onChange={(e) => setAddressData({ phone: e.target.value })}
-                  placeholder="Phone Number"
-                  className="mt-1"
-                />
-              </div>
-              <div className="md:col-span-2 flex items-center space-x-2">
-                <Checkbox
-                  id="default"
-                  checked={addressData.isDefault}
-                  onCheckedChange={(checked) => setAddressData({ isDefault: checked })}
-                />
-                <Label htmlFor="default" className="cursor-pointer text-sm">
-                  Set as default address
-                </Label>
-              </div>
+            <div className="text-center space-y-2">
+              <h3 className="text-lg font-medium text-gray-900">{paymentFailureData.errorMessage}</h3>
+              <p className="text-sm text-gray-600">{paymentFailureData.errorDescription}</p>
+              {paymentFailureData.orderId && (
+                <p className="text-xs text-gray-500 mt-2">Order ID: #{paymentFailureData.orderId}</p>
+              )}
+            </div>
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+              <p className="text-sm text-yellow-800">
+                <strong>Note:</strong> If amount was deducted from your account, it will be refunded within 5-7 business
+                days.
+              </p>
             </div>
           </div>
-          <div className="flex justify-end gap-3 pt-4 border-t">
-            <Button
-              variant="outline"
-              onClick={() => {
-                setShowAddressDialog(false)
-                setEditingAddress(null)
-                setError(null)
-              }}
-            >
-              Cancel
+          <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t">
+            <Button variant="outline" onClick={() => setShowPaymentFailedModal(false)} className="w-full sm:w-auto">
+              Try Again
             </Button>
             <Button
-              className="bg-[#8B2131] hover:bg-[#6d1926]"
-              onClick={isEditing ? handleEditAddress : handleAddAddress}
-              disabled={!addressData.name.trim()}
+              onClick={handleGoToOrderDetails}
+              className="bg-[#8B2131] hover:bg-[#6d1926] w-full sm:w-auto"
+              disabled={!paymentFailureData.orderId}
             >
-              {isEditing ? "Update Address" : "Save Address"}
+              View Order Details
             </Button>
           </div>
         </DialogContent>
@@ -1952,7 +1744,7 @@ export default function CheckoutPage() {
 
     return (
       <Dialog open={showCouponsDialog} onOpenChange={setShowCouponsDialog}>
-        <DialogContent className="max-w-2xl bg-white">
+        <DialogContent className="max-w-2xl bg-white max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-xl font-semibold text-[#8B2131] flex items-center">
               <Gift className="h-5 w-5 mr-2" />
@@ -1979,19 +1771,19 @@ export default function CheckoutPage() {
               availableCoupons.map((coupon) => (
                 <Card key={coupon.id} className="border-l-4 border-l-[#8B2131]">
                   <CardContent className="p-4">
-                    <div className="flex justify-between items-start mb-3">
-                      <div>
+                    <div className="flex flex-col sm:flex-row justify-between items-start mb-3 gap-3">
+                      <div className="flex-1">
                         <h3 className="font-semibold text-[#8B2131] text-lg">{coupon.coupon_code}</h3>
                         <p className="text-sm text-gray-600 mt-1">
                           Save {formatPrice(coupon.discount)} on orders above {formatPrice(coupon.min_amount)}
                         </p>
                       </div>
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 w-full sm:w-auto">
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={() => handleCopyCoupon(coupon.coupon_code)}
-                          className="text-[#8B2131] hover:text-[#6d1926] hover:bg-[#f8ece9]"
+                          className="text-[#8B2131] hover:text-[#6d1926] hover:bg-[#f8ece9] flex-1 sm:flex-none"
                         >
                           <Copy className="h-4 w-4 mr-1" />
                           Copy
@@ -1999,14 +1791,14 @@ export default function CheckoutPage() {
                         <Button
                           size="sm"
                           onClick={() => handleApplyCouponFromModal(coupon.coupon_code)}
-                          className="bg-[#8B2131] hover:bg-[#6d1926]"
+                          className="bg-[#8B2131] hover:bg-[#6d1926] flex-1 sm:flex-none"
                           disabled={couponApplied?.code === coupon.coupon_code}
                         >
                           {couponApplied?.code === coupon.coupon_code ? "Applied" : "Apply"}
                         </Button>
                       </div>
                     </div>
-                    <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                       <div>
                         <span className="text-gray-500">Min Purchase:</span>
                         <span className="ml-1 font-medium">{formatPrice(coupon.min_amount)}</span>
@@ -2040,7 +1832,6 @@ export default function CheckoutPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50">
       <div className="container mx-auto px-4 py-8 max-w-7xl">
-        {/* Header */}
         <div className="mb-8">
           <Link
             to="/cart"
@@ -2049,24 +1840,19 @@ export default function CheckoutPage() {
             <ArrowLeft className="h-4 w-4 mr-2 group-hover:-translate-x-1 transition-transform" />
             <span>Back to Cart</span>
           </Link>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
-              <h1 className="text-4xl font-bold text-[#8B2131] mb-2">Secure Checkout</h1>
+              <h1 className="text-3xl sm:text-4xl font-bold text-[#8B2131] mb-2">Secure Checkout</h1>
               <p className="text-gray-600">Complete your purchase with confidence</p>
-            </div>
-            <div className="hidden md:flex items-center space-x-2 text-sm text-gray-500">
-              <ShieldCheck className="h-4 w-4 text-green-600" />
             </div>
           </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Shipping Address Section */}
             <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
               <CardHeader className="pb-4">
-                <CardTitle className="flex items-center justify-between">
+                <CardTitle className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                   <div className="flex items-center">
                     <div className="bg-[#8B2131] text-white rounded-full p-2 mr-3">
                       <MapPin className="h-5 w-5" />
@@ -2075,8 +1861,8 @@ export default function CheckoutPage() {
                   </div>
                   <Button
                     variant="outline"
-                    className="border-[#8B2131] text-[#8B2131] hover:bg-[#8B2131] hover:text-white"
-                    onClick={() => navigate('/addaddress')}
+                    className="border-[#8B2131] text-[#8B2131] hover:bg-[#8B2131] hover:text-white w-full sm:w-auto"
+                    onClick={() => setShowAddressDialog(true)}
                     disabled={showAddressDialog}
                   >
                     <Plus className="h-4 w-4 mr-2" />
@@ -2126,7 +1912,7 @@ export default function CheckoutPage() {
                               className="mt-1"
                             />
                             <div className="flex-1">
-                              <div className="flex items-center gap-2 mb-2">
+                              <div className="flex flex-wrap items-center gap-2 mb-2">
                                 <Label
                                   htmlFor={`address-${address.id}`}
                                   className="font-semibold text-gray-900 cursor-pointer"
@@ -2151,18 +1937,23 @@ export default function CheckoutPage() {
                                   ) : (
                                     <>
                                       <Building className="h-3 w-3 mr-1" />
-                                      Office
+                                      Work
                                     </>
                                   )}
                                 </Badge>
                               </div>
-                              <p className="text-gray-600 text-sm mb-1">{address.street}</p>
+                              <p className="text-gray-600 text-sm mb-1">
+                                {address.house_no}
+                                {address.landmark ? `, ${address.landmark}` : ""}
+                              </p>
                               <p className="text-gray-600 text-sm mb-1">
                                 {address.city}, {address.state} - {address.pincode}
                               </p>
                               <p className="text-gray-600 text-sm">Phone: {address.phone}</p>
-
-                              <div className="flex items-center gap-3 mt-3">
+                              {address.alternate_number && (
+                                <p className="text-gray-600 text-sm">Alternate: {address.alternate_number}</p>
+                              )}
+                              <div className="flex flex-wrap items-center gap-3 mt-3">
                                 <Button
                                   variant="ghost"
                                   size="sm"
@@ -2212,7 +2003,6 @@ export default function CheckoutPage() {
               </CardContent>
             </Card>
 
-            {/* Payment Method Section */}
             <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
               <CardHeader className="pb-4">
                 <CardTitle className="flex items-center">
@@ -2276,8 +2066,8 @@ export default function CheckoutPage() {
                         isCodDisabled
                           ? "opacity-50 cursor-not-allowed"
                           : selectedPayment === "cod"
-                          ? "border-[#8B2131] bg-gradient-to-r from-[#8B2131]/5 to-orange-50 shadow-md"
-                          : "border-gray-200 hover:border-gray-300 hover:shadow-sm cursor-pointer"
+                            ? "border-[#8B2131] bg-gradient-to-r from-[#8B2131]/5 to-orange-50 shadow-md"
+                            : "border-gray-200 hover:border-gray-300 hover:shadow-sm cursor-pointer"
                       }`}
                     >
                       <div className="flex items-center space-x-4">
@@ -2304,14 +2094,12 @@ export default function CheckoutPage() {
             </Card>
           </div>
 
-          {/* Order Summary Sidebar */}
           <div className="lg:col-span-1">
             <Card className="shadow-xl border-0 bg-white/90 backdrop-blur-sm sticky top-6">
               <CardHeader className="pb-4">
                 <CardTitle className="text-xl font-semibold text-[#8B2131]">Order Summary</CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
-                {/* Cart Items */}
                 <div className="space-y-4 max-h-64 overflow-y-auto">
                   {cart?.items?.length > 0 ? (
                     cart.items.map((item) => (
@@ -2360,7 +2148,6 @@ export default function CheckoutPage() {
                   )}
                 </div>
 
-                {/* Coupon Section */}
                 <div className="space-y-3">
                   <div className="flex gap-2">
                     <Input
@@ -2374,7 +2161,7 @@ export default function CheckoutPage() {
                       <Button
                         variant="ghost"
                         onClick={handleRemoveCoupon}
-                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                        className="text-red-600 hover:text-red-700 hover:bg-red-50 shrink-0"
                       >
                         Remove
                       </Button>
@@ -2382,7 +2169,7 @@ export default function CheckoutPage() {
                       <Button
                         onClick={handleApplyCoupon}
                         disabled={!couponCode.trim()}
-                        className="bg-[#8B2131] hover:bg-[#6d1926]"
+                        className="bg-[#8B2131] hover:bg-[#6d1926] shrink-0"
                       >
                         Apply
                       </Button>
@@ -2410,7 +2197,6 @@ export default function CheckoutPage() {
                   )}
                 </div>
 
-                {/* Price Breakdown */}
                 <div className="space-y-3 text-sm">
                   <div className="flex justify-between">
                     <span className="text-gray-600">Subtotal</span>
@@ -2452,7 +2238,6 @@ export default function CheckoutPage() {
                   </div>
                 </div>
 
-                {/* Place Order Button */}
                 <Button
                   className="w-full bg-gradient-to-r from-[#8B2131] to-[#a02a3a] hover:from-[#6d1926] hover:to-[#8B2131] text-white py-3 text-lg font-semibold shadow-lg"
                   disabled={
@@ -2476,7 +2261,6 @@ export default function CheckoutPage() {
                   )}
                 </Button>
 
-                {/* Security Badge */}
                 <div className="flex items-center justify-center text-xs text-gray-500 pt-2">
                   <ShieldCheck className="h-4 w-4 mr-1 text-green-600" />
                   <span>Secured by 256-bit SSL encryption</span>
@@ -2486,9 +2270,20 @@ export default function CheckoutPage() {
           </div>
         </div>
 
-        {/* Dialogs */}
-        <AddressDialog />
+        <AddressDialog
+          showAddressDialog={showAddressDialog}
+          setShowAddressDialog={setShowAddressDialog}
+          editingAddress={editingAddress}
+          setEditingAddress={setEditingAddress}
+          newAddress={newAddress}
+          setNewAddress={setNewAddress}
+          error={error}
+          setError={setError}
+          handleAddAddress={handleAddAddress}
+          handleEditAddress={handleEditAddress}
+        />
         <CouponsDialog />
+        <PaymentFailedModal />
       </div>
     </div>
   )

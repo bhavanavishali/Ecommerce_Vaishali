@@ -20,13 +20,14 @@ import AdminLogin from './Features/Auth/AdminLogin';
 import UserTable from './Features/Auth/UserTable';
 import UserProfile from './Features/UserProfile/UserProfile';
 import AddAddress from './Features/Auth/AddAddress';
+import AddressDialog from './Features/Auth/AddressDialog';
 import Cart from './Features/Auth/CartPage'
 import CheckoutPage from './Features/Auth/CheckoutPage';
 import Myorders from './Features/UserProfile/Myorders';
 import ForgotPassword from './Features/Auth/ForgotPassword';
 import ResetPassword from './Features/Auth/ResetPassword';
 import UserOrderDetailsPage from './Features/Auth/UserOrderDetailsPage';
-
+import ContactPage from './Features/Layout/Contact';
 import OrderTable from './Features/Auth/OrderTable';
 import OrderHandlePage from './Features/Auth/OrderHandlePage';
 import ViewOrderDetails from './Features/Auth/ViewOrderDetails';
@@ -73,6 +74,7 @@ function App() {
       <Route path='/google' element={<GoogleLoginButton/>} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password/:uidb64/:token" element={<ResetPassword />} />
+      <Route path="/contact" element ={<ContactPage/>}/>
 
       {/* Admin section */}
       <Route path='/adminLogin' element={<AdminLogin/>}/>

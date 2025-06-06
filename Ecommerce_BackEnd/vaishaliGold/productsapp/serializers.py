@@ -110,11 +110,12 @@ class ProductSerializer(serializers.ModelSerializer):
     variants = ProductVariantSerializer(many=True, read_only=True)
     category = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all())
     category_name = serializers.SerializerMethodField()
+    category_Isactive=serializers.SerializerMethodField()
     price = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
-        fields = ['id', 'name', 'category', 'category_name', 'description',
+        fields = ['id', 'name', 'category', 'category_name', 'category_Isactive','description',
                   'occasion', 'gender', 'is_active', 'bis_hallmark', 'size',
                   'created_at', 'updated_at', 'variants', 'available',
                   'gold_color', 'price', 'image', 'uploaded_images', 'discount', 'product_offer_Isactive']
@@ -154,7 +155,11 @@ class ProductSerializer(serializers.ModelSerializer):
         if obj.category:
             return obj.category.name
         return None
-
+    def get_category_Isactive(self, obj):
+        if obj.category:
+            return obj.category.is_active
+        return None
+    
     def get_price(self, obj):
         available_variants = [variant for variant in obj.variants.all() if variant.available]
         if not available_variants:

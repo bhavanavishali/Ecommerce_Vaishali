@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { User, Package, MapPin, Wallet, Camera,KeyRound, } from "lucide-react"
+import { User, Package, MapPin, Wallet, Camera,KeyRound, ShoppingBag,Settings} from "lucide-react"
 import { cn } from "@/lib/utils"
 import ProfileEdit from './Profileedit'
 import MyOrders from "./Myorders"
@@ -17,8 +17,8 @@ const UserProfile= () => {
 
   const menuItems = [
     { id: "profile information", label: "Profile Information", icon: User },
-    { id: "profile edit", label: "Profile Edit", icon: User },
-    { id: "myorders", label: "My Orders", icon: Package },
+    { id: "profile edit", label: "Profile Edit", icon: Settings },
+    { id: "myorders", label: "My Orders", icon: ShoppingBag },
     { id: "addresses", label: "Manage Addresses", icon: MapPin },
     { id: "wallet", label: "Wallet", icon: Wallet },
     { id: "resetpassword", label: "Reset Password", icon: KeyRound },

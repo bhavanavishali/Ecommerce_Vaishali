@@ -5,7 +5,7 @@ from .models import *
 import re
 import logging
 
-# Set up logging
+
 logger = logging.getLogger(__name__)
 
 User = get_user_model()

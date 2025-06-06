@@ -89,7 +89,7 @@ class Cart(models.Model):
             raise ValidationError("Cart is empty")
         
         try:
-            coupon = Coupon.objects.get(coupon_code=coupon_code)
+            coupon = Coupon.objects.get(coupon_code=coupon_code,is_active=True)
             if not coupon.is_valid(self.user):
                 raise ValidationError("Coupon is not valid or has expired")
             

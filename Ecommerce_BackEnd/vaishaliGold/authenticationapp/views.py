@@ -25,6 +25,9 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 from django.db import transaction
 
 logger = logging.getLogger(__name__)
+# Use Redis client from settings
+# redis_client = settings.REDIS_CLIENT
+
 from .models import *
 from offer.models import *
 
@@ -41,6 +44,8 @@ from django.db.models import Q
 from .pagination import CustomPagination
 
 User = get_user_model()
+
+
 
 
 class SignupView(APIView):
@@ -252,20 +257,8 @@ class VerifyOTPView(APIView):
                 return Response({'error': 'Invalid or expired OTP'}, status=status.HTTP_400_BAD_REQUEST)
         except User.DoesNotExist:
             return Response({'error': 'User not found'}, status=status.HTTP_400_BAD_REQUEST)
-        
 
-        
-class ReferralLinkView(APIView):
-    permission_classes = [IsAuthenticated]
 
-    def get(self, request):
-        user = request.user
-        referral_link = f"{settings.CORS_ALLOWED_ORIGINS}/signup?referral_token={user.referral_code}"
-        print("dddd",referral_link)
-        return Response({
-            'referral_code': user.referral_code,
-            'referral_link': referral_link
-        }, status=status.HTTP_200_OK)
         
 class ResendOTPView(APIView):
     permission_classes = [AllowAny]
@@ -310,7 +303,21 @@ class ResendOTPView(APIView):
                 
         except User.DoesNotExist:
             return Response({'error': 'User not found'}, status=status.HTTP_400_BAD_REQUEST)
-        
+      
+
+
+class ReferralLinkView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        referral_link = f"{settings.CORS_ALLOWED_ORIGINS}/signup?referral_token={user.referral_code}"
+        print("dddd",referral_link)
+        return Response({
+            'referral_code': user.referral_code,
+            'referral_link': referral_link
+        }, status=status.HTTP_200_OK)
+           
 @method_decorator(ensure_csrf_cookie, name='dispatch')
 class AdminLoginview(APIView):
     
@@ -390,44 +397,7 @@ def get_csrf_token(request):
     return JsonResponse({'detail': 'CSRF cookie set'})
 
 
-# class UserProfileView(APIView):
-#     permission_classes = [IsAuthenticated]
 
-#     def get(self, request):
-#         print(f"request.user: {request.user}, type: {type(request.user)}")
-#         if not request.user.is_authenticated:
-#             return Response({
-#                 'status': 'error',
-#                 'message': 'Authentication required'
-#             }, status=status.HTTP_401_UNAUTHORIZED)
-#         try:
-#             profile = UserProfile.objects.select_related('user').get(user=request.user)
-#             serializer = UserProfileSerializer(profile)
-
-#             print("its data",serializer.data)
-#             return Response({
-#                 'status': 'success',
-#                 'user': serializer.data
-#             }, status=status.HTTP_200_OK)
-        
-#         except UserProfile.DoesNotExist:
-#             return Response({
-#                 'status': 'error',
-#                 'message': 'Profile not found'
-#             }, status=status.HTTP_404_NOT_FOUND)
-
-#     def patch(self, request):
-#         try:
-#             user_profile = UserProfile.objects.get(user=request.user)
-#             print("my neww data",request.data)
-#             serializer = UserProfileSerializer(user_profile, data=request.data, partial=True)
-#             if serializer.is_valid():
-#                 serializer.save()
-#                 print("lll",serializer.data)
-#                 return Response(serializer.data)
-#             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-#         except UserProfile.DoesNotExist:
-#             return Response({"message": "Profile not found"}, status=status.HTTP_404_NOT_FOUND)
         
 
 class UserProfileView(APIView):
@@ -510,7 +480,7 @@ class GoogleLoginView(APIView):
                     if not user.google_id:
                         user.google_id = google_id
                         user.save()
-                        # Check if UserProfile exists before creating
+                        
                         if not hasattr(user, 'user') or not user.user:
                             UserProfile.objects.create(user=user)
                 except User.DoesNotExist:
@@ -529,7 +499,7 @@ class GoogleLoginView(APIView):
                         
                         phone_number=''  
                     )
-                    # UserProfile is created automatically via post_save signal
+                    
                 
                 refresh_token = RefreshToken.for_user(user)
                 access_token = refresh_token.access_token

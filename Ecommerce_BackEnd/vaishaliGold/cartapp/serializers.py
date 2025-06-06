@@ -80,7 +80,7 @@ class CartSerializer(serializers.ModelSerializer):
             return None
         try:
             coupon = Coupon.objects.get(coupon_code=value)
-            if not coupon.is_valid(self.context['request'].user):  # Now works with updated is_valid
+            if not coupon.is_valid(self.context['request'].user):  
                 raise serializers.ValidationError("Coupon is not valid or has expired.")
             cart = self.instance
             if cart and cart.final_subtotal < coupon.min_amount:
@@ -500,8 +500,7 @@ class OrderItemReturnSerializer(serializers.ModelSerializer):
         order = item.order
         if order.status != 'delivered':
             raise serializers.ValidationError("Only items in delivered orders can be returned.")
-        # if item.status != 'delivered':
-        #     raise serializers.ValidationError("Only active items can be returned.")
+        
         return data
 
     def update(self, instance, validated_data):
@@ -584,6 +583,7 @@ class WishlistItemSerializer(serializers.ModelSerializer):
             "name": product.name,
             "description": product.description,
             "category": product.category.name if product.category else None,
+            "category_IsActive":product.category.is_active,
             "gold_color": product.gold_color,
             "images": images,
             'is_active':product.is_active,
