@@ -102,7 +102,7 @@ export default function Wishlist() {
   const { addToCart } = useCart()
   const [quantity] = useState(1)
 
-  const BASE_URL = "http://127.0.0.1:8000"
+  const BASE_URL = import.meta.env.VITE_BASE_URL
 
   useEffect(() => {
     fetchWishlist()

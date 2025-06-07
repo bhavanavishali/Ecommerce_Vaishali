@@ -8,7 +8,7 @@ const BannerManagement = () => {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
 
-  // Fetch banners on component mount
+  
   useEffect(() => {
     fetchBanners();
   }, []);

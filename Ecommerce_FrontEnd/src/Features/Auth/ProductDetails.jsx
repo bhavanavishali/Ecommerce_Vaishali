@@ -31,7 +31,7 @@ import { useCart } from "@/Context/CartContext"
 import { useWishlist } from "@/Context/WishlistContext"
 import { useNavigate } from "react-router-dom"
 
-const BASE_URL = "http://127.0.0.1:8000"
+const BASE_URL =import.meta.env.VITE_BASE_URL
 
 const ProductDetails = () => {
   const { id } = useParams()

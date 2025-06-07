@@ -44,7 +44,7 @@ function OrderTable() {
 
     const handleStatusFilter = (value) => {
         setStatusFilter(value);
-        setCurrentPage(1); // Reset to first page when filtering
+        setCurrentPage(1); 
     };
 
     const filteredOrders = orders.filter(order => {
@@ -54,19 +54,19 @@ function OrderTable() {
         return matchesSearch && matchesStatus;
     });
 
-    // Pagination calculations
+    
     const totalItems = filteredOrders.length;
     const totalPages = Math.ceil(totalItems / itemsPerPage);
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     const currentItems = filteredOrders.slice(startIndex, endIndex);
 
-    // Handle page changes
+    
     const handlePageChange = (page) => {
         setCurrentPage(page);
     };
 
-    // Generate page numbers for display
+   
     const getPageNumbers = () => {
         const pageNumbers = [];
         const maxPagesToShow = 5;

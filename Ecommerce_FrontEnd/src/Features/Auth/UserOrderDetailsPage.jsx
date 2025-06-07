@@ -12,7 +12,7 @@ const MyOrders = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
 
-  const BASE_URL = "http://127.0.0.1:8000"
+  const BASE_URL = import.meta.env.VITE_BASE_URL
 
   // Animation variants
   const containerVariants = {
@@ -51,50 +51,7 @@ const MyOrders = () => {
     fetchOrders()
   }, [])
 
-  // const handleCancelOrder = async (orderId) => {
-  //   const result = await Swal.fire({
-  //     title: 'Are you sure?',
-  //     text: 'Do you really want to cancel this order? This action cannot be undone.',
-  //     icon: 'warning',
-  //     showCancelButton: true,
-  //     confirmButtonColor: '#7a2828',
-  //     cancelButtonColor: '#d33',
-  //     confirmButtonText: 'Yes, cancel it!',
-  //     cancelButtonText: 'No, keep it'
-  //   })
-
-  //   if (!result.isConfirmed) {
-  //     return
-  //   }
-
-  //   setIsLoading(true)
-  //   setError(null)
-
-  //   try {
-  //     const response = await api.put(`/cartapp/orders/${orderId}/cancel/`)
-  //     const updatedOrders = orders.map(order => 
-  //       order.id === orderId ? { ...order, ...response.data.order } : order
-  //     )
-  //     setOrders(updatedOrders)
-
-  //     await Swal.fire({
-  //       title: 'Cancelled!',
-  //       text: 'Your order has been successfully cancelled.',
-  //       icon: 'success',
-  //       confirmButtonColor: '#7a2828'
-  //     })
-  //   } catch (err) {
-  //     await Swal.fire({
-  //       title: 'Error!',
-  //       text: err.response?.data?.error || 'Failed to cancel order',
-  //       icon: 'error',
-  //       confirmButtonColor: '#7a2828'
-  //     })
-  //     setError(err.response?.data?.error || 'Failed to cancel order')
-  //   } finally {
-  //     setIsLoading(false)
-  //   }
-  // }
+ 
 
   // Format price in Indian Rupees
   const formatPrice = (price) => {

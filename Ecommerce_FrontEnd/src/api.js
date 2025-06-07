@@ -1,9 +1,9 @@
 import axios from "axios";
 
-const baseURL = "http://localhost:8000";
+const BASE_URL=import.meta.env.VITE_BASE_URL
 
 const api = axios.create({
-  baseURL: baseURL,
+  baseURL: BASE_URL,
   headers: {
     "Content-Type": "application/json",
     "X-CSRFToken": getCookie("csrftoken"),
@@ -23,7 +23,7 @@ api.interceptors.response.use(
         const csrfToken = getCookie("csrftoken");
 
          await axios.post(
-          `${baseURL}/refresh_token/`,{}, {
+          `${BASE_URL}/refresh_token/`,{}, {
             headers: {
               "X-CSRFToken": csrfToken,
             },
@@ -34,7 +34,7 @@ api.interceptors.response.use(
         return api(originalRequest);
       } catch (refreshError) {
         try {
-          await axios.post(`${baseURL}/logout/`, {}, {
+          await axios.post(`${BASE_URL}/logout/`, {}, {
             headers: {
               "X-CSRFToken": getCookie("csrftoken"),
             },

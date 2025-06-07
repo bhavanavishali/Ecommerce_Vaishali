@@ -73,7 +73,7 @@ const ViewOrderDetails = () => {
     if (typeof str !== "string" || str.length === 0) return "Unknown";
     return str.charAt(0).toUpperCase() + str.slice(1);
   };
-  const BASE_URL = "http://127.0.0.1:8000"
+  const BASE_URL = import.meta.env.VITE_BASE_URL
   const loadRazorpayScript = () => {
     return new Promise((resolve, reject) => {
       if (window.Razorpay) {
