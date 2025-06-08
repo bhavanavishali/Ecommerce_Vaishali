@@ -45,6 +45,7 @@ import api from "../../api"
 
 const Header = () => {
   const { cart } = useCart()
+  const isuser = localStorage.getItem("user");
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const user = useSelector((state) => state.auth.user)
@@ -150,7 +151,39 @@ const Header = () => {
                     <Home className="h-5 w-5" />
                   </Button>
 
+                    {/* Shopping Cart Button */}
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-10 w-10 rounded-full bg-white/80 backdrop-blur-sm text-[#7a2828] hover:bg-[#7a2828] hover:text-white transition-all duration-300 shadow-sm hover:shadow-md relative"
+                onClick={() => navigate("/cart")}
+                aria-label="Shopping Cart"
+              >
+                <ShoppingCart className="h-5 w-5" />
+                {user && totalItems > 0 && (
+                  <span className="absolute -top-1 -right-1 flex h-5 w-5">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#7a2828] opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-5 w-5 bg-[#7a2828] text-white text-xs font-bold items-center justify-center">
+                      {totalItems}
+                    </span>
+                  </span>
+                )}
+              </Button>
+
+              {/* Wishlist Button */}
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-10 w-10 rounded-full bg-white/80 backdrop-blur-sm text-[#7a2828] hover:bg-[#7a2828] hover:text-white transition-all duration-300 shadow-sm hover:shadow-md"
+                onClick={() => navigate("/wishlist")}
+                aria-label="Wishlist"
+              >
+                <Heart className="h-5 w-5" />
+              </Button>
+
                   {/* User Profile Dropdown */}
+                  
+
                   <DropdownMenu >
                     <DropdownMenuTrigger asChild>
                       <Button
@@ -207,35 +240,7 @@ const Header = () => {
 
            
 
-              {/* Shopping Cart Button */}
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-10 w-10 rounded-full bg-white/80 backdrop-blur-sm text-[#7a2828] hover:bg-[#7a2828] hover:text-white transition-all duration-300 shadow-sm hover:shadow-md relative"
-                onClick={() => navigate("/cart")}
-                aria-label="Shopping Cart"
-              >
-                <ShoppingCart className="h-5 w-5" />
-                {user && totalItems > 0 && (
-                  <span className="absolute -top-1 -right-1 flex h-5 w-5">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#7a2828] opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-5 w-5 bg-[#7a2828] text-white text-xs font-bold items-center justify-center">
-                      {totalItems}
-                    </span>
-                  </span>
-                )}
-              </Button>
-
-              {/* Wishlist Button */}
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-10 w-10 rounded-full bg-white/80 backdrop-blur-sm text-[#7a2828] hover:bg-[#7a2828] hover:text-white transition-all duration-300 shadow-sm hover:shadow-md"
-                onClick={() => navigate("/wishlist")}
-                aria-label="Wishlist"
-              >
-                <Heart className="h-5 w-5" />
-              </Button>
+            
                 {/* Login button */}
               <Button
                 variant="ghost"
@@ -477,3 +482,4 @@ const LayoutDashboard = (props) => {
 }
 
 export default Header
+

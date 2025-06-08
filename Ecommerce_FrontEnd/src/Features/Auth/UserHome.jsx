@@ -16,7 +16,9 @@ import { Input } from "@/components/ui/input"
 import api from "../../api"
 import { useNavigate } from "react-router-dom"
 import banner2 from "/banner2.jpeg"
-import banner3 from "/banner3.png"
+import banner3 from "/banner4.png"
+import banner8 from "/banner8.png"
+import banner9 from "/Banner 9.png"
 import { useCart } from "@/Context/CartContext"
 import { useWishlist } from "@/Context/WishlistContext"
 import debounce from "lodash/debounce"
@@ -39,7 +41,7 @@ const formatPrice = (price) => {
   }).format(price)
 }
 
-const bannerImages = [banner2, banner3]
+const bannerImages = [banner2, banner3,banner8,banner9]
 
 const showToast = (message, type = "success") => {
   const toast = document.createElement("div")

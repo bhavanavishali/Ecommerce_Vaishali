@@ -5,6 +5,7 @@ import { BrowserRouter as Router,Routes,Route } from 'react-router-dom';
 import SignUpForm from './Features/Auth/SignUpPage';
 import Login from './Features/Auth/Login';
 import { fromJSON } from 'postcss';
+import NotFound from './Features/Auth/NotFound';
 import AddProductForm from './Features/Auth/AddProductForm';
 import AddVariantForm from './Features/Auth/AddProductVariant';
 import Dashboard from './Features/Auth/AdminSidebar';
@@ -49,6 +50,8 @@ function App() {
       {/* User section */}
       
       <Route path='/'element={<Layout/>}>
+      <Route path="*" element={<NotFound />} />
+
       <Route index element={<Landingpage/>}/>
       
         {/* user protected sessions */}

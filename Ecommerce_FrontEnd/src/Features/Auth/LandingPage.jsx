@@ -17,7 +17,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
-import banner2 from "/banner1.png";
+import banner2 from "/landing_banner11.png";
 
 export default function Landingpage() {
 

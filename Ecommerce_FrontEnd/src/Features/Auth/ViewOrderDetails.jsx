@@ -585,250 +585,593 @@ const ViewOrderDetails = () => {
   </span>
 </nav>
         {/* Order Header */}
-        <Card className="mb-8 border-none shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden relative">
-          <div className="absolute inset-0 bg-gradient-to-br from-[#7a2828] to-[#b8860b] opacity-10"></div>
-          <CardContent className="p-8 relative z-10">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-              <div className="animate-fade-in">
-                <h1 className="text-3xl font-bold flex items-center gap-3 text-gray-800">
-                  Order{" "}
-                  <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#7a2828] to-[#b8860b]">
-                    #{order.order_number}
-                  </span>
-                </h1>
-                <div className="flex items-center mt-3 text-gray-600">
-                  <Clock className="h-5 w-5 mr-2 text-[#7a2828]" />
-                  Ordered on {orderedDate}
+   {/* <Card className="mb-8 border-none shadow-lg hover:shadow-xl transition-all duration-500 overflow-hidden relative">
+  <div className="absolute inset-0 bg-gradient-to-br from-[#f3e9e9] to-[#f7f2e9] opacity-50"></div>
+  <CardContent className="p-8 relative z-10">
+    <div className="flex items-center justify-between gap-3 mb-6">
+      <div className="flex items-center gap-3">
+        <div className="bg-gradient-to-r from-[#7a2828] to-[#b8860b] p-2 rounded-lg shadow-md">
+          <Package className="h-6 w-6 text-white" />
+        </div>
+        <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#7a2828] to-[#b8860b]">
+          Order Status
+        </h2>
+      </div>
+      <div className="flex flex-wrap items-center gap-4">
+        <Badge
+          variant="outline"
+          className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold transition-all duration-300 transform hover:scale-105 shadow-sm ${
+            order.payment_status === "pending"
+              ? "bg-amber-100 text-amber-800 border-amber-200 hover:bg-amber-200"
+              : "bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-200"
+          }`}
+        >
+          <span
+            className={`h-2.5 w-2.5 rounded-full ${
+              order.payment_status === "pending" ? "bg-amber-500" : "bg-emerald-500"
+            } animate-pulse`}
+          ></span>
+          {order.payment_status === "pending" ? "Payment Pending" : "Payment Completed"}
+        </Badge>
+        {(order.status === "pending" || order.status === "processing") && (
+          <Dialog open={isCancelModalOpen} onOpenChange={setIsCancelModalOpen}>
+            <DialogTrigger asChild>
+              <Button
+                variant="destructive"
+                size="sm"
+                className="bg-gradient-to-r from-[#7a2828] to-[#5e1f1f] hover:from-[#5e1f1f] hover:to-[#441717] text-white font-semibold px-4 py-2 transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-md hover:shadow-lg"
+                disabled={isCancellingItem || isReturningItem}
+              >
+                <XCircle className="h-5 w-5 mr-2" />
+                Cancel Order
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-md bg-white rounded-xl shadow-2xl border-none">
+              <DialogHeader>
+                <DialogTitle className="text-2xl font-bold text-red-600">Cancel Order</DialogTitle>
+                <DialogDescription className="text-gray-600">
+                  Please select the reason for cancelling your order
+                  {cancelReasonType === "other" ? " and provide details." : "."}
+                </DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-6 py-6">
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <label htmlFor="reason-type" className="text-right font-medium text-gray-700">
+                    Reason Type
+                  </label>
+                  <Select
+                    onValueChange={(value) => {
+                      setCancelReasonType(value);
+                      if (value !== "other") {
+                        setCancelReason("");
+                      }
+                    }}
+                    value={cancelReasonType}
+                    className="col-span-3"
+                  >
+                    <SelectTrigger className="bg-white border-red-200 focus:ring-[#7a2828]">
+                      <SelectValue placeholder="Select a reason" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-white border-red-200">
+                      <SelectItem value="changed_mind">Changed Mind</SelectItem>
+                      <SelectItem value="ordered_by_mistake">Ordered by Mistake</SelectItem>
+                      <SelectItem value="found_better_price">Found Better Price</SelectItem>
+                      <SelectItem value="other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
-                {order.status === "cancelled" && order.cancel_reason && (
-                  <div className="mt-3 text-red-600 bg-red-50 p-3 rounded-lg border border-red-200 shadow-sm animate-fade-in">
-                    <span className="font-medium">Cancellation Reason:</span> {order.cancel_reason}
-                  </div>
-                )}
-                {order.status === "return_requested" && order.return_reason && (
-                  <div className="mt-3 text-amber-600 bg-amber-50 p-3 rounded-lg border border-amber-200 shadow-sm animate-fade-in">
-                    <span className="font-medium">Return Reason:</span> {order.return_reason}
-                  </div>
-                )}
-                {order.status === "returned" && order.return_reason && (
-                  <div className="mt-3 text-emerald-600 bg-emerald-50 p-3 rounded-lg border border-emerald-200 shadow-sm animate-fade-in">
-                    <span className="font-medium">Return Approved:</span> {order.return_reason}
-                  </div>
-                )}
-                {order.status === "return_denied" && order.return_reason && (
-                  <div className="mt-3 text-red-600 bg-red-50 p-3 rounded-lg border border-red-200 shadow-sm animate-fade-in">
-                    <span className="font-medium">Return Denied:</span> {order.return_reason}
+                {cancelReasonType === "other" && (
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <label htmlFor="reason-details" className="text-right font-medium text-gray-700">
+                      Details
+                    </label>
+                    <Input
+                      id="reason-details"
+                      value={cancelReason}
+                      onChange={(e) => setCancelReason(e.target.value)}
+                      className="col-span-3 border-red-200 focus:ring-[#7a2828]"
+                      placeholder="Provide more details"
+                    />
                   </div>
                 )}
               </div>
-              <div className="flex flex-wrap items-center gap-4">
-                {/* <Badge
+              <DialogFooter className="flex justify-end gap-3">
+                <Button
                   variant="outline"
-                  className={`${order.payment_status === "pending"
-                    ? "bg-amber-100 text-amber-800 border-amber-200 hover:bg-amber-200"
-                    : "bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-200"
-                  } flex items-center gap-2 px-4 py-2 text-sm font-semibold transition-all duration-300 transform hover:scale-105 shadow-sm`}
+                  onClick={() => {
+                    setIsCancelModalOpen(false);
+                    setCancelReason("");
+                    setCancelReasonType("");
+                  }}
+                  className="border-red-200 text-red-600 hover:bg-red-50"
                 >
-                  <span
-                    className={`h-2.5 w-2.5 rounded-full ${order.payment_status === "pending" ? "bg-amber-500" : "bg-emerald-500"
-                      } animate-pulse`}
-                  ></span>
-                  {order.payment_status === "pending" ? "Payment Pending" : "Waiting"}
-                </Badge> */}
-                <Badge
-                  variant="outline"
-                  className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold transition-all duration-300 transform hover:scale-105 shadow-sm
-                    ${order.status === "pending"
-                      ? "bg-amber-100 text-amber-800 border-amber-200"
-                      : order.status === "processing"
-                        ? "bg-blue-100 text-blue-800 border-blue-200"
-                        : order.status === "shipped"
-                          ? "bg-indigo-100 text-indigo-800 border-indigo-200"
-                          : order.status === "delivered"
-                            ? "bg-emerald-100 text-emerald-800 border-emerald-200"
-                            : order.status === "cancelled"
-                              ? "bg-red-100 text-red-800 border-red-200"
-                              : "bg-purple-100 text-purple-800 border-purple-200"
-                    }`}
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleCancelOrder}
+                  className="bg-gradient-to-r from-[#7a2828] to-[#5e1f1f] hover:from-[#5e1f1f] hover:to-[#441717] text-white"
+                  disabled={isCancellingItem || isReturningItem}
                 >
-                  {getStatusIcon(order.status)}
-                  <span>{capitalize(order.status.replace("_", " "))}</span>
-                </Badge>
-                {canCancel && (
-                  <Dialog open={isCancelModalOpen} onOpenChange={setIsCancelModalOpen}>
-                    <DialogTrigger asChild>
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        className="bg-gradient-to-r from-[#7a2828] to-[#5e1f1f] hover:from-[#5e1f1f] hover:to-[#441717] text-white font-semibold px-4 py-2 transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-md hover:shadow-lg"
-                        disabled={isCancellingItem || isReturningItem}
+                  Submit
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        )}
+      </div>
+    </div>
+    <Separator className="mb-6 bg-gradient-to-r from-[#e5d1d1] to[#f0e6c9] h-0.5 rounded-full" />
+
+    <div
+      className="relative"
+      onMouseEnter={() => setIsHoveringTimeline(true)}
+      onMouseLeave={() => setIsHoveringTimeline(false)}
+    >
+      <div className="flex justify-between mb-4">
+        {(() => {
+          const filteredSteps = [
+            { status: "pending", label: "Ordered", date: order.created_at },
+            { status: "processing", label: "Processing", date: null },
+            { status: "shipped", label: "Shipped", date: null },
+            { status: "delivered", label: "Delivered", date: order.est_delivery },
+            ...(order.status === "cancelled"
+              ? [{ status: "cancelled", label: "Cancelled", date: null }]
+              : []),
+            ...(order.status === "return_requested"
+              ? [{ status: "return_requested", label: "Return Requested", date: null }]
+              : []),
+            ...(order.status === "returned"
+              ? [{ status: "returned", label: "Returned", date: null }]
+              : []),
+            ...(order.status === "return_denied"
+              ? [{ status: "return_denied", label: "Return Denied", date: null }]
+              : []),
+          ];
+
+          return filteredSteps.map((step, index) => {
+            const isActive = () => {
+              const statusOrder = [
+                "pending",
+                "processing",
+                "shipped",
+                "delivered",
+                "cancelled",
+                "return_requested",
+                "returned",
+                "return_denied",
+              ];
+              const currentIndex = statusOrder.indexOf(order.status);
+              const stepIndex = statusOrder.indexOf(step.status);
+              if (order.status === "cancelled" || order.status.includes("return")) {
+                return step.status === order.status;
+              }
+              return (
+                stepIndex <= currentIndex &&
+                !["cancelled", "return_requested", "returned", "return_denied"].includes(order.status)
+              );
+            };
+
+            const getTooltipContent = () => {
+              if (step.status === order.status) {
+                return `Order is currently ${capitalize(step.status.replace("_", " "))}`;
+              }
+              if (step.date && step.status === "pending") {
+                return `Order placed on ${new Date(step.date).toLocaleString("en-US", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}`;
+              }
+              if (step.date && step.status === "delivered" && order.status !== "delivered") {
+                return `Expected delivery on ${new Date(step.date).toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}`;
+              }
+              return `Order ${step.status} ${isActive() ? "active" : "pending"}`;
+            };
+
+            return (
+              <TooltipProvider key={step.status}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="flex flex-col items-center cursor-pointer group">
+                      <div
+                        className={`rounded-full h-14 w-14 flex items-center justify-center ${
+                          isActive()
+                            ? "bg-gradient-to-br from-[#7a2828] to-[#b8860b] text-white"
+                            : "bg-gray-200 text-gray-500"
+                        } font-bold text-lg group-hover:shadow-lg group-hover:shadow-purple-300 transition-all duration-300 transform group-hover:scale-110`}
                       >
-                        <XCircle className="h-5 w-5 mr-2" />
-                        Cancel Order
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="sm:max-w-md bg-white rounded-xl shadow-2xl border-none">
-                      <DialogHeader>
-                        <DialogTitle className="text-2xl font-bold text-red-600">Cancel Order</DialogTitle>
-                        <DialogDescription className="text-gray-600">
-                          Please select the reason for cancelling your order
-                          {cancelReasonType === "other" ? " and provide details." : "."}
-                        </DialogDescription>
-                      </DialogHeader>
-                      <div className="grid gap-6 py-6">
-                        <div className="grid grid-cols-4 items-center gap-4">
-                          <label htmlFor="reason-type" className="text-right font-medium text-gray-700">
-                            Reason Type
-                          </label>
-                          <Select
-                            onValueChange={(value) => {
-                              setCancelReasonType(value);
-                              if (value !== "other") {
-                                setCancelReason("");
-                              }
-                            }}
-                            value={cancelReasonType}
-                            className="col-span-3"
-                          >
-                            <SelectTrigger className="bg-white border-red-200 focus:ring-[#7a2828]">
-                              <SelectValue placeholder="Select a reason" />
-                            </SelectTrigger>
-                            <SelectContent className="bg-white border-red-200">
-                              <SelectItem value="changed_mind">Changed Mind</SelectItem>
-                              <SelectItem value="ordered_by_mistake">Ordered by Mistake</SelectItem>
-                              <SelectItem value="found_better_price">Found Better Price</SelectItem>
-                              <SelectItem value="other">Other</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        {cancelReasonType === "other" && (
-                          <div className="grid grid-cols-4 items-center gap-4">
-                            <label htmlFor="reason-details" className="text-right font-medium text-gray-700"
-                            >
-                              Details
-                            </label>
-                            <Input
-                              id="reason-details"
-                              value={cancelReason}
-                              onChange={(e) => setCancelReason(e.target.value)}
-                              className="col-span-3 border-red-200 focus:ring-[#7a2828]"
-                              placeholder="Provide more details"
-                            />
-                          </div>
-                        )}
+                        {index + 1}
                       </div>
-                      <DialogFooter className="flex justify-end gap-3">
-                        <Button
-                          variant="outline"
-                          onClick={() => {
-                            setIsCancelModalOpen(false);
-                            setCancelReason("");
-                            setCancelReasonType("");
-                          }}
-                          className="border-red-200 text-red-600 hover:bg-red-50"
-                        >
-                          Cancel
-                        </Button>
-                        <Button
-                          onClick={handleCancelOrder}
-                          className="bg-gradient-to-r from-[#7a2828] to-[#5e1f1f] hover:from-[#5e1f1f] hover:to-[#441717] text-white"
-                          disabled={isCancellingItem || isReturningItem}
-                        >
-                          Submit
-                        </Button>
-                      </DialogFooter>
-                    </DialogContent>
-                  </Dialog>
-                )}
-                {canReturn && !["return_requested", "returned", "return_denied"].includes(order.status) && (
-                  <Dialog open={isReturnModalOpen} onOpenChange={setIsReturnModalOpen}>
-                    <DialogTrigger asChild>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="border-[#7a2828] text-[#7a2828] hover:bg-[#7a2828] hover:text-white font-semibold px-4 py-2 transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-md hover:shadow-lg"
-                        disabled={isCancellingItem || isReturningItem}
+                      <p
+                        className={`mt-3 font-semibold text-sm ${
+                          isActive() ? "text-gray-800 group-hover:text-[#7a2828]" : "text-gray-500"
+                        } transition-colors duration-200`}
                       >
-                        <RotateCcw className="h-5 w-5 mr-2" />
-                        Request Return
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="sm:max-w-md bg-white rounded-xl shadow-2xl border-none">
-                      <DialogHeader>
-                        <DialogTitle className="text-2xl font-bold text-[#7a2828]">Request Order Return</DialogTitle>
-                        <DialogDescription className="text-gray-600">
-                          Please select the reason for returning your order
-                          {returnReasonType === "other" ? " and provide details." : "."}
-                        </DialogDescription>
-                      </DialogHeader>
-                      <div className="grid gap-6 py-6">
-                        <div className="grid grid-cols-4 items-center gap-4">
-                          <label htmlFor="return-reason-type" className="text-right font-medium text-gray-700">
-                            Reason Type
-                          </label>
-                          <Select
-                            onValueChange={(value) => {
-                              setReturnReasonType(value);
-                              if (value !== "other") {
-                                setReturnReason("");
-                              }
-                            }}
-                            value={returnReasonType}
-                            className="col-span-3"
-                          >
-                            <SelectTrigger className="bg-white border-[#e5d1d1] focus:ring-[#7a2828]">
-                              <SelectValue placeholder="Select a reason" />
-                            </SelectTrigger>
-                            <SelectContent className="bg-white border-[#e5d1d1]">
-                              <SelectItem value="defective_product">Defective Product</SelectItem>
-                              <SelectItem value="wrong_item">Wrong Item Received</SelectItem>
-                              <SelectItem value="not_as_expected">Not As Expected</SelectItem>
-                              <SelectItem value="other">Other</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        {returnReasonType === "other" && (
-                          <div className="grid grid-cols-4 items-center gap-4">
-                            <label htmlFor="return-reason-details" className="text-right font-medium text-gray-700">
-                              Details
-                            </label>
-                            <Input
-                              id="return-reason-details"
-                              value={returnReason}
-                              onChange={(e) => setReturnReason(e.target.value)}
-                              className="col-span-3 border-[#e5d1d1] focus:ring-[#7a2828]"
-                              placeholder="Provide more details"
-                            />
-                          </div>
-                        )}
-                      </div>
-                      <DialogFooter className="flex justify-end gap-3">
-                        <Button
-                          variant="outline"
-                          onClick={() => {
-                            setIsReturnModalOpen(false);
-                            setReturnReason("");
-                            setReturnReasonType("");
-                          }}
-                          className="border-[#e5d1d1] text-[#7a2828] hover:bg-[#f8f3f3]"
-                        >
-                          Cancel
-                        </Button>
-                        <Button
-                          onClick={handleReturnOrder}
-                          className="bg-gradient-to-r from-[#7a2828] to-[#5e1f1f] hover:from-[#5e1f1f] hover:to-[#441717] text-white"
-                          disabled={isCancellingItem || isReturningItem}
-                        >
-                          Submit
-                        </Button>
-                      </DialogFooter>
-                    </DialogContent>
-                  </Dialog>
+                        {step.label}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {step.date && step.status === "pending"
+                          ? new Date(step.date).toLocaleDateString("en-US", { month: "short", day: "numeric" })
+                          : step.date && step.status === "delivered" && order.status !== "delivered"
+                          ? `Est. ${new Date(step.date).toLocaleDateString("en-US", {
+                              month: "short",
+                              day: "numeric",
+                            })}`
+                          : isActive()
+                          ? "Active"
+                          : "Pending"}
+                      </p>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent className="bg-gradient-to-r from-[#7a2828] to-[#b8860b] text-white border-none shadow-lg">
+                    <p>{getTooltipContent()}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            );
+          });
+        })()}
+      </div>
+
+      <div className="absolute top-7 left-0 right-0 h-2 bg-gray-200 -z-10 rounded-full">
+        <div
+          className="h-full bg-gradient-to-r from-[#7a2828] to-[#b8860b] transition-all duration-1000 rounded-full"
+          style={{
+            width: (() => {
+              const filteredSteps = [
+                { status: "pending", label: "Ordered", date: order.created_at },
+                { status: "processing", label: "Processing", date: null },
+                { status: "shipped", label: "Shipped", date: null },
+                { status: "delivered", label: "Delivered", date: order.est_delivery },
+                ...(order.status === "cancelled"
+                  ? [{ status: "cancelled", label: "Cancelled", date: null }]
+                  : []),
+                ...(order.status === "return_requested"
+                  ? [{ status: "return_requested", label: "Return Requested", date: null }]
+                  : []),
+                ...(order.status === "returned"
+                  ? [{ status: "returned", label: "Returned", date: null }]
+                  : []),
+                ...(order.status === "return_denied"
+                  ? [{ status: "return_denied", label: "Return Denied", date: null }]
+                  : []),
+              ];
+              const statusOrder = [
+                "pending",
+                "processing",
+                "shipped",
+                "delivered",
+                "cancelled",
+                "return_requested",
+                "returned",
+                "return_denied",
+              ];
+              const currentIndex = statusOrder.indexOf(order.status);
+              const defaultStatuses = ["pending", "processing", "shipped", "delivered"];
+              if (order.status === "cancelled" || order.status.includes("return")) {
+                return currentIndex === -1 ? "0%" : "100%";
+              }
+              return currentIndex === -1 ? "0%" : `${(currentIndex / (defaultStatuses.length - 1)) * 100}%`;
+            })(),
+            boxShadow: isHoveringTimeline ? "0 0 10px rgba(147, 51, 234, 0.5)" : "none",
+          }}
+        ></div>
+      </div>
+    </div>
+  </CardContent>
+</Card> */}
+
+
+<Card className="mb-8 border-none shadow-lg hover:shadow-xl transition-all duration-500 overflow-hidden relative">
+  <div className="absolute inset-0 bg-gradient-to-br from-[#f3e9e9] to-[#f7f2e9] opacity-50"></div>
+  <CardContent className="p-8 relative z-10">
+    <div className="flex items-center justify-between gap-3 mb-6">
+      <div className="flex items-center gap-3">
+        <div className="bg-gradient-to-r from-[#7a2828] to-[#b8860b] p-2 rounded-lg shadow-md">
+          <Package className="h-6 w-6 text-white" />
+        </div>
+        <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#7a2828] to-[#b8860b]">
+          Order Status
+        </h2>
+      </div>
+      <div className="flex flex-wrap items-center gap-4">
+        <Badge
+          variant="outline"
+          className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold transition-all duration-300 transform hover:scale-105 shadow-sm ${
+            order.payment_status === "pending"
+              ? "bg-amber-100 text-amber-800 border-amber-200 hover:bg-amber-200"
+              : "bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-200"
+          }`}
+        >
+          <span
+            className={`h-2.5 w-2.5 rounded-full ${
+              order.payment_status === "pending" ? "bg-amber-500" : "bg-emerald-500"
+            } animate-pulse`}
+          ></span>
+          {order.payment_status === "pending" ? "Payment Pending" : "Payment Completed"}
+        </Badge>
+        {(order.status === "pending" || order.status === "processing") && (
+          <Dialog open={isCancelModalOpen} onOpenChange={setIsCancelModalOpen}>
+            <DialogTrigger asChild>
+              <Button
+                variant="destructive"
+                size="sm"
+                className="bg-gradient-to-r from-[#7a2828] to-[#5e1f1f] hover:from-[#5e1f1f] hover:to-[#441717] text-white font-semibold px-4 py-2 transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-md hover:shadow-lg"
+                disabled={isCancellingItem || isReturningItem}
+              >
+                <XCircle className="h-5 w-5 mr-2" />
+                Cancel Order
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-md bg-white rounded-xl shadow-2xl border-none">
+              <DialogHeader>
+                <DialogTitle className="text-2xl font-bold text-red-600">Cancel Order</DialogTitle>
+                <DialogDescription className="text-gray-600">
+                  Please select the reason for cancelling your order
+                  {cancelReasonType === "other" ? " and provide details." : "."}
+                </DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-6 py-6">
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <label htmlFor="reason-type" className="text-right font-medium text-gray-700">
+                    Reason Type
+                  </label>
+                  <Select
+                    onValueChange={(value) => {
+                      setCancelReasonType(value);
+                      if (value !== "other") {
+                        setCancelReason("");
+                      }
+                    }}
+                    value={cancelReasonType}
+                    className="col-span-3"
+                  >
+                    <SelectTrigger className="bg-white border-red-200 focus:ring-[#7a2828]">
+                      <SelectValue placeholder="Select a reason" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-white border-red-200">
+                      <SelectItem value="changed_mind">Changed Mind</SelectItem>
+                      <SelectItem value="ordered_by_mistake">Ordered by Mistake</SelectItem>
+                      <SelectItem value="found_better_price">Found Better Price</SelectItem>
+                      <SelectItem value="other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                {cancelReasonType === "other" && (
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <label htmlFor="reason-details" className="text-right font-medium text-gray-700">
+                      Details
+                    </label>
+                    <Input
+                      id="reason-details"
+                      value={cancelReason}
+                      onChange={(e) => setCancelReason(e.target.value)}
+                      className="col-span-3 border-red-200 focus:ring-[#7a2828]"
+                      placeholder="Provide more details"
+                    />
+                  </div>
                 )}
               </div>
-            </div>
-          </CardContent>
-        </Card>
+              <DialogFooter className="flex justify-end gap-3">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setIsCancelModalOpen(false);
+                    setCancelReason("");
+                    setCancelReasonType("");
+                  }}
+                  className="border-red-200 text-red-600 hover:bg-red-50"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleCancelOrder}
+                  className="bg-gradient-to-r from-[#7a2828] to-[#5e1f1f] hover:from-[#5e1f1f] hover:to-[#441717] text-white"
+                  disabled={isCancellingItem || isReturningItem}
+                >
+                  Submit
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        )}
+      </div>
+    </div>
+    <Separator className="mb-6 bg-gradient-to-r from-[#e5d1d1] to-[#f0e6c9] h-0.5 rounded-full" />
+
+    <div
+      className="relative"
+      onMouseEnter={() => setIsHoveringTimeline(true)}
+      onMouseLeave={() => setIsHoveringPaymentTimeline(false)}
+    >
+      <div className="flex justify-between mb-4">
+        {(() => {
+          const filteredSteps = [
+            { status: "pending", label: "Ordered", date: order.created_at },
+            { status: "processing", label: "Processing", date: null },
+            { status: "shipped", label: "Shipped", date: null },
+            { status: "delivered", label: "Delivered", date: order.est_delivery },
+            ...(order.status === "cancelled"
+              ? [{ status: "cancelled", label: "Cancelled", date: null }]
+              : []),
+            ...(order.status === "return_requested"
+              ? [{ status: "return_requested", label: "Return Requested", date: null }]
+              : []),
+            ...(order.status === "returned"
+              ? [{ status: "returned", label: "Returned", date: null }]
+              : []),
+            ...(order.status === "return_denied"
+              ? [{ status: "return_denied", label: "Return Denied", date: null }]
+              : []),
+          ];
+
+          return filteredSteps.map((step, index) => {
+            const isActive = () => {
+              const statusOrder = [
+                "pending",
+                "processing",
+                "shipped",
+                "delivered",
+                "cancelled",
+                "return_requested",
+                "returned",
+                "return_denied",
+              ];
+              const currentIndex = statusOrder.indexOf(order.status);
+              const stepIndex = statusOrder.indexOf(step.status);
+              if (order.status === "cancelled" || order.status.includes("return")) {
+                return step.status === order.status;
+              }
+              return (
+                stepIndex <= currentIndex &&
+                !["cancelled", "return_requested", "returned", "return_denied"].includes(order.status)
+              );
+            };
+
+            const getTooltipContent = () => {
+              if (step.status === order.status) {
+                return `Order is currently ${capitalize(step.status.replace("_", " "))}`;
+              }
+              if (step.date && step.status === "pending") {
+                return `Order placed on ${new Date(step.date).toLocaleString("en-US", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}`;
+              }
+              if (step.date && step.status === "delivered" && order.status !== "delivered") {
+                return `Expected delivery on ${new Date(step.date).toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}`;
+              }
+              return `Order ${step.status} ${isActive() ? "active" : "pending"}`;
+            };
+
+            return (
+              <TooltipProvider key={step.status}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="flex flex-col items-center cursor-pointer group">
+                      <div
+                        className={`rounded-full h-14 w-14 flex items-center justify-center ${
+                          isActive()
+                            ? "bg-gradient-to-br from-[#7a2828] to-[#b8860b] text-white"
+                            : "bg-gray-200 text-gray-500"
+                        } font-bold text-lg group-hover:shadow-lg group-hover:shadow-purple-300 transition-all duration-300 transform group-hover:scale-110`}
+                      >
+                        {index + 1}
+                      </div>
+                      <p
+                        className={`mt-3 font-semibold text-sm ${
+                          isActive() ? "text-gray-800 group-hover:text-[#7a2828]" : "text-gray-500"
+                        } transition-colors duration-200`}
+                      >
+                        {step.label}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {step.date && step.status === "pending"
+                          ? new Date(step.date).toLocaleDateString("en-US", { month: "short", day: "numeric" })
+                          : step.date && step.status === "delivered" && order.status !== "delivered"
+                          ? `Est. ${new Date(step.date).toLocaleDateString("en-US", {
+                              month: "short",
+                              day: "numeric",
+                            })}`
+                          : isActive()
+                          ? "Active"
+                          : "Pending"}
+                      </p>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent className="bg-gradient-to-r from-[#7a2828] to-[#b8860b] text-white border-none shadow-lg">
+                    <p>{getTooltipContent()}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            );
+          });
+        })()}
+      </div>
+
+      <div className="absolute top-7 left-0 right-0 h-2 bg-gray-200 -z-10 rounded-full">
+        <div
+          className="h-full bg-gradient-to-r from-[#7a2828] to-[#b8860b] transition-all duration-1000 rounded-full"
+          style={{
+            width: (() => {
+              const filteredSteps = [
+                { status: "pending", label: "Ordered", date: order.created_at },
+                { status: "processing", label: "Processing", date: null },
+                { status: "shipped", label: "Shipped", date: null },
+                { status: "delivered", label: "Delivered", date: order.est_delivery },
+                ...(order.status === "cancelled"
+                  ? [{ status: "cancelled", label: "Cancelled", date: null }]
+                  : []),
+                ...(order.status === "return_requested"
+                  ? [{ status: "return_requested", label: "Return Requested", date: null }]
+                  : []),
+                ...(order.status === "returned"
+                  ? [{ status: "returned", label: "Returned", date: null }]
+                  : []),
+                ...(order.status === "return_denied"
+                  ? [{ status: "return_denied", label: "Return Denied", date: null }]
+                  : []),
+              ];
+              const statusOrder = [
+                "pending",
+                "processing",
+                "shipped",
+                "delivered",
+                "cancelled",
+                "return_requested",
+                "returned",
+                "return_denied",
+              ];
+              const currentIndex = statusOrder.indexOf(order.status);
+              const defaultStatuses = ["pending", "processing", "shipped", "delivered"];
+              if (order.status === "cancelled" || order.status.includes("return")) {
+                return currentIndex === -1 ? "0%" : "100%";
+              }
+              return currentIndex === -1 ? "0%" : `${(currentIndex / (defaultStatuses.length - 1)) * 100}%`;
+            })(),
+            boxShadow: isHoveringTimeline ? "0 0 10px rgba(147, 51, 234, 0.5)" : "none",
+          }}
+        ></div>
+      </div>
+      {order.status === "cancelled" && order.cancel_reason && (
+        <div className="mt-6 text-red-600 bg-red-50 p-3 rounded-lg border border-red-200 shadow-sm animate-fade-in">
+          <span className="font-medium">Cancellation Reason:</span> {order.cancel_reason}
+        </div>
+      )}
+      {order.status === "return_requested" && order.return_reason && (
+        <div className="mt-6 text-amber-600 bg-amber-50 p-3 rounded-lg border border-amber-200 shadow-sm animate-fade-in">
+          <span className="font-medium">Return Reason:</span> {order.return_reason}
+        </div>
+      )}
+      {order.status === "returned" && order.return_reason && (
+        <div className="mt-6 text-emerald-600 bg-emerald-50 p-3 rounded-lg border border-emerald-200 shadow-sm animate-fade-in">
+          <span className="font-medium">Return Approved:</span> {order.return_reason}
+        </div>
+      )}
+      {order.status === "return_denied" && order.return_reason && (
+        <div className="mt-6 text-red-600 bg-red-50 p-3 rounded-lg border border-red-200 shadow-sm animate-fade-in">
+          <span className="font-medium">Return Denied:</span> {order.return_reason}
+        </div>
+      )}
+    </div>
+  </CardContent>
+</Card>
+
+
+
 
         {/* Payment Failed Alert */}
         {order.payment_status === "pending" && order.payment_method === "card" && (
@@ -866,157 +1209,7 @@ const ViewOrderDetails = () => {
         )}
 
         {/* Order Status */}
-        <Card className="mb-8 border-none shadow-lg hover:shadow-xl transition-all duration-500 overflow-hidden relative">
-          <div className="absolute inset-0 bg-gradient-to-br from-[#f3e9e9] to-[#f7f2e9] opacity-50"></div>
-          <CardContent className="p-8 relative z-10">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="bg-gradient-to-r from-[#7a2828] to-[#b8860b] p-2 rounded-lg shadow-md">
-                <Package className="h-6 w-6 text-white" />
-              </div>
-              <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#7a2828] to-[#b8860b]">
-                Order Status
-              </h2>
-            </div>
-            <Separator className="mb-8 bg-gradient-to-r from-[#e5d1d1] to-[#f0e6c9] h-0.5 rounded-full" />
-
-            <div
-              className="relative"
-              onMouseEnter={() => setIsHoveringTimeline(true)}
-              onMouseLeave={() => setIsHoveringTimeline(false)}
-            >
-              <div className="flex justify-between mb-4">
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <div className="flex flex-col items-center cursor-pointer group">
-                        <div className="rounded-full h-14 w-14 flex items-center justify-center bg-gradient-to-br from-[#7a2828] to-[#b8860b] text-white font-bold text-lg group-hover:shadow-lg group-hover:shadow-purple-300 transition-all duration-300 transform group-hover:scale-110">
-                          1
-                        </div>
-                        <p className="mt-3 font-semibold text-sm text-gray-800 group-hover:text-[#7a2828] transition-colors duration-200">
-                          Ordered
-                        </p>
-                        <p className="text-xs text-gray-500">
-                          {new Date(order.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
-                        </p>
-                      </div>
-                    </TooltipTrigger>
-                    <TooltipContent className="bg-gradient-to-r from-[#7a2828] to-[#b8860b] text-white border-none shadow-lg">
-                      <p>Order placed on {orderedDate}</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <div className="flex flex-col items-center cursor-pointer group">
-                        <div
-                          className={`rounded-full h-14 w-14 flex items-center justify-center ${order.status === "processing" || order.status === "shipped" || order.status === "delivered"
-                            ? "bg-gradient-to-br from-[#7a2828] to-[#b8860b] text-white"
-                            : "bg-gray-200 text-gray-500"
-                            } font-bold text-lg group-hover:shadow-lg transition-all duration-300 transform group-hover:scale-110`}
-                        >
-                          2
-                        </div>
-                        <p
-                          className={`mt-3 font-semibold text-sm ${order.status === "processing" || order.status === "shipped" || order.status === "delivered"
-                            ? "text-gray-800 group-hover:text-[#7a2828]"
-                            : "text-gray-500"
-                            } transition-colors duration-200`}
-                        >
-                          Processing
-                        </p>
-                        <p className="text-xs text-gray-500">{order.status === "processing" ? "Active" : "Pending"}</p>
-                      </div>
-                    </TooltipTrigger>
-                    <TooltipContent className="bg-gradient-to-r from-[#7a2828] to-[#b8860b] text-white border-none shadow-lg">
-                      <p>Order processing {order.status === "processing" ? "active" : "pending"}</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <div className="flex flex-col items-center cursor-pointer group">
-                        <div
-                          className={`rounded-full h-14 w-14 flex items-center justify-center ${order.status === "shipped" || order.status === "delivered"
-                            ? "bg-gradient-to-br from-[#7a2828] to-[#b8860b] text-white"
-                            : "bg-gray-200 text-gray-500"
-                            } font-bold text-lg group-hover:shadow-lg transition-all duration-300 transform group-hover:scale-110`}
-                        >
-                          3
-                        </div>
-                        <p
-                          className={`mt-3 font-semibold text-sm ${order.status === "shipped" || order.status === "delivered"
-                            ? "text-gray-800 group-hover:text-[#7a2828]"
-                            : "text-gray-500"
-                            } transition-colors duration-200`}
-                        >
-                          Shipped
-                        </p>
-                        <p className="text-xs text-gray-500">{order.status === "shipped" ? "Active" : "Pending"}</p>
-                      </div>
-                    </TooltipTrigger>
-                    <TooltipContent className="bg-gradient-to-r from-[#7a2828] to-[#b8860b] text-white border-none shadow-lg">
-                      <p>Order shipping {order.status === "shipped" ? "active" : "pending"}</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <div className="flex flex-col items-center cursor-pointer group">
-                        <div
-                          className={`rounded-full h-14 w-14 flex items-center justify-center ${order.status === "delivered"
-                            ? "bg-gradient-to-br from-[#7a2828] to-[#b8860b] text-white"
-                            : "bg-gray-200 text-gray-500"
-                            } font-bold text-lg group-hover:shadow-lg transition-all duration-300 transform group-hover:scale-110`}
-                        >
-                          4
-                        </div>
-                        <p
-                          className={`mt-3 font-semibold text-sm ${order.status === "delivered" ? "text-gray-800 group-hover:text-[#7a2828]" : "text-gray-500"
-                            } transition-colors duration-200`}
-                        >
-                          Delivered
-                        </p>
-                        <p className="text-xs text-gray-500">
-                          {order.status === "delivered" ? "Completed" : `Est. ${estDeliveryDate}`}
-                        </p>
-                      </div>
-                    </TooltipTrigger>
-                    <TooltipContent className="bg-gradient-to-r from-[#7a2828] to-[#b8860b] text-white border-none shadow-lg">
-                      <p>
-                        {order.status === "delivered" ? "Order delivered" : `Expected delivery on ${estDeliveryDate}`}
-                      </p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              </div>
-
-              <div className="absolute top-7 left-0 right-0 h-2 bg-gray-200 -z-10 rounded-full">
-                <div
-                  className="h-full bg-gradient-to-r from-[#7a2828] to-[#b8860b] transition-all duration-1000 rounded-full"
-                  style={{
-                    width:
-                      order.status === "delivered"
-                        ? "100%"
-                        : order.status === "shipped"
-                          ? "66.66%"
-                          : order.status === "processing"
-                            ? "33.33%"
-                            : "0%",
-                    boxShadow: isHoveringTimeline ? "0 0 10px rgba(147, 51, 234, 0.5)" : "none",
-                  }}
-                ></div>
-              </div>
-            </div>
-
-           
-          </CardContent>
-        </Card>
+        
 
         {/* Tabs for Order Items and Summary */}
         <Tabs defaultValue="items" className="mb-8">

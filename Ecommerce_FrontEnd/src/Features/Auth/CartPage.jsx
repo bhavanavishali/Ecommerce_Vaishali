@@ -26,6 +26,8 @@ import {
 import Swal from "sweetalert2"
 
 export default function ShoppingCartComponent() {
+
+ 
   const { cart, fetchCart, updateQuantity, removeFromCart, loading, error } = useCart()
   const navigate = useNavigate()
   console.log("Cart Data:", cart)

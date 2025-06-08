@@ -78,7 +78,13 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-CORS_ALLOWED_ORIGINS =  os.getenv('CORS_ALLOWED_ORIGINS','').split(',')
+# CORS_ALLOWED_ORIGINS =  os.getenv('CORS_ALLOWED_ORIGINS','').split(',')
+
+
+CORS_ALLOWED_ORIGINS = [
+    origin for origin in os.getenv('CORS_ALLOWED_ORIGINS', '').split(',')
+    if origin.strip()  # removes empty strings
+]
 
 CORS_ALLOW_ALL_ORIGINS=True
 CORS_ALLOW_CREDENTIALS = True
