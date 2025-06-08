@@ -311,7 +311,7 @@ class ReferralLinkView(APIView):
 
     def get(self, request):
         user = request.user
-        referral_link = f"{settings.CORS_ALLOWED_ORIGINS}/signup?referral_token={user.referral_code}"
+        referral_link = f"{settings.CORS_ALLOWED_ORIGINS[0].rstrip('/')}/signup?referral_token={user.referral_code}"
         print("dddd",referral_link)
         return Response({
             'referral_code': user.referral_code,
