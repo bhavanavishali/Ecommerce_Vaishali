@@ -398,11 +398,12 @@ def get_csrf_token(request):
 
 
 
-        
+from rest_framework.parsers import MultiPartParser, FormParser      
 
 class UserProfileView(APIView):
     permission_classes = [IsAuthenticated]
-
+    parser_classes = [MultiPartParser, FormParser]
+    
     def get(self, request):
         logger.info(f"Fetching profile for user: {request.user.email}")
         try:

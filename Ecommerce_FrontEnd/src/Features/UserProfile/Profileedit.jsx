@@ -147,7 +147,7 @@ const ProfileEdit = () => {
         ...prev,
         profilePicture: files[0],
       }))
-      setPreviewImage(URL.createObjectURL(files[0])) // Set preview for selected image
+      setPreviewImage(URL.createObjectURL(files[0])) 
     } else {
       setUser((prev) => ({
         ...prev,
@@ -289,23 +289,7 @@ const ProfileEdit = () => {
                     />
                   </div>
 
-                  {/* <div
-                    className={`space-y-2 md:col-span-2 transition-all duration-300 ${hoverField === "email" ? "scale-[1.02]" : ""}`}
-                    onMouseEnter={() => setHoverField("email")}
-                    onMouseLeave={() => setHoverField(null)}
-                  >
-                    <Label htmlFor="email" className="text-amber-900 flex items-center gap-2">
-                      <Mail className="h-4 w-4 text-[#7a2828]" />
-                      Email Address
-                    </Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      value={user.email}
-                      onChange={handleChange}
-                      className="w-full border-amber-300 focus:border-[#7a2828] focus:ring-[#7a2828]/20 bg-amber-50 transition-all duration-300 hover:border-[#7a2828]/70"
-                    />
-                  </div> */}
+                  
                 </div>
 
                 <div className="flex flex-col sm:flex-row justify-between items-center pt-4 border-t border-amber-200">
