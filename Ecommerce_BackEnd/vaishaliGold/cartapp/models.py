@@ -469,7 +469,7 @@ class OrderItem(models.Model):
             self.save()
             all_items = self.order.items.all()
             if all(item.status == 'return_requested' for item in all_items):
-                self.order.status = 'return_requested'
+                
                 self.order.return_reason = "All items requested for return"
                 self.order.save()
 
@@ -483,6 +483,10 @@ class OrderItem(models.Model):
                 self.payment_status='refunded'
             else:
                 self.payment_status='faild'
+
+            all_items = self.order.items.all()
+            if all(item.status == 'returned' for item in all_items):
+                self.order.status = 'returned'
 
             self.returned_at = timezone.now()
             self.variant.stock += self.quantity

@@ -418,9 +418,11 @@ class UserProfileView(APIView):
                 'status': 'error',
                 'message': 'Profile not found'
             }, status=status.HTTP_404_NOT_FOUND)
+        
+class UserProfileEdit(APIView):
 
     def patch(self, request):
-        logger.info(f"Updating profile for user: {request.user.email}, data: {request.data}")
+        logger.info(f"Updating profile for  data: {request.data}")
         try:
             user_profile = UserProfile.objects.get(user=request.user)
             serializer = UserProfileSerializer(user_profile, data=request.data, partial=True)

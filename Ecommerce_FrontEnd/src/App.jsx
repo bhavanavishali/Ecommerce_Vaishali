@@ -67,6 +67,7 @@ function App() {
       <Route path='/user/view-order-details/:id' element={<ProtectedRoute><ViewOrderDetails/></ProtectedRoute>}/>
       <Route path='/wishlist' element={<ProtectedRoute><Wishlist/></ProtectedRoute>}/>
       <Route path='/invoice/:id' element={<ProtectedRoute><Invoice/></ProtectedRoute>}/>
+      <Route path="/contact" element ={<ContactPage/>}/>
       </Route>
 
 
@@ -77,7 +78,7 @@ function App() {
       <Route path='/google' element={<GoogleLoginButton/>} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password/:uidb64/:token" element={<ResetPassword />} />
-      <Route path="/contact" element ={<ContactPage/>}/>
+      
 
       {/* Admin section */}
       <Route path='/adminLogin' element={<AdminLogin/>}/>

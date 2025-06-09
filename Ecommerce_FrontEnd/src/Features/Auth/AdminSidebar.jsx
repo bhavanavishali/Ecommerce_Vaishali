@@ -38,7 +38,6 @@ import {
   FileText 
 } from "lucide-react"
 
-// Sidebar Component
 const Sidebar = ({ activeItem, setActiveItem }) => {
   const menuItems = [
     { id: "dashboard", label: "Dashboard", icon: LayoutGrid },

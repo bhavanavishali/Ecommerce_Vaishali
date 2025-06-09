@@ -53,19 +53,15 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         logger.info(f"Updating profile for user: {instance.user.email}, data: {validated_data}")
-        
-        user_data = {
-            'first_name': validated_data.pop('user.first_name', instance.user.first_name),
-            'last_name': validated_data.pop('user.last_name', instance.user.last_name),
-            'username': validated_data.pop('user.username', instance.user.username),
-            'phone_number': validated_data.pop('user.phone_number', instance.user.phone_number),
-        }
- 
+
+        # Extract nested user fields
+        user_data = validated_data.pop('user', {})
+
         user = instance.user
         for field, value in user_data.items():
-            if value:
+            if value is not None:
                 setattr(user, field, value)
-        
+
         try:
             user.full_clean()
             user.save()
@@ -74,9 +70,10 @@ class UserProfileSerializer(serializers.ModelSerializer):
             logger.error(f"Failed to update user {user.email}: {str(e)}")
             raise serializers.ValidationError(f"Failed to update user: {str(e)}")
 
-        if 'profile_picture' in validated_data:
-            instance.profile_picture = validated_data['profile_picture']
-        
+        # Handle profile fields (e.g., profile_picture)
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+
         try:
             instance.full_clean()
             instance.save()
@@ -86,6 +83,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(f"Failed to update profile: {str(e)}")
 
         return instance
+
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)

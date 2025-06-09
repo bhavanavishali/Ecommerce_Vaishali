@@ -14,7 +14,7 @@ import WalletPage from "./wallets"
 
 const UserProfile= () => {
   const [activePage, setActivePage] = useState("profile")
-
+  const BASE_URL = import.meta.env.VITE_BASE_URL
   const menuItems = [
     { id: "profile information", label: "Profile Information", icon: User },
     { id: "profile edit", label: "Profile Edit", icon: Settings },

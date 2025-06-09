@@ -26,6 +26,7 @@ urlpatterns = [
     path('verify-otp/', VerifyOTPView.as_view(), name='verify-otp'),
     path('resend-otp/', ResendOTPView.as_view(), name='resend-otp'),
     path('profile/', UserProfileView.as_view(), name='user-profile'),
+    path('profileedit/', UserProfileEdit.as_view(), name='user-profile-edit'),
     
     path('google/', GoogleLoginView.as_view(), name='google_login'),
     path('get-csrf-token/', get_csrf_token, name='get-csrf-token'),

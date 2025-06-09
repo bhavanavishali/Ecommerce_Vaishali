@@ -34,7 +34,7 @@ function AdminLogin() {
       const { user } = response.data;
       console.log('this is the data coming from the backend after login: ',response.data)
       
-      // Dispatch user details to Redux (without token)
+      
       dispatch(
         setAuthData({
           user: user,

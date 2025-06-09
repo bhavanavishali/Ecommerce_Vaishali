@@ -131,7 +131,7 @@ const Header = () => {
             {user && (
               <div className="hidden lg:flex items-center px-4 py-1.5 rounded-full bg-white/80 backdrop-blur-sm border border-amber-100 shadow-sm">
                 <span className="text-[#7a2828] font-medium">
-                  Welcome, {capitalizeFirstLetter(user.username || user.email)}
+                  Welcome {capitalizeFirstLetter(user.username || user.email)}
                 </span>
               </div>
             )}
@@ -482,4 +482,3 @@ const LayoutDashboard = (props) => {
 }
 
 export default Header
-

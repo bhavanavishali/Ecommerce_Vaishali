@@ -156,8 +156,8 @@ function SignUpPage() {
         dispatch(setAuthData(response.data));
         if (response.status === 200 || response.status === 201) {
           setShowOtpDialog(true)
-          setTimer(60) // Reset timer to 1 minute
-          setCanResend(false) // Disable resend button
+          setTimer(60) 
+          setCanResend(false) 
           setOtp(["", "", "", "", "", ""]) // Reset OTP input
         }
       } catch (error) {

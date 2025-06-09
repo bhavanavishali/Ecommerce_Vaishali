@@ -17,7 +17,7 @@ const ProfileEdit = () => {
     lastName: "",
     mobile: "",
     email: "",
-    profilePicture: null, // Added for profile picture
+    profilePicture: null, 
   })
 
   const BASE_URL = import.meta.env.VITE_BASE_URL
@@ -101,15 +101,17 @@ const ProfileEdit = () => {
     try {
       setSaving(true)
       const formData = new FormData()
-      formData.append("user.first_name", user.firstName)
-      formData.append("user.last_name", user.lastName)
-      formData.append("user.phone_number", user.mobile)
-      formData.append("user.email", user.email)
+      formData.append("first_name", user.firstName)
+      formData.append("last_name", user.lastName)
+      formData.append("phone_number", user.mobile)
+      formData.append("email", user.email)
       if (user.profilePicture && typeof user.profilePicture !== "string") {
         formData.append("profile_picture", user.profilePicture) // Append profile picture if changed
       }
 
-      const response = await api.patch("profile/", formData)
+      const response = await api.patch("profileedit/", formData,{ headers: {
+    "Content-Type": "multipart/form-data", 
+  },})
       if (response.status === 200) {
         setUser({
           firstName: response.data.user.first_name || "",
