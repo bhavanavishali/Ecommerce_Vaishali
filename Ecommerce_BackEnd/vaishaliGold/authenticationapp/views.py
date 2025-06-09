@@ -311,7 +311,7 @@ class ReferralLinkView(APIView):
 
     def get(self, request):
         user = request.user
-        referral_link = f"{settings.CORS_ALLOWED_ORIGINS[0].rstrip('/')}/signup?referral_token={user.referral_code}"
+        referral_link = f"{settings.BASE_URL[0].rstrip('/')}/signup?referral_token={user.referral_code}"
         print("dddd",referral_link)
         return Response({
             'referral_code': user.referral_code,
@@ -648,8 +648,8 @@ class PasswordResetRequestView(APIView):
             uidb64 = urlsafe_base64_encode(force_bytes(user.id))
             
             
-            reset_link = f"http://localhost:5173/reset-password/{uidb64}/{token}/"
-            
+            # reset_link = f"http://localhost:5173/reset-password/{uidb64}/{token}/"
+            reset_link = f"{settings.BASE_URL[0].rstrip('/')}/reset-password/{uidb64}/{token}/"
             # Send email
             send_mail(
                 'Password Reset Request',
