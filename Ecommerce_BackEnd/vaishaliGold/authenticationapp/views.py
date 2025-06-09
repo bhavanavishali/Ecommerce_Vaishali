@@ -403,7 +403,7 @@ from rest_framework.parsers import MultiPartParser, FormParser
 class UserProfileView(APIView):
     permission_classes = [IsAuthenticated]
     parser_classes = [MultiPartParser, FormParser]
-    
+
     def get(self, request):
         logger.info(f"Fetching profile for user: {request.user.email}")
         try:
@@ -478,6 +478,14 @@ class GoogleLoginView(APIView):
                 first_name = idinfo.get('given_name', '')
                 last_name = idinfo.get('family_name', '')
                 
+                # Sanitize username to contain only letters and spaces
+                def sanitize_username(username):
+                    # Remove any character that is not a letter or space
+                    sanitized = re.sub(r'[^a-zA-Z\s]', '', username)
+                    # Replace multiple spaces with a single space and strip
+                    sanitized = re.sub(r'\s+', ' ', sanitized).strip()
+                    return sanitized if sanitized else 'user'  # Fallback if empty
+                
                 try:
                     user = User.objects.get(email=email)
                     if not user.google_id:
@@ -487,22 +495,26 @@ class GoogleLoginView(APIView):
                         if not hasattr(user, 'user') or not user.user:
                             UserProfile.objects.create(user=user)
                 except User.DoesNotExist:
+                    # Generate username from email's local part
                     username = email.split('@')[0]
-                    if User.objects.filter(username=username).exists():
-                        username = f"{username}_{google_id[:6]}"
+                    # Sanitize the username
+                    username = sanitize_username(username)
+                    
+                    # Ensure username is unique
+                    base_username = username
+                    counter = 1
+                    while User.objects.filter(username=username).exists():
+                        username = f"{base_username}_{counter}"
+                        counter += 1
                     
                     user = User.objects.create_user(
                         username=username,
                         email=email,
                         google_id=google_id,
                         first_name=first_name,
-                        
-                        
                         last_name=last_name,
-                        
                         phone_number=''  
                     )
-                    
                 
                 refresh_token = RefreshToken.for_user(user)
                 access_token = refresh_token.access_token
@@ -538,7 +550,6 @@ class GoogleLoginView(APIView):
                 )
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 
 #================ User management=================================

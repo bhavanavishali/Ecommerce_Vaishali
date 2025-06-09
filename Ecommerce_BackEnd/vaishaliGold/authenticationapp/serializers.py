@@ -30,13 +30,12 @@ class UserProfileSerializer(serializers.ModelSerializer):
         return value
 
     def validate_last_name(self, value):
-        if value and (len(value) < 2 or not re.match(r'^[a-zA-Z\s]+$', value)):
+        if value and (len(value) < 1 or not re.match(r'^[a-zA-Z\s]+$', value)):
             raise serializers.ValidationError("Last name must be at least 2 characters and contain only letters and spaces")
         return value
 
     def validate_username(self, value):
-        if value and (len(value) < 2 or not re.match(r'^[a-zA-Z\s]+$', value)):
-            raise serializers.ValidationError("Username must be at least 2 characters and contain only letters and spaces")
+        
         if value and User.objects.filter(username=value).exclude(email=self.instance.user.email if self.instance else None).exists():
             raise serializers.ValidationError("Username is already taken")
         return value
