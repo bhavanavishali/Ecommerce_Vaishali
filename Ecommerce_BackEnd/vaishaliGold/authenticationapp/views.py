@@ -419,7 +419,7 @@ class UserProfileView(APIView):
                 'message': 'Profile not found'
             }, status=status.HTTP_404_NOT_FOUND)
         
-class UserProfileEdit(APIView):
+
 
     def patch(self, request):
         logger.info(f"Updating profile for  data: {request.data}")

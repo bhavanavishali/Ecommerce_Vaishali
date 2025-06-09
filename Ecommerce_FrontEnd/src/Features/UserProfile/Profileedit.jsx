@@ -109,7 +109,7 @@ const ProfileEdit = () => {
         formData.append("profile_picture", user.profilePicture) // Append profile picture if changed
       }
 
-      const response = await api.patch("profileedit/", formData,{ headers: {
+      const response = await api.patch("profile/", formData,{ headers: {
     "Content-Type": "multipart/form-data", 
   },})
       if (response.status === 200) {
