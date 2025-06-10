@@ -32,7 +32,7 @@ def send_otp_email(sender, instance, created, **kwargs):
         try:
             send_mail(
                 'Your OTP for Sign Up',
-                f'Your OTP is {otp}. It expires in 2 minutes.',
+                f'Thank you for registering .Your OTP is {otp}. It expires in 2 minutes.',
                 'bhavana.vayshali@gmail.com',
                 [instance.email],
                 fail_silently=False,
