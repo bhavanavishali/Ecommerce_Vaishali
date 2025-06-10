@@ -311,7 +311,7 @@ class ReferralLinkView(APIView):
 
     def get(self, request):
         user = request.user
-        referral_link = f"{settings.BASE_URL}/signup?referral_token={user.referral_code}"
+        referral_link = f"https://vaishaligold.shop/signup?referral_token={user.referral_code}"
         print("dddd",referral_link)
         return Response({
             'referral_code': user.referral_code,
@@ -661,7 +661,7 @@ class PasswordResetRequestView(APIView):
             
             
             # reset_link = f"http://localhost:5173/reset-password/{uidb64}/{token}/"
-            reset_link = f"{settings.BASE_URL}/reset-password/{uidb64}/{token}/"
+            reset_link = f"https://vaishaligold.shop/reset-password/{uidb64}/{token}/"
             # Send email
             send_mail(
                 'Password Reset Request',
