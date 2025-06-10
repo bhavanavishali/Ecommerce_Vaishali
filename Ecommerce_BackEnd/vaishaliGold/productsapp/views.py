@@ -381,3 +381,4 @@ class TaxListView(APIView):
         taxes = Tax.objects.all()
         serializer = TaxSerializer(taxes, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    

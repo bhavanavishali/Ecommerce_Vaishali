@@ -82,6 +82,7 @@ const ProfileEdit = () => {
         referralCode: response.data.referral_code || "",
         referralLink: response.data.referral_link || "",
       })
+      console.log("To check the response in the profile edit",response)
     } catch (error) {
       console.error("Error fetching referral data:", error)
     }
@@ -318,7 +319,7 @@ const ProfileEdit = () => {
 
               <div className="space-y-4">
                 <h3 className="text-xl font-semibold text-[#7a2828]">Refer a Friend</h3>
-                <p className="text-amber-800">Invite friends and earn a $10 coupon when they sign up and verify their account!</p>
+                <p className="text-amber-800">Invite friends and earn a ₹10 coupon when they sign up and verify their account!</p>
                 
                 <div className="space-y-2">
                   <Label className="text-amber-900 flex items-center gap-2">

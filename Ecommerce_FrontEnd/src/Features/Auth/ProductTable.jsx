@@ -57,6 +57,7 @@ export default function ProductTable() {
     setLoading(true)
     try {
       const response = await api.get("productapp/products/")
+      console.log("product response",response.data)
       setProducts(response.data)
       setError(null)
     } catch (err) {
