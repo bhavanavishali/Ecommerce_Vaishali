@@ -157,14 +157,15 @@ const ProfileEdit = () => {
     }
   }
 
-  const handleCopyLink = () => {
-    navigator.clipboard.writeText(referralData.referralLink)
-      .then(() => {
-        setCopySuccess(true)
-        setTimeout(() => setCopySuccess(false), 2000)
-      })
-      .catch((error) => console.error("Failed to copy:", error))
-  }
+const handleCopyLink = () => {
+  const link = `https://vaishaligold.shop/signup?referral_token=${referralData.referralCode}`
+  navigator.clipboard.writeText(link)
+    .then(() => {
+      setCopySuccess(true)
+      setTimeout(() => setCopySuccess(false), 2000)
+    })
+    .catch((error) => console.error("Failed to copy:", error))
+}
 
   const handleCopyCoupon = (code) => {
     navigator.clipboard.writeText(code)
@@ -342,7 +343,7 @@ const ProfileEdit = () => {
                     </Button>
                   </div>
                   {referralData.referralLink && (
-                    <p className="text-sm text-amber-700">Share this link: {referralData.referralLink}</p>
+                    <p className="text-sm text-amber-700">Share this link: https://vaishaligold.shop/signup?referral_token={referralData.referralCode}</p>
                   )}
                 </div>
               </div>
