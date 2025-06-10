@@ -80,10 +80,7 @@ MIDDLEWARE = [
 ]
 # CORS_ALLOWED_ORIGINS =  os.getenv('CORS_ALLOWED_ORIGINS','').split(',')
 
-BASE_URL = [
-    base for base in os.getenv('BASE_URL', '').split(',')
-    if base.strip()  # removes empty strings
-]
+BASE_URL = os.getenv('BASE_URL')
 
 CORS_ALLOWED_ORIGINS = [
     origin for origin in os.getenv('CORS_ALLOWED_ORIGINS', '').split(',')
