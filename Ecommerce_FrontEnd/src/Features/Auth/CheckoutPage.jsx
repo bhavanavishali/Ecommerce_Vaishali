@@ -1413,7 +1413,7 @@ export default function CheckoutPage() {
   const totalDiscount = cart?.final_discount || 0
   const total = cart?.final_total || 0
   const shipping = cart?.shipping || 0
-  const isCodDisabled = total > 1000
+  const isCodDisabled = total > 100000
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat("en-IN", {
