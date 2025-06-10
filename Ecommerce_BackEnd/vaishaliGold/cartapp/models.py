@@ -264,10 +264,36 @@ class Order(models.Model):
                 if self.payment_method in ['card', 'wallet']:
                     wallet, _ = Wallet.objects.get_or_create(user=self.user)
                     refund_amount = sum(item.final_price for item in self.items.filter(status='active'))
+                    refund_amount+=self.shipping
                     wallet.add_funds(refund_amount, order_number=self.order_number)
 
             else:
                 self.payment_status = 'cancelled'
+
+            for item in self.items.filter(status='active'):
+            # Update stock
+                if item.variant and item.variant.is_active and item.variant.available:
+                    original_stock = item.variant.stock
+                    expected_stock = original_stock + item.quantity
+                    item.variant.stock += item.quantity
+                    item.variant.save()
+                    
+                    item.variant.refresh_from_db()
+                    if item.variant.stock != expected_stock:
+                        logger.error(
+                            f"Stock update failed for variant {item.variant.id}. "
+                            f"Expected: {expected_stock}, Actual: {item.variant.stock}, Original: {original_stock}"
+                        )
+                        raise ValueError(f"Failed to update stock for {item.variant.product.name}")
+                    
+                    logger.info(
+                        f"Stock updated for variant {item.variant.id}: "
+                        f"Added {item.quantity}, New stock: {item.variant.stock}"
+                    )
+                else:
+                    logger.error(f"Cannot cancel item {item.id}: Variant {item.variant.id} is invalid or unavailable")
+                    raise ValueError(f"Variant {item.variant.product.name} is not available for stock update")
+
 
             for item in self.items.filter(status='active'):
                 item.status = 'cancelled'
@@ -296,23 +322,124 @@ class Order(models.Model):
                 item.save()
             self.save()
 
+    # def approve_return(self):
+    #     with transaction.atomic():
+    #         if self.status != 'return_requested':
+    #             raise ValueError("Only return requested orders can be approved")
+    #         self.status = 'returned'
+    #         self.approve_status = True
+    #         self.returned_at = timezone.now()
+    #         self.payment_status = 'refunded' if self.payment_status == 'completed' else 'cancelled'
+    #         for item in self.items.filter(status='return_requested'):
+    #             item.approve_item_return()
+            
+    #         final_total = sum(item.final_price for item in self.items.filter(status='delivered'))
+    #         if final_total > 0:
+    #             logger.info(f"Processing wallet credit for user {self.user}, amount: {final_total}")
+    #             wallet, _ = Wallet.objects.get_or_create(user=self.user)
+    #             wallet.add_funds(final_total, order_number=self.order_number)
+    #         print("successfull refunderd")
+    #         self.save()
+
+    # def approve_return(self):
+    #     with transaction.atomic():
+    #         if self.status != 'return_requested':
+    #             raise ValueError("Only return requested orders can be approved")
+            
+    #                     # Calculate refund amount based on items being returned
+    #         refund_amount = sum(item.final_price for item in self.items.filter(status='return_requested'))
+    #         if refund_amount <= 0:
+    #             logger.error(f"Cannot refund order {self.order_number}: refund_amount is {refund_amount}")
+    #             raise ValueError("Invalid refund amount for order")
+
+            
+    #         for item in self.items.filter(status='return_requested'):
+    #             if item.status != 'return_requested':
+    #                 raise ValueError("Only return requested items can be approved")
+    #             item.status = 'returned'
+    #             if self.payment_method in ['card', 'wallet']:
+    #                 item.payment_status = 'refunded'
+    #             else:
+    #                 item.payment_status = 'failed'
+
+    #             # Update stock
+    #             item.variant.stock += item.quantity
+    #             item.variant.save()
+
+    #             item.returned_at = timezone.now()
+    #             item.save()
+
+    #         # Check if all items are returned
+    #         all_items = self.items.all()
+    #         if all(item.status == 'returned' for item in all_items):
+    #             self.status = 'returned'
+    #             self.approve_status = True
+    #             self.returned_at = timezone.now()
+    #             self.payment_status = 'refunded' if self.payment_status == 'completed' else 'cancelled'
+
+    #             refund_amount = self.final_total - self.shipping
+    #             if refund_amount <= 0:
+    #                 logger.error(f"Cannot refund order {self.order_number}: refund_amount is {refund_amount}")
+    #                 raise ValueError("Invalid refund amount for order")
+
+    #             if self.payment_method in ['card', 'wallet']:
+    #                 logger.info(f"Processing wallet credit for user {self.user}, amount: {refund_amount}, order: {self.order_number}")
+    #                 wallet, _ = Wallet.objects.get_or_create(user=self.user)
+    #                 wallet.add_funds(refund_amount, order_number=self.order_number)
+
+    #             logger.info(f"Successfully refunded {refund_amount} for order {self.order_number}")
+    #         else:
+    #             logger.info(f"Order {self.order_number} not fully returned; some items not in 'returned' status")
+    #             self.status = 'partially_returned'
+
+    #         self.save()
+
     def approve_return(self):
         with transaction.atomic():
             if self.status != 'return_requested':
                 raise ValueError("Only return requested orders can be approved")
-            self.status = 'returned'
-            self.approve_status = True
-            self.returned_at = timezone.now()
-            self.payment_status = 'refunded' if self.payment_status == 'completed' else 'cancelled'
-            for item in self.items.filter(status='return_requested'):
-                item.approve_item_return()
             
-            final_total = sum(item.final_price for item in self.items.filter(status='delivered'))
-            if final_total > 0:
-                logger.info(f"Processing wallet credit for user {self.user}, amount: {final_total}")
-                wallet, _ = Wallet.objects.get_or_create(user=self.user)
-                wallet.add_funds(final_total, order_number=self.order_number)
-            print("successfull refunderd")
+            # Calculate refund amount based on items being returned
+            refund_amount = sum(item.final_price for item in self.items.filter(status='return_requested'))
+            if refund_amount <= 0:
+                logger.error(f"Cannot refund order {self.order_number}: refund_amount is {refund_amount}")
+                raise ValueError("Invalid refund amount for order")
+
+            # Process all return-requested items
+            for item in self.items.filter(status='return_requested'):
+                if item.status != 'return_requested':
+                    raise ValueError("Only return requested items can be approved")
+                item.status = 'returned'
+                if self.payment_method in ['card', 'wallet']:
+                    item.payment_status = 'refunded'
+                else:
+                    item.payment_status = 'failed'
+
+                # Update stock
+                item.variant.stock += item.quantity
+                item.variant.save()
+
+                item.returned_at = timezone.now()
+                item.save()
+
+            # Check if all items are returned
+            all_items = self.items.all()
+            if all(item.status == 'returned' for item in all_items):
+                self.status = 'returned'
+                self.approve_status = True
+                self.returned_at = timezone.now()
+                self.payment_status = 'refunded' if self.payment_status == 'completed' else 'cancelled'
+
+                if self.payment_method in ['card', 'wallet']:
+                    logger.info(f"Processing wallet credit for user {self.user}, amount: {refund_amount}, order: {self.order_number}")
+                    wallet, _ = Wallet.objects.get_or_create(user=self.user)
+                    wallet.add_funds(refund_amount, order_number=self.order_number)
+                    print("successfully refunded")
+                logger.info(f"Successfully refunded {refund_amount} for order {self.order_number}")
+            else:
+                logger.info(f"Order {self.order_number} not fully returned; some items not in 'returned' status")
+                self.status = 'partially_returned'
+
             self.save()
 
     def deny_return(self):

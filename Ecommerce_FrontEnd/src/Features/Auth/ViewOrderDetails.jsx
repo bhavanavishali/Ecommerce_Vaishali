@@ -2257,7 +2257,7 @@ const ViewOrderDetails = () => {
                 </h2>
               </div>
               <div className="flex flex-wrap items-center gap-4">
-                <Badge
+                {/* <Badge
                   variant="outline"
                   className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold transition-all duration-300 transform hover:scale-105 shadow-sm ${
                     order.payment_status === "pending"
@@ -2271,7 +2271,7 @@ const ViewOrderDetails = () => {
                     } animate-pulse`}
                   ></span>
                   {order.payment_status === "pending" ? "Payment Pending" : "Payment Completed"}
-                </Badge>
+                </Badge> */}
                 {(order.status === "pending" || order.status === "processing") && (
                   <Dialog open={isCancelModalOpen} onOpenChange={setIsCancelModalOpen}>
                     <DialogTrigger asChild>
