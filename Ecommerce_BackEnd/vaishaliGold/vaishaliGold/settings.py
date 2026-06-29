@@ -30,8 +30,11 @@ SECRET_KEY=os.getenv('SECRET_KEY')
 
 DEBUG = os.getenv('DEBUG') == 'True'
 
-ALLOWED_HOSTS = ["api.vaishaligold.shop","localhost","127.0.0.1"]
-
+ALLOWED_HOSTS = [
+    host.strip()
+    for host in os.getenv("ALLOWED_HOSTS", "").split(",")
+    if host.strip()
+]
 
 INSTALLED_APPS = [
     'corsheaders',
