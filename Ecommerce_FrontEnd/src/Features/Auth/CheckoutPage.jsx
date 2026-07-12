@@ -1243,7 +1243,7 @@ export default function CheckoutPage() {
   const [couponError, setCouponError] = useState(null)
   const [couponApplied, setCouponApplied] = useState(null)
   const [selectedAddress, setSelectedAddress] = useState(null)
-  const [selectedPayment, setSelectedPayment] = useState("card")
+  const [selectedPayment, setSelectedPayment] = useState("direct")
   const [showAddressDialog, setShowAddressDialog] = useState(false)
   const [editingAddress, setEditingAddress] = useState(null)
   const [newAddress, setNewAddress] = useState({
@@ -1394,6 +1394,58 @@ export default function CheckoutPage() {
     setCouponCode(code)
     await handleApplyCoupon()
     setShowCouponsDialog(false)
+  }
+
+  const handleWhatsAppOrder = () => {
+    if (!selectedAddress) {
+      setError("Please select a shipping address before placing your order.")
+      return
+    }
+    if (!cart?.items?.length) {
+      setError("Your cart is empty.")
+      return
+    }
+
+    const addr = addresses.find((a) => a.id === selectedAddress)
+    const addrLine = addr
+      ? `${addr.house_no}, ${addr.landmark ? addr.landmark + ", " : ""}${addr.city}, ${addr.state} - ${addr.pincode}`
+      : "Not selected"
+
+    const itemLines = cart.items
+      .map((item) => {
+        const size = item.variant?.size || item.product?.size || null
+        const color = item.product?.color || null
+        const price = formatPrice(item.final_price)
+        const extras = [size && `Size: ${size}`, color && `Color: ${color}`]
+          .filter(Boolean)
+          .join(", ")
+        return `• *${item.product.name}*  Qty: ${item.quantity}  Price: ${price}${extras ? `  (${extras})` : ""}`
+      })
+      .join("\n")
+
+    const lines = [
+      `Hi! I'd like to place an order for the following items:`,
+      ``,
+      itemLines,
+      ``,
+      `🧾 *Order Summary*`,
+      `Subtotal: ${formatPrice(subtotal)}`,
+      totalDiscount > 0 ? `Discount: -${formatPrice(totalDiscount)}` : null,
+      couponApplied ? `Coupon (${couponApplied.code}): -${formatPrice(couponApplied.discount)}` : null,
+      `Tax: ${formatPrice(totalTax)}`,
+      shipping > 0 ? `Shipping: ${formatPrice(shipping)}` : `Shipping: Free`,
+      `*Total: ${formatPrice(total)}*`,
+      ``,
+      `📦 *Delivery Address*`,
+      addr ? `${addr.name}\n${addrLine}\nPhone: ${addr.phone}` : "Not provided",
+      ``,
+      `Please confirm the order and let me know the delivery details. Thank you!`,
+    ]
+      .filter((l) => l !== null)
+      .join("\n")
+
+    const encoded = encodeURIComponent(lines)
+    window.open(`https://wa.me/918943801278?text=${encoded}`, "_blank", "noopener,noreferrer")
   }
 
   const cartItems =
@@ -2094,90 +2146,47 @@ export default function CheckoutPage() {
             <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
               <CardHeader className="pb-4">
                 <CardTitle className="flex items-center">
-                  <div className="bg-[#8B2131] text-white rounded-full p-2 mr-3">
-                    <CreditCard className="h-5 w-5" />
+                  <div className="bg-[#25D366] text-white rounded-full p-2 mr-3">
+                    {/* WhatsApp icon */}
+                    <svg viewBox="0 0 32 32" fill="currentColor" className="h-5 w-5" aria-hidden="true">
+                      <path d="M16.003 2.667C8.636 2.667 2.667 8.636 2.667 16c0 2.348.636 4.636 1.845 6.636L2.667 29.333l6.909-1.812A13.31 13.31 0 0 0 16.003 29.333c7.367 0 13.33-5.967 13.33-13.333 0-7.364-5.963-13.333-13.33-13.333zm0 24.4a11.08 11.08 0 0 1-5.636-1.536l-.403-.24-4.1 1.076 1.094-4.003-.263-.412A11.067 11.067 0 0 1 4.933 16c0-6.107 4.963-11.067 11.07-11.067S27.067 9.893 27.067 16c0 6.11-4.96 11.067-11.064 11.067zm6.073-8.294c-.332-.167-1.966-.97-2.27-1.08-.303-.112-.524-.168-.745.167-.22.335-.854 1.08-1.048 1.302-.193.22-.386.248-.718.083-.332-.167-1.4-.515-2.666-1.643-.984-.878-1.647-1.963-1.84-2.295-.193-.332-.021-.512.146-.677.15-.148.332-.387.498-.58.167-.193.222-.332.333-.553.112-.22.056-.415-.028-.58-.083-.167-.745-1.797-1.02-2.462-.27-.647-.545-.56-.745-.57l-.635-.012c-.22 0-.58.083-.883.415-.304.332-1.158 1.133-1.158 2.763s1.186 3.205 1.351 3.428c.166.22 2.333 3.56 5.653 4.994.79.34 1.406.543 1.887.695.793.251 1.515.216 2.085.131.636-.094 1.966-.804 2.243-1.581.277-.777.277-1.44.193-1.58-.083-.14-.304-.222-.636-.39z"/>
+                    </svg>
                   </div>
-                  <span className="text-xl font-semibold text-[#8B2131]">Payment Method</span>
+                  <span className="text-xl font-semibold text-gray-800">Payment Method</span>
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <RadioGroup value={selectedPayment} onValueChange={setSelectedPayment}>
-                  <div className="space-y-4">
-                    <div
-                      className={`relative border rounded-xl p-4 transition-all duration-200 cursor-pointer ${
-                        selectedPayment === "card"
-                          ? "border-[#8B2131] bg-gradient-to-r from-[#8B2131]/5 to-orange-50 shadow-md"
-                          : "border-gray-200 hover:border-gray-300 hover:shadow-sm"
-                      }`}
-                    >
-                      <div className="flex items-center space-x-4">
-                        <RadioGroupItem value="card" id="card" />
-                        <div className="flex-1">
-                          <Label htmlFor="card" className="font-medium cursor-pointer flex items-center">
-                            <CreditCard className="h-5 w-5 mr-2 text-[#8B2131]" />
-                            Credit/Debit Card
-                          </Label>
-                          <p className="text-sm text-gray-500 mt-1">Pay securely with your card via Razorpay</p>
-                        </div>
-                        <div className="flex space-x-1">
-                          <div className="w-8 h-5 bg-blue-600 rounded text-white text-xs flex items-center justify-center font-bold">
-                            VISA
-                          </div>
-                          <div className="w-8 h-5 bg-red-600 rounded text-white text-xs flex items-center justify-center font-bold">
-                            MC
-                          </div>
-                        </div>
+                {/* Direct Purchase — only available option */}
+                <div className="border-2 border-[#25D366] rounded-xl p-5 bg-gradient-to-r from-green-50 to-emerald-50 shadow-sm">
+                  <div className="flex items-start gap-4">
+                    <div className="mt-0.5 flex-shrink-0">
+                      <div className="w-5 h-5 rounded-full border-2 border-[#25D366] flex items-center justify-center">
+                        <div className="w-2.5 h-2.5 rounded-full bg-[#25D366]" />
                       </div>
                     </div>
-
-                    <div
-                      className={`relative border rounded-xl p-4 transition-all duration-200 cursor-pointer ${
-                        selectedPayment === "wallet"
-                          ? "border-[#8B2131] bg-gradient-to-r from-[#8B2131]/5 to-orange-50 shadow-md"
-                          : "border-gray-200 hover:border-gray-300 hover:shadow-sm"
-                      }`}
-                    >
-                      <div className="flex items-center space-x-4">
-                        <RadioGroupItem value="wallet" id="wallet" />
-                        <div className="flex-1">
-                          <Label htmlFor="wallet" className="font-medium cursor-pointer flex items-center">
-                            <Wallet className="h-5 w-5 mr-2 text-[#8B2131]" />
-                            Wallet
-                          </Label>
-                          <p className="text-sm text-gray-500 mt-1">Pay using your wallet balance</p>
-                        </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <svg viewBox="0 0 32 32" fill="#25D366" className="h-5 w-5 flex-shrink-0" aria-hidden="true">
+                          <path d="M16.003 2.667C8.636 2.667 2.667 8.636 2.667 16c0 2.348.636 4.636 1.845 6.636L2.667 29.333l6.909-1.812A13.31 13.31 0 0 0 16.003 29.333c7.367 0 13.33-5.967 13.33-13.333 0-7.364-5.963-13.333-13.33-13.333zm0 24.4a11.08 11.08 0 0 1-5.636-1.536l-.403-.24-4.1 1.076 1.094-4.003-.263-.412A11.067 11.067 0 0 1 4.933 16c0-6.107 4.963-11.067 11.07-11.067S27.067 9.893 27.067 16c0 6.11-4.96 11.067-11.064 11.067zm6.073-8.294c-.332-.167-1.966-.97-2.27-1.08-.303-.112-.524-.168-.745.167-.22.335-.854 1.08-1.048 1.302-.193.22-.386.248-.718.083-.332-.167-1.4-.515-2.666-1.643-.984-.878-1.647-1.963-1.84-2.295-.193-.332-.021-.512.146-.677.15-.148.332-.387.498-.58.167-.193.222-.332.333-.553.112-.22.056-.415-.028-.58-.083-.167-.745-1.797-1.02-2.462-.27-.647-.545-.56-.745-.57l-.635-.012c-.22 0-.58.083-.883.415-.304.332-1.158 1.133-1.158 2.763s1.186 3.205 1.351 3.428c.166.22 2.333 3.56 5.653 4.994.79.34 1.406.543 1.887.695.793.251 1.515.216 2.085.131.636-.094 1.966-.804 2.243-1.581.277-.777.277-1.44.193-1.58-.083-.14-.304-.222-.636-.39z"/>
+                        </svg>
+                        <span className="font-semibold text-gray-900 text-base">Direct Purchase via WhatsApp</span>
+                        <span className="ml-auto text-xs font-semibold text-white bg-[#25D366] px-2 py-0.5 rounded-full">
+                          Only Available
+                        </span>
                       </div>
-                    </div>
-
-                    <div
-                      className={`relative border rounded-xl p-4 transition-all duration-200 ${
-                        isCodDisabled
-                          ? "opacity-50 cursor-not-allowed"
-                          : selectedPayment === "cod"
-                            ? "border-[#8B2131] bg-gradient-to-r from-[#8B2131]/5 to-orange-50 shadow-md"
-                            : "border-gray-200 hover:border-gray-300 hover:shadow-sm cursor-pointer"
-                      }`}
-                    >
-                      <div className="flex items-center space-x-4">
-                        <RadioGroupItem value="cod" id="cod" disabled={isCodDisabled} />
-                        <div className="flex-1">
-                          <Label
-                            htmlFor="cod"
-                            className={`font-medium flex items-center ${isCodDisabled ? "cursor-not-allowed" : "cursor-pointer"}`}
-                          >
-                            <Truck className="h-5 w-5 mr-2 text-[#8B2131]" />
-                            Cash on Delivery
-                          </Label>
-                          <p className="text-sm text-gray-500 mt-1">
-                            {isCodDisabled
-                              ? "Cash on Delivery is not available for orders above ₹1000"
-                              : "Pay when you receive your order"}
-                          </p>
-                        </div>
-                      </div>
+                      <p className="text-sm text-gray-600 leading-relaxed">
+                        Your order details will be shared directly with us on WhatsApp. You can review the pre-filled message before sending it.
+                      </p>
+                      <p className="text-xs text-gray-400 mt-2">
+                        Business number: <span className="font-medium text-gray-600">+91 89438 01278</span>
+                      </p>
                     </div>
                   </div>
-                </RadioGroup>
+                </div>
+
+                <p className="text-xs text-gray-400 mt-3 text-center">
+                  Other payment methods (Card, Wallet, Cash on Delivery) are currently unavailable.
+                </p>
               </CardContent>
             </Card>
           </div>
@@ -2326,32 +2335,21 @@ export default function CheckoutPage() {
                   </div>
                 </div>
 
-                <Button
-                  className="w-full bg-gradient-to-r from-[#8B2131] to-[#a02a3a] hover:from-[#6d1926] hover:to-[#8B2131] text-white py-3 text-lg font-semibold shadow-lg"
-                  disabled={
-                    addresses.length === 0 ||
-                    !cart?.items?.length ||
-                    isPlacingOrder ||
-                    (selectedPayment === "card" && !isRazorpayLoaded)
-                  }
-                  onClick={handlePlaceOrder}
+                <button
+                  type="button"
+                  disabled={addresses.length === 0 || !cart?.items?.length}
+                  onClick={handleWhatsAppOrder}
+                  className="w-full flex items-center justify-center gap-3 rounded-lg bg-[#25D366] hover:bg-[#1ebe5d] active:bg-[#19a852] disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold text-base py-4 px-6 transition-all duration-200 shadow-md hover:shadow-lg"
                 >
-                  {isPlacingOrder ? (
-                    <div className="flex items-center">
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                      Processing...
-                    </div>
-                  ) : (
-                    <div className="flex items-center justify-center">
-                      <span>Place Order {formatPrice(total)}</span>
-                      <ChevronRight className="ml-2 h-5 w-5" />
-                    </div>
-                  )}
-                </Button>
+                  <svg viewBox="0 0 32 32" fill="currentColor" className="h-5 w-5 flex-shrink-0" aria-hidden="true">
+                    <path d="M16.003 2.667C8.636 2.667 2.667 8.636 2.667 16c0 2.348.636 4.636 1.845 6.636L2.667 29.333l6.909-1.812A13.31 13.31 0 0 0 16.003 29.333c7.367 0 13.33-5.967 13.33-13.333 0-7.364-5.963-13.333-13.33-13.333zm0 24.4a11.08 11.08 0 0 1-5.636-1.536l-.403-.24-4.1 1.076 1.094-4.003-.263-.412A11.067 11.067 0 0 1 4.933 16c0-6.107 4.963-11.067 11.07-11.067S27.067 9.893 27.067 16c0 6.11-4.96 11.067-11.064 11.067zm6.073-8.294c-.332-.167-1.966-.97-2.27-1.08-.303-.112-.524-.168-.745.167-.22.335-.854 1.08-1.048 1.302-.193.22-.386.248-.718.083-.332-.167-1.4-.515-2.666-1.643-.984-.878-1.647-1.963-1.84-2.295-.193-.332-.021-.512.146-.677.15-.148.332-.387.498-.58.167-.193.222-.332.333-.553.112-.22.056-.415-.028-.58-.083-.167-.745-1.797-1.02-2.462-.27-.647-.545-.56-.745-.57l-.635-.012c-.22 0-.58.083-.883.415-.304.332-1.158 1.133-1.158 2.763s1.186 3.205 1.351 3.428c.166.22 2.333 3.56 5.653 4.994.79.34 1.406.543 1.887.695.793.251 1.515.216 2.085.131.636-.094 1.966-.804 2.243-1.581.277-.777.277-1.44.193-1.58-.083-.14-.304-.222-.636-.39z"/>
+                  </svg>
+                  DM for Order — {formatPrice(total)}
+                </button>
 
-                <div className="flex items-center justify-center text-xs text-gray-500 pt-2">
-                  <ShieldCheck className="h-4 w-4 mr-1 text-green-600" />
-                  <span>Secured by 256-bit SSL encryption</span>
+                <div className="flex items-center justify-center text-xs text-gray-500 pt-1">
+                  <ShieldCheck className="h-4 w-4 mr-1 text-[#25D366]" />
+                  <span>Order confirmed via WhatsApp by our team</span>
                 </div>
               </CardContent>
             </Card>

@@ -1,502 +1,32 @@
-// "use client"
-
-// import { useState, useEffect } from "react"
-// import { useNavigate } from "react-router-dom"
-// import { useSelector, useDispatch } from "react-redux"
-// import { clearAuthData } from "../../Redux/authslice"
-// import { useCart } from "@/Context/CartContext"
-
-// import {
-//   Bell,
-//   Heart,
-//   ShoppingCart,
-//   User,
-//   LogOut,
-//   LogIn,
-//   Home,
-//   Search,
-//   Menu,
-//   X,
-//   ChevronDown,
-//   Settings,
-//   ShoppingBag,
-//   HelpCircle,
-// } from "lucide-react"
-
-// import { Button } from "@/components/ui/button"
-// import { Input } from "@/components/ui/input"
-// import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-// import {
-//   DropdownMenu,
-//   DropdownMenuContent,
-//   DropdownMenuItem,
-//   DropdownMenuLabel,
-//   DropdownMenuSeparator,
-//   DropdownMenuTrigger,
-// } from "@/components/ui/dropdown-menu"
-// import { Badge } from "@/components/ui/badge"
-// import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-
-// import api from "../../api"
-
-// const Header = () => {
-//   const { cart } = useCart()
-//   const isuser = localStorage.getItem("user");
-//   const navigate = useNavigate()
-//   const dispatch = useDispatch()
-//   const user = useSelector((state) => state.auth.user)
-//   const [isScrolled, setIsScrolled] = useState(false)
-//   const [searchOpen, setSearchOpen] = useState(false)
-//   const [notifications, setNotifications] = useState([
-//     { id: 1, title: "Your order has shipped!", time: "Just now", read: false },
-//     { id: 2, title: "New collection available", time: "2 hours ago", read: true },
-//     { id: 3, title: "Special offer: 20% off", time: "Yesterday", read: true },
-//   ])
-
-//   const totalItems = user && cart?.items?.length ? cart.items.length : 0
-//   const unreadNotifications = notifications.filter((n) => !n.read).length
-
-//   useEffect(() => {
-//     const handleScroll = () => {
-//       if (window.scrollY > 10) {
-//         setIsScrolled(true)
-//       } else {
-//         setIsScrolled(false)
-//       }
-//     }
-
-//     window.addEventListener("scroll", handleScroll)
-//     return () => window.removeEventListener("scroll", handleScroll)
-//   }, [])
-
-//   const handleLogout = async () => {
-//     try {
-//       await api.post("logout/")
-//       dispatch(clearAuthData())
-//       navigate("/login/")
-//     } catch (error) {
-//       console.log("Failed the logout")
-//       navigate("/")
-//     }
-//   }
-
-//   const capitalizeFirstLetter = (string) => {
-//     if (!string) return ""
-//     return string.charAt(0).toUpperCase() + string.slice(1)
-//   }
-
-//   const handleLogin = () => {
-//     navigate("/login/")
-//   }
-
-//   const markAllAsRead = () => {
-//     setNotifications(notifications.map((n) => ({ ...n, read: true })))
-//   }
-
-//   const getInitials = (name) => {
-//     if (!name) return "U"
-//     const parts = name.split(/[@\s]/)
-//     return parts[0].charAt(0).toUpperCase()
-//   }
-
-//   return (
-//     <header
-//       className={`w-full sticky top-0 z-50 transition-all duration-300 ${
-//         isScrolled ? "bg-white shadow-md" : "bg-gradient-to-r from-[#f8ece9] to-[#f9f1ef]"
-//       }`}
-//     >
-//       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-//         <div className="flex items-center justify-between h-20">
-//           {/* Logo */}
-//           <div className="flex-shrink-0 group">
-//             <a
-//               href="/"
-//               className="flex items-center transition-transform duration-300 hover:scale-105"
-//               aria-label="Go to homepage"
-//             >
-//               <img src="/logo 1.png" alt="Vaishali Gold Logo" className="h-16 w-auto object-contain" />
-//             </a>
-//           </div>
-
-//           {/* Desktop Navigation */}
-//           <div className="hidden md:flex items-center space-x-1">
-
-//             {/* Welcome Message */}
-//             {user && (
-//               <div className="hidden lg:flex items-center px-4 py-1.5 rounded-full bg-white/80 backdrop-blur-sm border border-amber-100 shadow-sm">
-//                 <span className="text-[#7a2828] font-medium">
-//                   Welcome {capitalizeFirstLetter(user.username || user.email)}
-//                 </span>
-//               </div>
-//             )}
-
-//             {/* Action Buttons */}
-//             <div className="flex items-center space-x-2">
-//               {user ? (
-//                 <>
-//                   {/* Home Button */}
-//                   <Button
-//                     variant="ghost"
-//                     size="icon"
-//                     className="h-10 w-10 rounded-full bg-white/80 backdrop-blur-sm text-[#7a2828] hover:bg-[#7a2828] hover:text-white transition-all duration-300 shadow-sm hover:shadow-md"
-//                     onClick={() => navigate("/user/home")}
-//                     aria-label="Home"
-//                   >
-//                     <Home className="h-5 w-5" />
-//                   </Button>
-
-//                     {/* Shopping Cart Button */}
-//               <Button
-//                 variant="ghost"
-//                 size="icon"
-//                 className="h-10 w-10 rounded-full bg-white/80 backdrop-blur-sm text-[#7a2828] hover:bg-[#7a2828] hover:text-white transition-all duration-300 shadow-sm hover:shadow-md relative"
-//                 onClick={() => navigate("/cart")}
-//                 aria-label="Shopping Cart"
-//               >
-//                 <ShoppingCart className="h-5 w-5" />
-//                 {user && totalItems > 0 && (
-//                   <span className="absolute -top-1 -right-1 flex h-5 w-5">
-//                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#7a2828] opacity-75"></span>
-//                     <span className="relative inline-flex rounded-full h-5 w-5 bg-[#7a2828] text-white text-xs font-bold items-center justify-center">
-//                       {totalItems}
-//                     </span>
-//                   </span>
-//                 )}
-//               </Button>
-
-//               {/* Wishlist Button */}
-//               <Button
-//                 variant="ghost"
-//                 size="icon"
-//                 className="h-10 w-10 rounded-full bg-white/80 backdrop-blur-sm text-[#7a2828] hover:bg-[#7a2828] hover:text-white transition-all duration-300 shadow-sm hover:shadow-md"
-//                 onClick={() => navigate("/wishlist")}
-//                 aria-label="Wishlist"
-//               >
-//                 <Heart className="h-5 w-5" />
-//               </Button>
-
-//                   {/* User Profile Dropdown */}
-
-//                   <DropdownMenu >
-//                     <DropdownMenuTrigger asChild>
-//                       <Button
-//                         variant="ghost"
-//                         size="icon"
-//                         className="h-10 w-10 rounded-full bg-white/80 backdrop-blur-sm text-[#7a2828] hover:bg-[#7a2828] hover:text-white transition-all duration-300 shadow-sm hover:shadow-md relative group"
-//                         aria-label="User Profile"
-//                       >
-//                         <Avatar className="h-7 w-7 border border-amber-200 group-hover:border-white transition-all duration-300">
-//                           <AvatarImage src={user.avatar || "/placeholder.svg"} />
-//                           <AvatarFallback className="bg-amber-100 text-[#7a2828] text-sm font-medium">
-//                             {getInitials(user.username || user.email)}
-//                           </AvatarFallback>
-//                         </Avatar>
-//                         <span className="absolute -bottom-1 -right-1 h-3 w-3 bg-green-500 rounded-full border-2 border-white"></span>
-//                       </Button>
-//                     </DropdownMenuTrigger>
-//                     <DropdownMenuContent align="end" className="bg-white w-56 p-2 rounded-xl border-amber-200">
-//                       <DropdownMenuLabel className="flex items-center gap-2 text-[#7a2828]">
-//                         <User className="h-4 w-4" />
-//                         My Account
-//                       </DropdownMenuLabel>
-//                       <DropdownMenuSeparator className="bg-amber-100" />
-//                       <DropdownMenuItem
-//                         className="rounded-lg cursor-pointer hover:bg-amber-50 focus:bg-amber-50 transition-all duration-200"
-//                         onClick={() => navigate("/userprofile")}
-//                       >
-//                         <User className="h-4 w-4 mr-2 text-[#7a2828]" />
-//                         Profile
-//                       </DropdownMenuItem>
-
-//                       <DropdownMenuSeparator className="bg-amber-100" />
-//                       <DropdownMenuItem
-//                         className="rounded-lg cursor-pointer hover:bg-red-50 focus:bg-red-50 transition-all duration-200"
-//                         onClick={handleLogout}
-//                       >
-//                         <LogOut className="h-4 w-4 mr-2 text-red-600" />
-//                         <span className="text-red-600">Logout</span>
-//                       </DropdownMenuItem>
-//                     </DropdownMenuContent>
-//                   </DropdownMenu>
-//                 </>
-//               ) : (
-//                 <Button
-//                   variant="ghost"
-//                   size="icon"
-//                   className="h-10 w-10 rounded-full bg-white/80 backdrop-blur-sm text-[#7a2828] hover:bg-[#7a2828] hover:text-white transition-all duration-300 shadow-sm hover:shadow-md"
-//                   onClick={handleLogin}
-//                   aria-label="Login"
-//                 >
-//                   <LogIn className="h-5 w-5" />
-//                 </Button>
-//               )}
-
-//                 {/* Login button */}
-//               <Button
-//                 variant="ghost"
-//                 size="icon"
-//                 className="h-10 w-10 rounded-full bg-white/80 backdrop-blur-sm text-[#7a2828] hover:bg-[#7a2828] hover:text-white transition-all duration-300 shadow-sm hover:shadow-md"
-//                 onClick={() => navigate("/login")}
-//                 aria-label="Wishlist"
-//               >
-//                 <LogIn className="h-5 w-5" />
-
-//               </Button>
-//             </div>
-//           </div>
-
-//           {/* Mobile Menu */}
-//           <div className="md:hidden flex items-center space-x-2">
-//             {/* Mobile Cart Button */}
-//             <Button
-//               variant="ghost"
-//               size="icon"
-//               className="h-10 w-10 rounded-full bg-white/80 backdrop-blur-sm text-[#7a2828] hover:bg-[#7a2828] hover:text-white transition-all duration-300 shadow-sm hover:shadow-md relative"
-//               onClick={() => navigate("/cart")}
-//               aria-label="Shopping Cart"
-//             >
-//               <ShoppingCart className="h-5 w-5" />
-//               {user && totalItems > 0 && (
-//                 <span className="absolute -top-1 -right-1 flex h-5 w-5">
-//                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#7a2828] opacity-75"></span>
-//                   <span className="relative inline-flex rounded-full h-5 w-5 bg-[#7a2828] text-white text-xs font-bold items-center justify-center">
-//                     {totalItems}
-//                   </span>
-//                 </span>
-//               )}
-//             </Button>
-
-//             {/* Mobile Menu Button */}
-//             <Sheet>
-//               <SheetTrigger asChild>
-//                 <Button
-//                   variant="ghost"
-//                   size="icon"
-//                   className="h-10 w-10 rounded-full bg-white/80 backdrop-blur-sm text-[#7a2828] hover:bg-[#7a2828] hover:text-white transition-all duration-300 shadow-sm hover:shadow-md"
-//                   aria-label="Open menu"
-//                 >
-//                   <Menu className="h-5 w-5" />
-//                 </Button>
-//               </SheetTrigger>
-//               <SheetContent side="right" className="bg-white w-[300px] sm:w-[350px] p-0">
-//                 <div className="h-full flex flex-col">
-//                   <div className="p-6 bg-gradient-to-r from-[#7a2828] to-[#9a3a3a] text-white">
-//                     <div className="flex items-center gap-4 mb-6">
-//                       <Avatar className="h-12 w-12 border-2 border-white/50">
-//                         <AvatarImage src={user?.avatar || "/placeholder.svg"} />
-//                         <AvatarFallback className="bg-amber-100 text-[#7a2828] text-lg font-medium">
-//                           {user ? getInitials(user.username || user.email) : "G"}
-//                         </AvatarFallback>
-//                       </Avatar>
-//                       <div>
-//                         {user ? (
-//                           <>
-//                             <h3 className="font-bold text-lg">{capitalizeFirstLetter(user.username || user.email)}</h3>
-//                             <p className="text-amber-100 text-sm">Member</p>
-//                           </>
-//                         ) : (
-//                           <Button
-//                             className="bg-white text-[#7a2828] hover:bg-amber-100 hover:text-[#7a2828]"
-//                             onClick={handleLogin}
-//                           >
-//                             Sign In
-//                           </Button>
-//                         )}
-//                       </div>
-//                     </div>
-//                     <div className="flex items-center justify-between">
-//                       <div className="flex items-center gap-2">
-//                         <Bell className="h-5 w-5" />
-//                         <span>{unreadNotifications} new</span>
-//                       </div>
-//                       <div className="flex items-center gap-2">
-//                         <ShoppingCart className="h-5 w-5" />
-//                         <span>{totalItems} items</span>
-//                       </div>
-//                     </div>
-//                   </div>
-
-//                   <div className="flex-1 overflow-auto py-4">
-//                     <div className="px-6 py-2">
-//                       <Input
-//                         type="text"
-//                         placeholder="Search products..."
-//                         className="rounded-full border-amber-200 focus:border-[#7a2828] focus:ring-[#7a2828]/20"
-//                       />
-//                     </div>
-
-//                     <nav className="mt-4">
-//                       <div className="px-3">
-//                         <Button
-//                           variant="ghost"
-//                           className="w-full justify-start rounded-lg mb-1 hover:bg-amber-50 hover:text-[#7a2828]"
-//                           onClick={() => navigate("/")}
-//                         >
-//                           <Home className="h-5 w-5 mr-3" />
-//                           Home
-//                         </Button>
-//                         <Button
-//                           variant="ghost"
-//                           className="w-full justify-start rounded-lg mb-1 hover:bg-amber-50 hover:text-[#7a2828]"
-//                           onClick={() => navigate("/user/home")}
-//                         >
-//                           <LayoutDashboard className="h-5 w-5 mr-3" />
-//                           Dashboard
-//                         </Button>
-//                         <Button
-//                           variant="ghost"
-//                           className="w-full justify-start rounded-lg mb-1 hover:bg-amber-50 hover:text-[#7a2828]"
-//                           onClick={() => navigate("/userprofile")}
-//                         >
-//                           <User className="h-5 w-5 mr-3" />
-//                           Profile
-//                         </Button>
-
-//                         <Button
-//                           variant="ghost"
-//                           className="w-full justify-start rounded-lg mb-1 hover:bg-amber-50 hover:text-[#7a2828]"
-//                           onClick={() => navigate("/wishlist")}
-//                         >
-//                           <Heart className="h-5 w-5 mr-3" />
-//                           Wishlist
-//                         </Button>
-
-//                         <Button
-//                           variant="ghost"
-//                           className="w-full justify-start rounded-lg mb-1 hover:bg-amber-50 hover:text-[#7a2828]"
-//                           onClick={() => navigate("/cart")}
-//                         >
-//                           <ShoppingCart className="h-5 w-5 mr-3" />
-//                           Cart
-//                           {totalItems > 0 && <Badge className="ml-auto bg-[#7a2828]">{totalItems}</Badge>}
-//                         </Button>
-
-//                       </div>
-//                     </nav>
-//                   </div>
-
-//                   {user && (
-//                     <div className="p-6 border-t border-amber-100">
-//                       <Button
-//                         variant="outline"
-//                         className="w-full justify-start rounded-lg border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
-//                         onClick={handleLogout}
-//                       >
-//                         <LogOut className="h-5 w-5 mr-3" />
-//                         Logout
-//                       </Button>
-//                     </div>
-//                   )}
-//                 </div>
-//               </SheetContent>
-//             </Sheet>
-//           </div>
-//         </div>
-//       </div>
-
-//       {/* Optional: Second navigation row for categories/menu items */}
-//       <div
-//         className={`border-t border-amber-100 bg-white transition-all duration-300 ${
-//           isScrolled ? "opacity-100" : "opacity-95"
-//         }`}
-//       >
-//         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-//           <nav className="flex items-center justify-center h-12 text-sm">
-//             <ul className="flex space-x-8">
-//               <li>
-//                 <a
-//                   href="/"
-//                   className="text-gray-700 hover:text-[#7a2828] font-medium transition-all duration-300 hover:underline decoration-[#7a2828] decoration-2 underline-offset-8"
-//                 >
-//                   Home
-//                 </a>
-//               </li>
-//               <li>
-//                 <a
-//                   href="/user/home"
-//                   className="text-gray-700 hover:text-[#7a2828] font-medium transition-all duration-300 hover:underline decoration-[#7a2828] decoration-2 underline-offset-8"
-//                 >
-//                   Shop
-//                 </a>
-//               </li>
-
-//               <li>
-//                 <a
-//                   href="/about"
-//                   className="text-gray-700 hover:text-[#7a2828] font-medium transition-all duration-300 hover:underline decoration-[#7a2828] decoration-2 underline-offset-8"
-//                 >
-//                   About Us
-//                 </a>
-//               </li>
-//               <li>
-//                 <a
-//                   href="/contact"
-//                   className="text-gray-700 hover:text-[#7a2828] font-medium transition-all duration-300 hover:underline decoration-[#7a2828] decoration-2 underline-offset-8"
-//                 >
-//                   Contact
-//                 </a>
-//               </li>
-//             </ul>
-//           </nav>
-//         </div>
-//       </div>
-//     </header>
-//   )
-// }
-
-// // Import the missing LayoutDashboard icon at the top of the file
-// // with the other Lucide icons
-// const LayoutDashboard = (props) => {
-//   return (
-//     <svg
-//       xmlns="http://www.w3.org/2000/svg"
-//       width="24"
-//       height="24"
-//       viewBox="0 0 24 24"
-//       fill="none"
-//       stroke="currentColor"
-//       strokeWidth="2"
-//       strokeLinecap="round"
-//       strokeLinejoin="round"
-//       {...props}
-//     >
-//       <rect width="7" height="9" x="3" y="3" rx="1" />
-//       <rect width="7" height="5" x="14" y="3" rx="1" />
-//       <rect width="7" height="9" x="14" y="12" rx="1" />
-//       <rect width="7" height="5" x="3" y="16" rx="1" />
-//     </svg>
-//   )
-// }
-
-// export default Header
-
 "use client";
 
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { clearAuthData } from "../../Redux/authslice";
 import { useCart } from "@/Context/CartContext";
+import LoginModal from "../Auth/LoginModal";
 
 import {
-  Bell,
   Heart,
-  ShoppingCart,
+  ShoppingBag,
   User,
   LogOut,
   LogIn,
   Home,
-  Search,
   Menu,
-  X,
-  ChevronDown,
-  Settings,
-  ShoppingBag,
-  HelpCircle,
+  Gem,
+  Store,
+  Shirt,
+  Sparkles,
+  Gift,
+  Circle,
+  Coins,
+  Layers,
+  Grid3X3,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -511,41 +41,71 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 import api from "../../api";
 
+const getCategoryIcon = (name) => {
+  const n = (name || "").toLowerCase();
+  if (n.includes("all") || n.includes("shop")) return Grid3X3;
+  if (n.includes("gold")) return Coins;
+  if (n.includes("diamond")) return Gem;
+  if (n.includes("earring")) return Sparkles;
+  if (n.includes("ring")) return Circle;
+  if (n.includes("cloth") || n.includes("wear") || n.includes("saree") || n.includes("kurta")) return Shirt;
+  if (n.includes("gift")) return Gift;
+  if (n.includes("wedding") || n.includes("bridal")) return Layers;
+  return Sparkles;
+};
+
 const Header = () => {
   const { cart } = useCart();
-  const isuser = localStorage.getItem("user");
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
-  const isAuthenticated = user && (user.username || user.email); // More robust user check
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
-  const [notifications, setNotifications] = useState([
-    { id: 1, title: "Your order has shipped!", time: "Just now", read: false },
-    {
-      id: 2,
-      title: "New collection available",
-      time: "2 hours ago",
-      read: true,
-    },
-    { id: 3, title: "Special offer: 20% off", time: "Yesterday", read: true },
-  ]);
+  const isAuthenticated = user && (user.username || user.email);
 
-  const totalItems =
-    isAuthenticated && cart?.items?.length ? cart.items.length : 0;
-  const unreadNotifications = notifications.filter((n) => !n.read).length;
+  const searchParams = new URLSearchParams(location.search);
+  const activeType = searchParams.get("product_type");
+
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [categories, setCategories] = useState([]);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+
+  const totalItems = isAuthenticated && cart?.items?.length ? cart.items.length : 0;
+
+  const typeButtonClass = (type) =>
+    activeType === type
+      ? "text-[#832729] font-semibold"
+      : "text-gray-600 font-medium hover:text-[#832729] transition-colors";
 
   useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 10) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
-    };
-
+    const handleScroll = () => setIsScrolled(window.scrollY > 4);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await api.get("productapp/user/categories/");
+        const names = response.data
+          .filter((c) => c.is_active)
+          .map((c) => c.name)
+          .filter(Boolean);
+        setCategories(names);
+      } catch {
+        try {
+          const response = await api.get("productapp/productfilter/");
+          const unique = [
+            ...new Set(
+              response.data.map((p) => p.productCategory || p.category_name).filter(Boolean)
+            ),
+          ];
+          setCategories(unique);
+        } catch (error) {
+          console.error("Error fetching categories:", error);
+        }
+      }
+    };
+    fetchCategories();
   }, []);
 
   const handleLogout = async () => {
@@ -553,8 +113,7 @@ const Header = () => {
       await api.post("logout/");
       dispatch(clearAuthData());
       navigate("/login/");
-    } catch (error) {
-      console.log("Failed the logout");
+    } catch {
       navigate("/");
     }
   };
@@ -564,410 +123,374 @@ const Header = () => {
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
 
-  const handleLogin = () => {
-    navigate("/login/");
-  };
-
-  const markAllAsRead = () => {
-    setNotifications(notifications.map((n) => ({ ...n, read: true })));
-  };
-
   const getInitials = (name) => {
     if (!name) return "";
-    const parts = name.split(/[@\s]/);
-    return parts[0].charAt(0).toUpperCase();
+    return name.split(/[@\s]/)[0].charAt(0).toUpperCase();
   };
 
+  const iconBtnClass =
+    "p-1 text-[#832729] hover:opacity-70 transition-opacity relative";
+
+  const renderTypeButtons = (className = "") => (
+    <div className={`flex items-center justify-center gap-10 ${className}`}>
+      <button
+        type="button"
+        onClick={() => navigate("/user/home?product_type=clothing")}
+        className={`text-sm tracking-wide ${typeButtonClass("clothing")}`}
+      >
+        Clothing
+      </button>
+      <button
+        type="button"
+        onClick={() => navigate("/user/home?product_type=imitation_jewelry")}
+        className={`text-sm tracking-wide ${typeButtonClass("imitation_jewelry")}`}
+      >
+        Jewellery
+      </button>
+    </div>
+  );
+
   return (
-    <header
-      className={`w-full sticky top-0 z-50 transition-all duration-300 ${
-        isScrolled
-          ? "bg-white shadow-md"
-          : "bg-gradient-to-r from-[#f8ece9] to-[#f9f1ef]"
-      }`}
-    >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
-          {/* Logo */}
-          <div className="flex-shrink-0 group">
+    <>
+      <header
+        className={`w-full sticky top-0 z-50 bg-white transition-shadow duration-300 ${
+          isScrolled ? "shadow-md" : "shadow-sm"
+        }`}
+      >
+        {/* Tier 1 — Logo | Clothing/Jewellery | Icons */}
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10">
+          <div className="flex items-center justify-between h-[72px] gap-4">
+            {/* Logo */}
             <a
               href="/"
-              className="flex items-center transition-transform duration-300 hover:scale-105"
+              className="flex-shrink-0 flex items-center"
               aria-label="Go to homepage"
             >
               <img
                 src="/logo 1.png"
                 alt="Vaishali Gold Logo"
-                className="h-16 w-auto object-contain"
+                className="h-12 lg:h-14 w-auto object-contain"
               />
             </a>
-          </div>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-1">
-            {/* Welcome Message */}
-            {isAuthenticated && (
-              <div className="hidden lg:flex items-center px-4 py-1.5 rounded-full bg-white/80 backdrop-blur-sm border border-amber-100 shadow-sm">
-                <span className="text-[#7a2828] font-medium">
-                  Welcome {capitalizeFirstLetter(user.username || user.email)}
-                </span>
+            {/* Center — replaces search bar */}
+            <div className="hidden md:flex flex-1 justify-center px-6">
+              <div className="flex items-center justify-center w-full max-w-xl border border-gray-300 rounded-full px-10 py-2.5">
+                {renderTypeButtons()}
               </div>
-            )}
+            </div>
 
-            {/* Action Buttons */}
-            <div className="flex items-center space-x-2">
-              {isAuthenticated ? (
-                <>
-                  {/* Home Button */}
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-10 w-10 rounded-full bg-white/80 backdrop-blur-sm text-[#7a2828] hover:bg-[#7a2828] hover:text-white transition-all duration-300 shadow-sm hover:shadow-md"
-                    onClick={() => navigate("/user/home")}
-                    aria-label="Home"
-                  >
-                    <Home className="h-5 w-5" />
-                  </Button>
+            {/* Right icons — Tanishq-style minimal line icons */}
+            <div className="flex items-center gap-4 lg:gap-5 flex-shrink-0">
+              <button
+                type="button"
+                className={`${iconBtnClass} hidden sm:block`}
+                onClick={() => navigate("/user/home?product_type=imitation_jewelry")}
+                aria-label="Jewellery collection"
+              >
+                <Gem className="h-[22px] w-[22px]" strokeWidth={1.5} />
+              </button>
 
-                  {/* Shopping Cart Button */}
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-10 w-10 rounded-full bg-white/80 backdrop-blur-sm text-[#7a2828] hover:bg-[#7a2828] hover:text-white transition-all duration-300 shadow-sm hover:shadow-md relative"
-                    onClick={() => navigate("/cart")}
-                    aria-label="Shopping Cart"
-                  >
-                    <ShoppingCart className="h-5 w-5" />
-                    {totalItems > 0 && (
-                      <span className="absolute -top-1 -right-1 flex h-5 w-5">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#7a2828] opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-5 w-5 bg-[#7a2828] text-white text-xs font-bold items-center justify-center">
-                          {totalItems}
-                        </span>
-                      </span>
-                    )}
-                  </Button>
+              <button
+                type="button"
+                className={`${iconBtnClass} hidden sm:block`}
+                onClick={() => navigate("/user/home")}
+                aria-label="Shop"
+              >
+                <Store className="h-[22px] w-[22px]" strokeWidth={1.5} />
+              </button>
 
-                  {/* Wishlist Button */}
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-10 w-10 rounded-full bg-white/80 backdrop-blur-sm text-[#7a2828] hover:bg-[#7a2828] hover:text-white transition-all duration-300 shadow-sm hover:shadow-md"
-                    onClick={() => navigate("/wishlist")}
-                    aria-label="Wishlist"
-                  >
-                    <Heart className="h-5 w-5" />
-                  </Button>
+              <button
+                type="button"
+                className={iconBtnClass}
+                onClick={() => (isAuthenticated ? navigate("/wishlist") : setIsLoginModalOpen(true))}
+                aria-label="Wishlist"
+              >
+                <Heart className="h-[22px] w-[22px]" strokeWidth={1.5} />
+              </button>
 
-                  {/* User Profile Dropdown - Only shows when user exists */}
-                  {isAuthenticated && (
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-10 w-10 rounded-full bg-white/80 backdrop-blur-sm text-[#7a2828] hover:bg-[#7a2828] hover:text-white transition-all duration-300 shadow-sm hover:shadow-md relative group"
-                          aria-label="User Profile"
-                        >
-                          <Avatar className="h-7 w-7 border border-amber-200 group-hover:border-white transition-all duration-300">
-                            <AvatarImage
-                              src={user.avatar || "/placeholder.svg"}
-                            />
-                            <AvatarFallback className="bg-amber-100 text-[#7a2828] text-sm font-medium">
-                              {getInitials(user.username || user.email)}
-                            </AvatarFallback>
-                          </Avatar>
-                          <span className="absolute -bottom-1 -right-1 h-3 w-3 bg-green-500 rounded-full border-2 border-white"></span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent
-                        align="end"
-                        className="bg-white w-56 p-2 rounded-xl border-amber-200"
+              {/* Account */}
+              <div className="hidden md:block">
+                {isAuthenticated ? (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button type="button" className={iconBtnClass} aria-label="My account">
+                        <User className="h-[22px] w-[22px]" strokeWidth={1.5} />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-52">
+                      <DropdownMenuLabel className="text-[#832729]">
+                        {capitalizeFirstLetter(user.username || user.email)}
+                      </DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={() => navigate("/userprofile")}>
+                        <User className="h-4 w-4 mr-2" />
+                        Profile
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => navigate("/myorders")}>
+                        <ShoppingBag className="h-4 w-4 mr-2" />
+                        My Orders
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        className="text-red-600 focus:text-red-600"
+                        onClick={handleLogout}
                       >
-                        <DropdownMenuLabel className="flex items-center gap-2 text-[#7a2828]">
-                          <User className="h-4 w-4" />
-                          My Account
-                        </DropdownMenuLabel>
-                        <DropdownMenuSeparator className="bg-amber-100" />
-                        <DropdownMenuItem
-                          className="rounded-lg cursor-pointer hover:bg-amber-50 focus:bg-amber-50 transition-all duration-200"
-                          onClick={() => navigate("/userprofile")}
-                        >
-                          <User className="h-4 w-4 mr-2 text-[#7a2828]" />
-                          Profile
-                        </DropdownMenuItem>
-
-                        <DropdownMenuSeparator className="bg-amber-100" />
-                        <DropdownMenuItem
-                          className="rounded-lg cursor-pointer hover:bg-red-50 focus:bg-red-50 transition-all duration-200"
-                          onClick={handleLogout}
-                        >
-                          <LogOut className="h-4 w-4 mr-2 text-red-600" />
-                          <span className="text-red-600">Logout</span>
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  )}
-                </>
-              ) : (
-                <>
-                  {/* Login Button - Only shown when user is NOT logged in */}
-                  <Button
-                    variant="ghost"
-                    className="px-4 py-2 rounded-xl bg-white/80 backdrop-blur-sm text-[#7a2828] hover:bg-[#7a2828] hover:text-white transition-all duration-300 shadow-sm hover:shadow-md flex items-center gap-2"
-                    onClick={handleLogin}
+                        <LogOut className="h-4 w-4 mr-2" />
+                        Logout
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                ) : (
+                  <button
+                    type="button"
+                    className={iconBtnClass}
+                    onClick={() => setIsLoginModalOpen(true)}
                     aria-label="Login"
                   >
-                    <LogIn className="h-5 w-5" />
-                    <span className="text-sm font-medium">Login</span>
-                  </Button>
-                </>
-              )}
-            </div>
-          </div>
-
-          {/* Mobile Menu */}
-          <div className="md:hidden flex items-center space-x-2">
-            {/* Mobile Cart Button - Only show when user is logged in */}
-            {user && (
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-10 w-10 rounded-full bg-white/80 backdrop-blur-sm text-[#7a2828] hover:bg-[#7a2828] hover:text-white transition-all duration-300 shadow-sm hover:shadow-md relative"
-                onClick={() => navigate("/cart")}
-                aria-label="Shopping Cart"
-              >
-                <ShoppingCart className="h-5 w-5" />
-                {totalItems > 0 && (
-                  <span className="absolute -top-1 -right-1 flex h-5 w-5">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#7a2828] opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-5 w-5 bg-[#7a2828] text-white text-xs font-bold items-center justify-center">
-                      {totalItems}
-                    </span>
-                  </span>
+                    <User className="h-[22px] w-[22px]" strokeWidth={1.5} />
+                  </button>
                 )}
-              </Button>
-            )}
+              </div>
 
-            {/* Mobile Menu Button */}
-            <Sheet>
-              <SheetTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-10 w-10 rounded-full bg-white/80 backdrop-blur-sm text-[#7a2828] hover:bg-[#7a2828] hover:text-white transition-all duration-300 shadow-sm hover:shadow-md"
-                  aria-label="Open menu"
-                >
-                  <Menu className="h-5 w-5" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent
-                side="right"
-                className="bg-white w-[300px] sm:w-[350px] p-0"
+              {/* Cart */}
+              <button
+                type="button"
+                className={iconBtnClass}
+                onClick={() => (isAuthenticated ? navigate("/cart") : setIsLoginModalOpen(true))}
+                aria-label="Shopping cart"
               >
-                <div className="h-full flex flex-col">
-                  <div className="p-6 bg-gradient-to-r from-[#7a2828] to-[#9a3a3a] text-white">
-                    <div className="flex items-center gap-4 mb-6">
-                      {user && (
-                        <Avatar className="h-12 w-12 border-2 border-white/50">
-                          <AvatarImage
-                            src={user.avatar || "/placeholder.svg"}
-                          />
-                          <AvatarFallback className="bg-amber-100 text-[#7a2828] text-lg font-medium">
-                            {getInitials(user.username || user.email)}
-                          </AvatarFallback>
-                        </Avatar>
-                      )}
-                      <div>
-                        {user ? (
-                          <>
-                            <h3 className="font-bold text-lg">
-                              {capitalizeFirstLetter(
-                                user.username || user.email
-                              )}
-                            </h3>
-                            <p className="text-amber-100 text-sm">Member</p>
-                          </>
+                <ShoppingBag className="h-[22px] w-[22px]" strokeWidth={1.5} />
+                <span className="absolute -top-1.5 -right-1.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-bold text-white">
+                  {totalItems}
+                </span>
+              </button>
+
+              {/* Mobile menu */}
+              <div className="md:hidden">
+                <Sheet>
+                  <SheetTrigger asChild>
+                    <button type="button" className={iconBtnClass} aria-label="Open menu">
+                      <Menu className="h-[22px] w-[22px]" strokeWidth={1.5} />
+                    </button>
+                  </SheetTrigger>
+                  <SheetContent side="right" className="w-[300px] p-0">
+                    <div className="flex flex-col h-full">
+                      <div className="p-6 bg-[#832729] text-white">
+                        {isAuthenticated ? (
+                          <div className="flex items-center gap-3">
+                            <Avatar className="h-10 w-10 border-2 border-white/40">
+                              <AvatarImage src={user.avatar || "/placeholder.svg"} />
+                              <AvatarFallback className="bg-white text-[#832729]">
+                                {getInitials(user.username || user.email)}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div>
+                              <p className="font-semibold">
+                                {capitalizeFirstLetter(user.username || user.email)}
+                              </p>
+                              <p className="text-xs text-white/80">Welcome back</p>
+                            </div>
+                          </div>
                         ) : (
                           <Button
-                            className="bg-white text-[#7a2828] hover:bg-amber-100 hover:text-[#7a2828]"
-                            onClick={handleLogin}
+                            className="w-full bg-white text-[#832729] hover:bg-gray-100"
+                            onClick={() => setIsLoginModalOpen(true)}
                           >
+                            <LogIn className="h-4 w-4 mr-2" />
                             Sign In
                           </Button>
                         )}
                       </div>
-                    </div>
-                    {user && (
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <Bell className="h-5 w-5" />
-                          <span>{unreadNotifications} new</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <ShoppingCart className="h-5 w-5" />
-                          <span>{totalItems} items</span>
-                        </div>
-                      </div>
-                    )}
-                  </div>
 
-                  <div className="flex-1 overflow-auto py-4">
-                    <div className="px-6 py-2">
-                      <Input
-                        type="text"
-                        placeholder="Search products..."
-                        className="rounded-full border-amber-200 focus:border-[#7a2828] focus:ring-[#7a2828]/20"
-                      />
-                    </div>
+                      <div className="p-4 border-b">{renderTypeButtons("gap-8")}</div>
 
-                    <nav className="mt-4">
-                      <div className="px-3">
+                      <nav className="flex-1 overflow-auto p-3">
                         <Button
                           variant="ghost"
-                          className="w-full justify-start rounded-lg mb-1 hover:bg-amber-50 hover:text-[#7a2828]"
+                          className="w-full justify-start text-[#832729]"
                           onClick={() => navigate("/")}
                         >
-                          <Home className="h-5 w-5 mr-3" />
+                          <Home className="h-4 w-4 mr-3" />
                           Home
                         </Button>
-                        {user && (
+                        <Button
+                          variant="ghost"
+                          className="w-full justify-start text-[#832729]"
+                          onClick={() => navigate("/user/home")}
+                        >
+                          <Store className="h-4 w-4 mr-3" />
+                          Shop All
+                        </Button>
+                        {isAuthenticated && (
                           <>
                             <Button
                               variant="ghost"
-                              className="w-full justify-start rounded-lg mb-1 hover:bg-amber-50 hover:text-[#7a2828]"
-                              onClick={() => navigate("/user/home")}
-                            >
-                              <LayoutDashboard className="h-5 w-5 mr-3" />
-                              Dashboard
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              className="w-full justify-start rounded-lg mb-1 hover:bg-amber-50 hover:text-[#7a2828]"
+                              className="w-full justify-start text-[#832729]"
                               onClick={() => navigate("/userprofile")}
                             >
-                              <User className="h-5 w-5 mr-3" />
+                              <User className="h-4 w-4 mr-3" />
                               Profile
                             </Button>
-
                             <Button
                               variant="ghost"
-                              className="w-full justify-start rounded-lg mb-1 hover:bg-amber-50 hover:text-[#7a2828]"
-                              onClick={() => navigate("/wishlist")}
+                              className="w-full justify-start text-[#832729]"
+                              onClick={() => navigate("/myorders")}
                             >
-                              <Heart className="h-5 w-5 mr-3" />
-                              Wishlist
-                            </Button>
-
-                            <Button
-                              variant="ghost"
-                              className="w-full justify-start rounded-lg mb-1 hover:bg-amber-50 hover:text-[#7a2828]"
-                              onClick={() => navigate("/cart")}
-                            >
-                              <ShoppingCart className="h-5 w-5 mr-3" />
-                              Cart
-                              {totalItems > 0 && (
-                                <Badge className="ml-auto bg-[#7a2828]">
-                                  {totalItems}
-                                </Badge>
-                              )}
+                              <ShoppingBag className="h-4 w-4 mr-3" />
+                              My Orders
                             </Button>
                           </>
                         )}
-                      </div>
-                    </nav>
-                  </div>
+                        <Button
+                          variant="ghost"
+                          className="w-full justify-start text-[#832729]"
+                          onClick={() =>
+                            isAuthenticated ? navigate("/wishlist") : setIsLoginModalOpen(true)
+                          }
+                        >
+                          <Heart className="h-4 w-4 mr-3" />
+                          Wishlist
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          className="w-full justify-start text-[#832729]"
+                          onClick={() =>
+                            isAuthenticated ? navigate("/cart") : setIsLoginModalOpen(true)
+                          }
+                        >
+                          <ShoppingBag className="h-4 w-4 mr-3" />
+                          Cart
+                          {totalItems > 0 && (
+                            <Badge className="ml-auto bg-[#832729]">{totalItems}</Badge>
+                          )}
+                        </Button>
 
-                  {user && (
-                    <div className="p-6 border-t border-amber-100">
-                      <Button
-                        variant="outline"
-                        className="w-full justify-start rounded-lg border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
-                        onClick={handleLogout}
-                      >
-                        <LogOut className="h-5 w-5 mr-3" />
-                        Logout
-                      </Button>
+                        {categories.length > 0 && (
+                          <div className="mt-4 pt-4 border-t">
+                            <p className="px-3 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                              Categories
+                            </p>
+                            {categories.map((category) => {
+                              const Icon = getCategoryIcon(category);
+                              return (
+                                <Button
+                                  key={category}
+                                  variant="ghost"
+                                  className="w-full justify-start text-[#832729]"
+                                  onClick={() =>
+                                    navigate(`/category/${encodeURIComponent(category)}`)
+                                  }
+                                >
+                                  <Icon className="h-4 w-4 mr-3" strokeWidth={1.5} />
+                                  {category}
+                                </Button>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </nav>
+
+                      {isAuthenticated && (
+                        <div className="p-4 border-t">
+                          <Button
+                            variant="outline"
+                            className="w-full border-red-200 text-red-600 hover:bg-red-50"
+                            onClick={handleLogout}
+                          >
+                            <LogOut className="h-4 w-4 mr-2" />
+                            Logout
+                          </Button>
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
-              </SheetContent>
-            </Sheet>
+                  </SheetContent>
+                </Sheet>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Optional: Second navigation row for categories/menu items */}
-      <div
-        className={`border-t border-amber-100 bg-white transition-all duration-300 ${
-          isScrolled ? "opacity-100" : "opacity-95"
-        }`}
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <nav className="flex items-center justify-center h-12 text-sm">
-            <ul className="flex space-x-8">
-              <li>
-                <a
-                  href="/"
-                  className="text-gray-700 hover:text-[#7a2828] font-medium transition-all duration-300 hover:underline decoration-[#7a2828] decoration-2 underline-offset-8"
-                >
-                  Home
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/user/home"
-                  className="text-gray-700 hover:text-[#7a2828] font-medium transition-all duration-300 hover:underline decoration-[#7a2828] decoration-2 underline-offset-8"
-                >
-                  Shop
-                </a>
-              </li>
-
-              <li>
-                <a
-                  href="/about"
-                  className="text-gray-700 hover:text-[#7a2828] font-medium transition-all duration-300 hover:underline decoration-[#7a2828] decoration-2 underline-offset-8"
-                >
-                  About Us
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/contact"
-                  className="text-gray-700 hover:text-[#7a2828] font-medium transition-all duration-300 hover:underline decoration-[#7a2828] decoration-2 underline-offset-8"
-                >
-                  Contact
-                </a>
-              </li>
-            </ul>
-          </nav>
+        {/* Mobile — Clothing / Jewellery below logo row */}
+        <div className="md:hidden flex justify-center pb-3 -mt-1">
+          <div className="flex items-center justify-center w-full max-w-sm border border-gray-300 rounded-full px-8 py-2">
+            {renderTypeButtons("gap-8")}
+          </div>
         </div>
-      </div>
-    </header>
-  );
-};
 
-// Import the missing LayoutDashboard icon at the top of the file
-// with the other Lucide icons
-const LayoutDashboard = (props) => {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      {...props}
-    >
-      <rect width="7" height="9" x="3" y="3" rx="1" />
-      <rect width="7" height="5" x="14" y="3" rx="1" />
-      <rect width="7" height="9" x="14" y="12" rx="1" />
-      <rect width="7" height="5" x="3" y="16" rx="1" />
-    </svg>
+        {/* Tier 2 — Category navigation */}
+        <div className="border-t border-gray-200 bg-white">
+          <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10">
+            <nav className="hidden md:flex items-center w-full py-3">
+              <button
+                type="button"
+                onClick={() => navigate("/user/home")}
+                className="flex-1 flex items-center justify-center gap-2 min-w-0 transition-opacity hover:opacity-70"
+              >
+                <Grid3X3 className="h-5 w-5 text-[#832729] flex-shrink-0" strokeWidth={1.5} />
+                <span className="text-sm font-medium text-[#832729] truncate">
+                  All Products
+                </span>
+              </button>
+
+              {categories.map((category) => {
+                const Icon = getCategoryIcon(category);
+                const categoryPath = `/category/${encodeURIComponent(category)}`;
+                const isActive = location.pathname === categoryPath;
+
+                return (
+                  <button
+                    key={category}
+                    type="button"
+                    onClick={() => navigate(categoryPath)}
+                    className={`flex-1 flex items-center justify-center gap-2 min-w-0 transition-opacity hover:opacity-70 ${
+                      isActive ? "opacity-100" : "opacity-90"
+                    }`}
+                  >
+                    <Icon className="h-5 w-5 text-[#832729] flex-shrink-0" strokeWidth={1.5} />
+                    <span className="text-sm font-medium text-[#832729] truncate capitalize">
+                      {category}
+                    </span>
+                  </button>
+                );
+              })}
+            </nav>
+
+            {/* Mobile category scroll */}
+            <nav className="md:hidden flex items-center gap-6 py-3 overflow-x-auto scrollbar-hide">
+              <button
+                type="button"
+                onClick={() => navigate("/user/home")}
+                className="flex items-center gap-2 flex-shrink-0"
+              >
+                <Grid3X3 className="h-4 w-4 text-[#832729]" strokeWidth={1.5} />
+                <span className="text-xs font-medium text-[#832729] whitespace-nowrap">
+                  All Products
+                </span>
+              </button>
+              {categories.map((category) => {
+                const Icon = getCategoryIcon(category);
+                return (
+                  <button
+                    key={category}
+                    type="button"
+                    onClick={() => navigate(`/category/${encodeURIComponent(category)}`)}
+                    className="flex items-center gap-1.5 flex-shrink-0"
+                  >
+                    <Icon className="h-4 w-4 text-[#832729]" strokeWidth={1.5} />
+                    <span className="text-xs font-medium text-[#832729] whitespace-nowrap capitalize">
+                      {category}
+                    </span>
+                  </button>
+                );
+              })}
+            </nav>
+          </div>
+        </div>
+    </header>
+
+    <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
+    </>
   );
 };
 

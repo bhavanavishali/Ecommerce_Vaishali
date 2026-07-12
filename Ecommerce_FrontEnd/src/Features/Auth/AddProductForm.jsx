@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
@@ -14,18 +13,25 @@ import Cropper from "react-easy-crop";
 const AddProductForm = () => {
   const navigate = useNavigate();
   const [categories, setCategories] = useState([]);
+  const [taxes, setTaxes] = useState([]);
+
   const [productData, setProductData] = useState({
     name: "",
     category: "",
+    product_type: "clothing",
     description: "",
-    occasion: "",
     gender: "",
-    is_active: true,
-    bis_hallmark: "",
+    occasion: "",
     size: "",
-    available: true,
-    gold_color: "yellow",
+    color: "",
+    fabric: "",
+    material: "",
+    fixed_price: "",
+    stock: "",
+    tax: "",
     discount: "",
+    available: true,
+    is_active: true,
     product_offer_Isactive: true,
   });
 
@@ -40,23 +46,25 @@ const AddProductForm = () => {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
-  const [pendingImages, setPendingImages] = useState([]); // Queue for images to be cropped
+  const [pendingImages, setPendingImages] = useState([]);
 
-  // Fetch categories
   useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchData = async () => {
       try {
-        const response = await api.get("productapp/user/categories/");
-        setCategories(response.data);
-      } catch (error) {
-        console.error("Error fetching categories:", error);
-        setError("Failed to load categories. Please refresh the page.");
+        const [catRes, taxRes] = await Promise.all([
+          api.get("productapp/user/categories/"),
+          api.get("productapp/taxes/"),
+        ]);
+        setCategories(catRes.data);
+        setTaxes(taxRes.data);
+      } catch (err) {
+        console.error(err);
+        setError("Failed to load categories or taxes.");
       }
     };
-    fetchCategories();
+    fetchData();
   }, []);
 
-  // Cleanup object URLs on unmount
   useEffect(() => {
     return () => {
       imagePreviews.forEach((url) => URL.revokeObjectURL(url));
@@ -77,9 +85,8 @@ const AddProductForm = () => {
     }));
     setPendingImages((prev) => [...prev, ...newPendingImages]);
     if (newPendingImages.length > 0 && !isEditModalOpen) {
-      // Start cropping the first pending image
       setCurrentImage(newPendingImages[0]);
-      setCurrentImageIndex(null); // Not editing an existing image
+      setCurrentImageIndex(null);
       setIsEditModalOpen(true);
     }
   };
@@ -91,165 +98,108 @@ const AddProductForm = () => {
   };
 
   const editImage = (index) => {
-    console.log("Editing image:", { index, url: imagePreviews[index] });
     setCurrentImageIndex(index);
     setCurrentImage({ file: imageFiles[index], url: imagePreviews[index] });
     setIsEditModalOpen(true);
   };
 
-  const onCropComplete = (croppedArea, croppedAreaPixels) => {
-    console.log("Cropped Area Pixels:", croppedAreaPixels);
+  const onCropComplete = (_, croppedAreaPixels) => {
     setCroppedAreaPixels(croppedAreaPixels);
   };
 
   const createCroppedImage = async () => {
-    if (!croppedAreaPixels) {
-      console.error("No cropped area defined");
-      setError("Please select a crop area before saving.");
-      return null;
-    }
-    try {
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d");
-      const image = new Image();
-      image.src = currentImage.url;
+    if (!croppedAreaPixels) return null;
 
-      return new Promise((resolve, reject) => {
-        image.onload = () => {
-          canvas.width = croppedAreaPixels.width;
-          canvas.height = croppedAreaPixels.height;
-          ctx.drawImage(
-            image,
-            croppedAreaPixels.x,
-            croppedAreaPixels.y,
-            croppedAreaPixels.width,
-            croppedAreaPixels.height,
-            0,
-            0,
-            croppedAreaPixels.width,
-            croppedAreaPixels.height
-          );
-          canvas.toBlob(
-            (blob) => {
-              if (!blob) {
-                console.error("Failed to create blob");
-                return reject(new Error("Failed to create blob"));
-              }
-              const croppedFile = new File([blob], currentImage.file.name, {
-                type: "image/jpeg",
-                lastModified: new Date().getTime(),
-              });
-              console.log("Cropped image created:", croppedFile);
-              resolve({ file: croppedFile, url: URL.createObjectURL(blob) });
-            },
-            "image/jpeg",
-            0.9
-          );
-        };
-        image.onerror = () => reject(new Error("Failed to load image"));
-      });
-    } catch (e) {
-      console.error("Error creating cropped image:", e);
-      setError("Failed to crop image. Please try again.");
-      return null;
-    }
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    const image = new Image();
+    image.src = currentImage.url;
+
+    return new Promise((resolve, reject) => {
+      image.onload = () => {
+        canvas.width = croppedAreaPixels.width;
+        canvas.height = croppedAreaPixels.height;
+        ctx.drawImage(
+          image,
+          croppedAreaPixels.x,
+          croppedAreaPixels.y,
+          croppedAreaPixels.width,
+          croppedAreaPixels.height,
+          0,
+          0,
+          croppedAreaPixels.width,
+          croppedAreaPixels.height
+        );
+        canvas.toBlob((blob) => {
+          if (!blob) return reject(new Error("Failed to create blob"));
+          const croppedFile = new File([blob], currentImage.file.name, {
+            type: "image/jpeg",
+            lastModified: Date.now(),
+          });
+          resolve({ file: croppedFile, url: URL.createObjectURL(blob) });
+        }, "image/jpeg", 0.9);
+      };
+      image.onerror = () => reject(new Error("Failed to load image"));
+    });
   };
 
   const saveCroppedImage = async () => {
-    if (!croppedAreaPixels) {
-      console.error("No cropped area pixels available");
-      setError("Please select a crop area before saving.");
-      return;
-    }
     const croppedImage = await createCroppedImage();
-    if (croppedImage) {
-      if (currentImageIndex !== null) {
-        // Editing an existing image
-        const newImageFiles = [...imageFiles];
-        const newImagePreviews = [...imagePreviews];
-        URL.revokeObjectURL(imagePreviews[currentImageIndex]);
-        newImageFiles[currentImageIndex] = croppedImage.file;
-        newImagePreviews[currentImageIndex] = croppedImage.url;
-        setImageFiles(newImageFiles);
-        setImagePreviews(newImagePreviews);
-      } else {
-        // New image from pending queue
-        setImageFiles((prev) => [...prev, croppedImage.file]);
-        setImagePreviews((prev) => [...prev, croppedImage.url]);
-      }
-      
-      setPendingImages((prev) => {
-        const remaining = prev.slice(1);
-        if (remaining.length > 0) {
-          // Open cropper for the next image
-          setCurrentImage(remaining[0]);
-          setCurrentImageIndex(null);
-          setCrop({ x: 0, y: 0 });
-          setZoom(1);
-          setCroppedAreaPixels(null);
-          return remaining;
-        } else {
-          // Close modal if no more images to crop
-          setIsEditModalOpen(false);
-          setCurrentImage(null);
-          setCurrentImageIndex(null);
-          setCrop({ x: 0, y: 0 });
-          setZoom(1);
-          setCroppedAreaPixels(null);
-          return [];
-        }
-      });
-    }
-  };
+    if (!croppedImage) return;
 
-  const cancelImageEdit = () => {
-    if (currentImage) {
-      URL.revokeObjectURL(currentImage.url);
-    }
-    // Remove the current image from pendingImages if it's a new image
-    if (currentImageIndex === null) {
-      setPendingImages((prev) => {
-        const remaining = prev.slice(1);
-        if (remaining.length > 0) {
-          // Open cropper for the next image
-          setCurrentImage(remaining[0]);
-          setCrop({ x: 0, y: 0 });
-          setZoom(1);
-          setCroppedAreaPixels(null);
-          return remaining;
-        } else {
-          // Close modal if no more images
-          setIsEditModalOpen(false);
-          setCurrentImage(null);
-          return [];
-        }
-      });
+    if (currentImageIndex !== null) {
+      const newFiles = [...imageFiles];
+      const newPreviews = [...imagePreviews];
+      URL.revokeObjectURL(imagePreviews[currentImageIndex]);
+      newFiles[currentImageIndex] = croppedImage.file;
+      newPreviews[currentImageIndex] = croppedImage.url;
+      setImageFiles(newFiles);
+      setImagePreviews(newPreviews);
     } else {
-      // Reset for existing image edit
+      setImageFiles((prev) => [...prev, croppedImage.file]);
+      setImagePreviews((prev) => [...prev, croppedImage.url]);
+    }
+
+    setPendingImages((prev) => {
+      const remaining = prev.slice(1);
+      if (remaining.length > 0) {
+        setCurrentImage(remaining[0]);
+        setCurrentImageIndex(null);
+        setCrop({ x: 0, y: 0 });
+        setZoom(1);
+        setCroppedAreaPixels(null);
+        return remaining;
+      }
       setIsEditModalOpen(false);
       setCurrentImage(null);
       setCurrentImageIndex(null);
-      setCrop({ x: 0, y: 0 });
-      setZoom(1);
-      setCroppedAreaPixels(null);
-    }
+      return [];
+    });
+  };
+
+  const cancelImageEdit = () => {
+    if (currentImage) URL.revokeObjectURL(currentImage.url);
+    setIsEditModalOpen(false);
+    setCurrentImage(null);
+    setCurrentImageIndex(null);
+    setPendingImages([]);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (
       !productData.name ||
       !productData.category ||
-      !productData.bis_hallmark ||
-      !productData.gender ||
-      !productData.occasion ||
-      !productData.size
+      !productData.product_type ||
+      !productData.fixed_price ||
+      productData.stock === "" ||
+      !productData.tax
     ) {
-      setError(
-        "Please fill in all required fields (Name, Category, BIS Hallmark, Gender, Occasion, Size)"
-      );
+      setError("Please fill required fields: Name, Category, Type, Fixed Price, Stock, Tax");
       return;
     }
+
     if (pendingImages.length > 0) {
       setError("Please crop all selected images before submitting.");
       return;
@@ -257,118 +207,74 @@ const AddProductForm = () => {
 
     setIsSubmitting(true);
     setError(null);
-    setSuccess(false);
 
     try {
-      const formattedData = {
+      const payload = {
         ...productData,
-        category: Number.parseInt(productData.category),
+        category: Number(productData.category),
+        tax: Number(productData.tax),
+        fixed_price: Number.parseFloat(productData.fixed_price),
+        stock: Number.parseInt(productData.stock, 10),
         discount: productData.discount ? Number.parseFloat(productData.discount) : 0,
       };
 
-      const response = await api.post("productapp/products/", formattedData);
+      const response = await api.post("productapp/products/", payload);
       const productId = response.data.id;
 
       if (imageFiles.length > 0) {
         const formData = new FormData();
-        imageFiles.forEach((file) => {
-          formData.append("images", file);
-        });
+        imageFiles.forEach((file) => formData.append("images", file));
         await api.post(`productapp/products/${productId}/images/`, formData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
       }
 
       setSuccess(true);
-      setProductData({
-        name: "",
-        category: "",
-        description: "",
-        occasion: "",
-        gender: "",
-        is_active: true,
-        bis_hallmark: "",
-        size: "",
-        available: true,
-        gold_color: "yellow",
-        discount: "",
-        product_offer_Isactive: true,
-      });
-      setImageFiles([]);
-      setImagePreviews([]);
-      setPendingImages([]);
-      setTimeout(() => {
-        navigate("/dashboard");
-      }, 1500);
+      setTimeout(() => navigate("/dashboard"), 1500);
     } catch (err) {
-      console.error("Error:", err);
-      if (err.response) {
-        const errorMessages =
-          typeof err.response.data === "object"
-            ? Object.entries(err.response.data)
-                .map(([key, value]) => `${key}: ${value}`)
-                .join(", ")
-            : err.response.data || "Server rejected the data";
-        setError(`Validation error: ${errorMessages}`);
-      } else if (err.request) {
-        setError("No response from server. Please check your connection.");
-      } else {
-        setError("Error setting up request: " + err.message);
-      }
+      const errorMessages =
+        err.response?.data && typeof err.response.data === "object"
+          ? Object.entries(err.response.data).map(([k, v]) => `${k}: ${v}`).join(", ")
+          : "Failed to add product";
+      setError(errorMessages);
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  const isClothing = productData.product_type === "clothing";
+  const isJewelry = productData.product_type === "imitation_jewelry";
+
   return (
     <div className="max-w-4xl mx-auto p-6">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-semibold">Add Product</h2>
-        <Button
-          variant="outline"
-          onClick={() => navigate("/dashboard")}
-          className="flex items-center gap-2 border-[#7a2828] text-[#7a2828] hover:bg-[#7a2828] hover:text-white"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back
+        <Button variant="outline" onClick={() => navigate("/dashboard")}>
+          <ArrowLeft className="h-4 w-4 mr-2" /> Back
         </Button>
       </div>
 
-      {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-          {error}
-        </div>
-      )}
-
-      {success && (
-        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
-          Product added successfully!
-        </div>
-      )}
+      {error && <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">{error}</div>}
+      {success && <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">Product added successfully!</div>}
 
       <form className="space-y-6" onSubmit={handleSubmit}>
         <div className="grid grid-cols-2 gap-6">
           <div>
             <label className="block text-sm font-medium mb-1">Product Name *</label>
-            <Input
-              name="name"
-              value={productData.name}
-              onChange={handleChange}
-              placeholder="Enter product name"
-              className="bg-gray-50"
-              required
-            />
+            <Input name="name" value={productData.name} onChange={handleChange} required />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">BIS Hallmark ID *</label>
-            <Input
-              name="bis_hallmark"
-              value={productData.bis_hallmark}
-              onChange={handleChange}
-              placeholder="Enter BIS hallmark ID"
-              className="bg-gray-50"
-              required
-            />
+            <label className="block text-sm font-medium mb-1">Product Type *</label>
+            <Select
+              value={productData.product_type}
+              onValueChange={(val) => setProductData((prev) => ({ ...prev, product_type: val }))}
+            >
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="clothing">Clothing</SelectItem>
+                <SelectItem value="imitation_jewelry">Imitation Jewelry</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
 
@@ -376,67 +282,28 @@ const AddProductForm = () => {
           <div>
             <label className="block text-sm font-medium mb-1">Category *</label>
             <Select
-              onValueChange={(val) => setProductData((prev) => ({ ...prev, category: val }))}
               value={productData.category}
-              required
+              onValueChange={(val) => setProductData((prev) => ({ ...prev, category: val }))}
             >
-              <SelectTrigger className="bg-gray-50">
-                <SelectValue placeholder="Select category" />
-              </SelectTrigger>
-              <SelectContent className="bg-white">
-                {categories.length > 0 ? (
-                  categories.map((category) => (
-                    <SelectItem key={category.id} value={category.id.toString()}>
-                      {category.name}
-                    </SelectItem>
-                  ))
-                ) : (
-                  <SelectItem value="0">No categories available</SelectItem>
-                )}
+              <SelectTrigger><SelectValue placeholder="Select category" /></SelectTrigger>
+              <SelectContent>
+                {categories.map((c) => (
+                  <SelectItem key={c.id} value={c.id.toString()}>{c.name}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Gold Color</label>
-            <Input
-              name="gold_color"
-              value={productData.gold_color}
-              onChange={handleChange}
-              placeholder="e.g., Yellow"
-              className="bg-gray-50"
-            />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-6">
-          <div>
-            <label className="block text-sm font-medium mb-1">Size *</label>
-            <Input
-              name="size"
-              value={productData.size}
-              onChange={handleChange}
-              placeholder="e.g., Small, Medium, 7"
-              className="bg-gray-50"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">Occasion *</label>
+            <label className="block text-sm font-medium mb-1">Gender</label>
             <Select
-              onValueChange={(val) => setProductData((prev) => ({ ...prev, occasion: val }))}
-              value={productData.occasion}
-              required
+              value={productData.gender}
+              onValueChange={(val) => setProductData((prev) => ({ ...prev, gender: val }))}
             >
-              <SelectTrigger className="bg-gray-50">
-                <SelectValue placeholder="Select occasion" />
-              </SelectTrigger>
-              <SelectContent className="bg-white">
-                <SelectItem value="Wedding">Wedding</SelectItem>
-                <SelectItem value="Anniversary">Anniversary</SelectItem>
-                <SelectItem value="Birthday">Birthday</SelectItem>
-                <SelectItem value="Festival">Festival</SelectItem>
-                <SelectItem value="Casual">Casual</SelectItem>
-                <SelectItem value="Other">Other</SelectItem>
+              <SelectTrigger><SelectValue placeholder="Select gender" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Male">Male</SelectItem>
+                <SelectItem value="Female">Female</SelectItem>
+                <SelectItem value="Unisex">Unisex</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -444,124 +311,101 @@ const AddProductForm = () => {
 
         <div className="grid grid-cols-3 gap-6">
           <div>
-            <label className="block text-sm font-medium mb-1">Gender *</label>
+            <label className="block text-sm font-medium mb-1">Fixed Price (₹) *</label>
+            <Input name="fixed_price" type="number" min="1" step="0.01" value={productData.fixed_price} onChange={handleChange} required />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">Stock *</label>
+            <Input name="stock" type="number" min="0" value={productData.stock} onChange={handleChange} required />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">Tax *</label>
             <Select
-              onValueChange={(val) => setProductData((prev) => ({ ...prev, gender: val }))}
-              value={productData.gender}
-              required
+              value={productData.tax}
+              onValueChange={(val) => setProductData((prev) => ({ ...prev, tax: val }))}
             >
-              <SelectTrigger className="bg-gray-50">
-                <SelectValue placeholder="Select gender" />
-              </SelectTrigger>
-              <SelectContent className="bg-white">
-                <SelectItem value="Male">Male</SelectItem>
-                <SelectItem value="Female">Female</SelectItem>
-                <SelectItem value="Unisex">Unisex</SelectItem>
+              <SelectTrigger><SelectValue placeholder="Select tax" /></SelectTrigger>
+              <SelectContent>
+                {taxes.map((t) => (
+                  <SelectItem key={t.id} value={t.id.toString()}>{t.name} ({t.percentage}%)</SelectItem>
+                ))}
               </SelectContent>
             </Select>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-3 gap-6">
+          <div>
+            <label className="block text-sm font-medium mb-1">Size</label>
+            <Input name="size" value={productData.size} onChange={handleChange} placeholder="S, M, L, 32..." />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">Color</label>
+            <Input name="color" value={productData.color} onChange={handleChange} />
           </div>
           <div>
             <label className="block text-sm font-medium mb-1">Discount (%)</label>
-            <Input
-              name="discount"
-              type="number"
-              value={productData.discount}
-              onChange={handleChange}
-              placeholder="e.g., 10"
-              className="bg-gray-50"
-              min="0"
-              max="100"
-              step="0.01"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">Availability</label>
-            <Select
-              onValueChange={(val) => setProductData((prev) => ({ ...prev, available: val === "true" }))}
-              value={productData.available ? "true" : "false"}
-            >
-              <SelectTrigger className="bg-gray-50">
-                <SelectValue placeholder="Select availability" />
-              </SelectTrigger>
-              <SelectContent className="bg-white">
-                <SelectItem value="true">In Stock</SelectItem>
-                <SelectItem value="false">Out of Stock</SelectItem>
-              </SelectContent>
-            </Select>
+            <Input name="discount" type="number" min="0" max="100" value={productData.discount} onChange={handleChange} />
           </div>
         </div>
+
+        {isClothing && (
+          <div>
+            <label className="block text-sm font-medium mb-1">Fabric</label>
+            <Input name="fabric" value={productData.fabric} onChange={handleChange} placeholder="Cotton, Silk..." />
+          </div>
+        )}
+
+        {isJewelry && (
+          <div className="grid grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium mb-1">Material</label>
+              <Input name="material" value={productData.material} onChange={handleChange} placeholder="Alloy, Brass..." />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Occasion</label>
+              <Input name="occasion" value={productData.occasion} onChange={handleChange} />
+            </div>
+          </div>
+        )}
 
         <div>
           <label className="block text-sm font-medium mb-1">Description</label>
-          <Textarea
-            name="description"
-            value={productData.description}
-            onChange={handleChange}
-            placeholder="Enter product description"
-            className="bg-gray-50 min-h-[100px]"
-          />
+          <Textarea name="description" value={productData.description} onChange={handleChange} />
         </div>
 
-        <div className="mt-6">
+        {/* Image upload section - keep your existing preview/crop UI */}
+        <div>
           <h3 className="text-lg font-semibold mb-3">Product Images</h3>
-          <div className="flex flex-wrap gap-4 mb-4">
+          <div className="flex flex-wrap gap-4">
             {imagePreviews.map((preview, index) => (
-              <div key={index} className="relative group">
-                <img
-                  src={preview || "/placeholder.svg"}
-                  alt={`Preview ${index + 1}`}
-                  className="w-24 h-24 object-cover border rounded-md"
-                />
-                <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
-                  <button
-                    type="button"
-                    onClick={() => editImage(index)}
-                    className="bg-white text-gray-800 rounded-full p-1 mx-1"
-                  >
-                    <Crop size={16} />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => removeImage(index)}
-                    className="bg-white text-red-500 rounded-full p-1 mx-1"
-                  >
-                    <X size={16} />
-                  </button>
-                </div>
+              <div key={index} className="relative">
+                <img src={preview} alt="" className="w-24 h-24 object-cover border rounded-md" />
+                <button type="button" onClick={() => removeImage(index)} className="absolute top-1 right-1 bg-white rounded-full p-1">
+                  <X size={14} />
+                </button>
+                <button type="button" onClick={() => editImage(index)} className="absolute bottom-1 right-1 bg-white rounded-full p-1">
+                  <Crop size={14} />
+                </button>
               </div>
             ))}
-            <label className="flex flex-col items-center justify-center w-24 h-24 border-2 border-dashed border-gray-300 rounded-md cursor-pointer hover:bg-gray-50">
-              <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                <Upload className="w-8 h-8 text-gray-400" />
-                <p className="text-xs text-gray-500 mt-1">Add Image</p>
-              </div>
-              <input
-                type="file"
-                className="hidden"
-                accept="image/*"
-                onChange={handleImageSelect}
-                multiple
-              />
+            <label className="flex flex-col items-center justify-center w-24 h-24 border-2 border-dashed rounded-md cursor-pointer">
+              <Upload className="w-6 h-6" />
+              <input type="file" className="hidden" accept="image/*" multiple onChange={handleImageSelect} />
             </label>
           </div>
         </div>
 
-        <Button
-          type="submit"
-          className="w-full bg-[#8c2a2a] hover:bg-[#7a2424] text-white"
-          disabled={isSubmitting || pendingImages.length > 0}
-        >
+        <Button type="submit" className="w-full bg-[#8c2a2a] hover:bg-[#7a2424] text-white" disabled={isSubmitting}>
           {isSubmitting ? "Adding Product..." : "Add Product"}
         </Button>
       </form>
 
       <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-        <DialogContent className="sm:max-w-[600px] h-[80vh] flex flex-col bg-white z-[1000]">
-          <DialogHeader>
-            <DialogTitle>Edit Image</DialogTitle>
-          </DialogHeader>
-          <div className="relative flex-grow my-4" style={{ height: "400px", width: "100%" }}>
-            {currentImage ? (
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader><DialogTitle>Crop Image</DialogTitle></DialogHeader>
+          <div className="relative h-[400px]">
+            {currentImage && (
               <Cropper
                 image={currentImage.url}
                 crop={crop}
@@ -569,36 +413,15 @@ const AddProductForm = () => {
                 aspect={1}
                 onCropChange={setCrop}
                 onCropComplete={onCropComplete}
-                onZoomChange={(value) => {
-                  console.log("Zoom value:", value);
-                  setZoom(value);
-                }}
-                onMediaLoaded={() => console.log("Cropper image loaded")}
-                onError={(e) => console.error("Cropper error:", e)}
+                onZoomChange={setZoom}
               />
-            ) : (
-              <p className="text-red-500">No image selected for cropping</p>
             )}
           </div>
-          <div className="flex items-center gap-2 my-4">
-            <ZoomOut className="text-gray-500" />
-            <Slider
-              value={[zoom]}
-              min={1}
-              max={3}
-              step={0.1}
-              onValueChange={(value) => {
-                console.log("Slider zoom value:", value[0]);
-                setZoom(value[0]);
-              }}
-              className="flex-grow"
-            />
-            <ZoomIn className="text-gray-500" />
+          <div className="flex items-center gap-2">
+            <ZoomOut /><Slider value={[zoom]} min={1} max={3} step={0.1} onValueChange={(v) => setZoom(v[0])} /><ZoomIn />
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={cancelImageEdit}>
-              Cancel
-            </Button>
+            <Button variant="outline" onClick={cancelImageEdit}>Cancel</Button>
             <Button onClick={saveCroppedImage}>Save</Button>
           </DialogFooter>
         </DialogContent>

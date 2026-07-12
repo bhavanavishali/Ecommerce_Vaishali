@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge"
 import { useWishlist } from "@/Context/WishlistContext"
 import { useNavigate } from "react-router-dom"
 import { useCart } from "@/Context/CartContext"
-import { Heart, ShoppingCart, Trash2, Package, Weight } from "lucide-react"
+import { Heart, ShoppingCart, Trash2, Package, Tag } from "lucide-react"
 import Swal from "sweetalert2"
 
 const showToast = (message, type = "success") => {
@@ -103,21 +103,23 @@ export default function Wishlist() {
   const [quantity] = useState(1)
 
   const BASE_URL = import.meta.env.VITE_BASE_URL
+  const formatPrice = (value) => `₹${Number(value || 0).toLocaleString("en-IN")}`
 
   useEffect(() => {
     fetchWishlist()
   }, [isRemove])
 
-  const handleAddToCart = async (variantId, quantity, event) => {
+  const handleAddToCart = async (item, quantity, event) => {
     event.preventDefault()
     event.stopPropagation()
-    console.log("#################",wishlist)
-    setProcessingItems((prev) => new Set(prev).add(variantId))
+    const key = item.id
+    setProcessingItems((prev) => new Set(prev).add(key))
 
     try {
-      await addToCart(variantId, quantity)
+      const productId = item.product?.id || item.variant?.product?.id
+      await addToCart({ productId }, quantity)
       showToast("Item added to cart successfully!", "success")
-      await removeFromWishlist(variantId)
+      await removeFromWishlist(item.id)
       showToast("Item moved from wishlist to cart!", "success")
       setIsRemove(!isRemove)
     } catch (error) {
@@ -126,7 +128,7 @@ export default function Wishlist() {
     } finally {
       setProcessingItems((prev) => {
         const newSet = new Set(prev)
-        newSet.delete(variantId)
+        newSet.delete(key)
         return newSet
       })
     }
@@ -238,14 +240,16 @@ export default function Wishlist() {
 
                       <div className="flex items-center gap-4 mb-4">
                         <div className="flex items-center gap-2 text-sm text-gray-500">
-                          <Weight className="w-4 h-4" />
-                          <span>{item.variant.gross_weight}g</span>
+                          <Tag className="w-4 h-4" />
+                          <span>{item.product.product_type === "clothing" ? "Clothing" : "Imitation Jewelry"}</span>
                         </div>
+                        {item.product.size && <div className="text-sm text-gray-500">Size: {item.product.size}</div>}
+                        {item.product.color && <div className="text-sm text-gray-500">Color: {item.product.color}</div>}
                       </div>
 
                       <div className="flex items-center justify-between mb-6">
                         <div className="text-2xl font-bold text-green-600">
-                          ₹{item.variant.total_price.toLocaleString()}
+                          {formatPrice(item.variant.total_price)}
                         </div>
                       </div>
                     </div>
@@ -253,12 +257,12 @@ export default function Wishlist() {
                     <div className="flex flex-col sm:flex-row gap-3">
                       {item.product.available  && item.product.is_active  && item.product.category_IsActive && item.variant.stock > 0 ? (
                         <Button
-                          onClick={(e) => handleAddToCart(item.variant.id, quantity, e)}
-                          disabled={loading || processingItems.has(item.variant.id)}
+                          onClick={(e) => handleAddToCart(item, quantity, e)}
+                          disabled={loading || processingItems.has(item.id)}
                           className="flex-1 bg-gradient-to-r from-rose-900 to-red-800 hover:from-rose-600 hover:to-red-700 text-white font-medium py-3 rounded-xl transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           <ShoppingCart className="w-4 h-4 mr-2" />
-                          {processingItems.has(item.variant.id) ? "Adding..." : "Add to Cart"}
+                          {processingItems.has(item.id) ? "Adding..." : "Add to Cart"}
                         </Button>
                       ) : (
                         <Button

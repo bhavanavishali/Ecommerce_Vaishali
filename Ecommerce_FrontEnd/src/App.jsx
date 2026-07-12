@@ -38,6 +38,7 @@ import ProtectedRoute from './protected_route/protected_user';
 import AdminProtectedRoute from './protected_route/protected_admin';
 import BannerManagement from './Features/Banner/Banner';
 import Report from './Features/SalesReport/Report';
+import CategoryBasedProducts from './Features/Products/CategoryBasedProducts';
 
 function App() {
 
@@ -51,13 +52,13 @@ function App() {
       
       <Route path='/'element={<Layout/>}>
       <Route path="*" element={<NotFound />} />
-
-      <Route index element={<Landingpage/>}/>
+      <Route index element={<UserHome />} />
+      <Route path='/user/home' element={<UserHome />} />
+      <Route path='/category/:categoryName' element={<CategoryBasedProducts />} />
+      <Route path='/productdetails/:id' element={<ProductDetails />} />
       
         {/* user protected sessions */}
 
-      <Route path='/user/home' element={<ProtectedRoute><UserHome/></ProtectedRoute>} />
-      <Route path='/productdetails/:id' element={<ProtectedRoute><ProductDetails/></ProtectedRoute>} />
       <Route path='/cart' element={<ProtectedRoute><Cart/></ProtectedRoute>}/>
       <Route path='/userprofile' element={<ProtectedRoute><UserProfile/></ProtectedRoute>}/>
       <Route path='/addaddress' element={<ProtectedRoute><AddAddress/></ProtectedRoute>} />

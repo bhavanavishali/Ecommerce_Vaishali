@@ -21,7 +21,6 @@ import {
   Truck,
   Receipt,
   ShoppingBag,
-  Weight,
 } from "lucide-react"
 import Swal from "sweetalert2"
 
@@ -34,6 +33,7 @@ export default function ShoppingCartComponent() {
 
   const BASE_URL = import.meta.env.VITE_BASE_URL
   const MAX_QUANTITY_PER_PRODUCT = 10 
+  const formatPrice = (value) => `₹${Number(value || 0).toLocaleString("en-IN")}`
 
   useEffect(() => {
     if (!cart) {
@@ -272,17 +272,26 @@ export default function ShoppingCartComponent() {
 
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
                             <div className="flex items-center gap-2 text-sm text-gray-600">
-                              <Weight className="w-4 h-4" />
-                              <span>Weight: {item.variant.gross_weight}g</span>
+                              <Tag className="w-4 h-4" />
+                              <span>Price: {formatPrice(item.variant.total_price)}</span>
                             </div>
                             <div className="flex items-center gap-2 text-sm text-gray-600">
-                              <Tag className="w-4 h-4" />
-                              <span>Gold: {item.product.gold_color}</span>
+                              <span>Type: {item.product.product_type === "clothing" ? "Clothing" : "Imitation Jewelry"}</span>
                             </div>
                             <div className="flex items-center gap-2 text-sm text-gray-600 sm:col-span-2">
                               <Package className="w-4 h-4" />
                               <span>Category: {item.product.category || "N/A"}</span>
                             </div>
+                            {item.product.size && (
+                              <div className="flex items-center gap-2 text-sm text-gray-600">
+                                <span>Size: {item.product.size}</span>
+                              </div>
+                            )}
+                            {item.product.color && (
+                              <div className="flex items-center gap-2 text-sm text-gray-600">
+                                <span>Color: {item.product.color}</span>
+                              </div>
+                            )}
                           </div>
 
                           {/* Quantity Control */}
@@ -321,17 +330,17 @@ export default function ShoppingCartComponent() {
                             <div className="space-y-2 text-sm">
                               <div className="flex justify-between">
                                 <span className="text-gray-600">Subtotal:</span>
-                                <span className="font-medium">₹{item.variant.base_price.toLocaleString("en-IN")}</span>
+                                <span className="font-medium">{formatPrice(item.variant.base_price)}</span>
                               </div>
                               <div className="flex justify-between">
                                 <span className="text-gray-600">Discount:</span>
                                 <span className="font-medium text-green-600">
-                                  -₹{item.variant.discount_amount.toLocaleString("en-IN")}
+                                  -{formatPrice(item.variant.discount_amount)}
                                 </span>
                               </div>
                               <div className="flex justify-between">
                                 <span className="text-gray-600">Tax:</span>
-                                <span className="font-medium">₹{item.variant.tax_amount.toLocaleString("en-IN")}</span>
+                                <span className="font-medium">{formatPrice(item.variant.tax_amount)}</span>
                               </div>
                             </div>
                           </div>
@@ -340,7 +349,7 @@ export default function ShoppingCartComponent() {
                         {/* Price and Remove Button */}
                         <div className="flex justify-between items-center">
                           <div className="text-2xl font-bold text-green-600">
-                            ₹{item.variant.total_price.toLocaleString("en-IN")}
+                            {formatPrice(item.variant.total_price)}
                           </div>
                           <Button
                             variant="outline"
