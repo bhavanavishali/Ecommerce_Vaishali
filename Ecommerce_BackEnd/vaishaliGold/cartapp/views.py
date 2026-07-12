@@ -57,66 +57,66 @@ class CartDetailView(APIView):
         serializer = CartSerializer(cart)
         return Response(serializer.data)
 
-
-
 class AddToCartView(APIView):
     permission_classes = [IsAuthenticated]
-    
+
     def post(self, request):
-        cart, created = Cart.objects.get_or_create(user=request.user)
+        cart, _ = Cart.objects.get_or_create(user=request.user)
+
         variant_id = request.data.get('variant_id')
-        if not variant_id or not str(variant_id).isdigit():
-            return Response({'error': 'Valid variant_id is required'}, 
-                          status=status.HTTP_400_BAD_REQUEST)
-        
+        product_id = request.data.get('product_id')
+
         try:
             quantity = int(request.data.get('quantity', 1))
             if quantity <= 0:
-                return Response({'error': 'Quantity must be positive'}, 
-                              status=status.HTTP_400_BAD_REQUEST)
-        except ValueError:
-            return Response({'error': 'Invalid quantity'}, 
-                          status=status.HTTP_400_BAD_REQUEST)
-        
-        
-        try:
-            variant = ProductVariant.objects.get(id=variant_id, available=True, is_active=True)
-            if not variant.product.is_active:
-                return Response({'error': 'Product is not active'}, 
-                              status=status.HTTP_400_BAD_REQUEST)
+                return Response({'error': 'Quantity must be positive'}, status=status.HTTP_400_BAD_REQUEST)
+        except (TypeError, ValueError):
+            return Response({'error': 'Invalid quantity'}, status=status.HTTP_400_BAD_REQUEST)
 
-            if not variant.product.category.is_active:
-                return Response({'error': 'Product category is not active'}, 
-                              status=status.HTTP_400_BAD_REQUEST)
-        except ProductVariant.DoesNotExist:
-            return Response({'error': 'Variant not found or not available'}, 
-                          status=status.HTTP_404_NOT_FOUND)
-        except AttributeError:
-            return Response({'error': 'Product or category not properly configured'}, 
-                          status=status.HTTP_400_BAD_REQUEST)
-        
-       
+        variant = None
+
+        if product_id and str(product_id).isdigit():
+            product = get_object_or_404(Product, id=product_id, is_active=True, available=True)
+            if not product.category or not product.category.is_active:
+                return Response({'error': 'Product category is not active'}, status=status.HTTP_400_BAD_REQUEST)
+
+            variant = product.variants.filter(is_default=True, is_active=True, available=True).first()
+            if not variant:
+                return Response({'error': 'Default variant not found for product'}, status=status.HTTP_404_NOT_FOUND)
+
+        elif variant_id and str(variant_id).isdigit():
+            try:
+                variant = ProductVariant.objects.get(id=variant_id, available=True, is_active=True)
+                if not variant.product.is_active:
+                    return Response({'error': 'Product is not active'}, status=status.HTTP_400_BAD_REQUEST)
+                if not variant.product.category.is_active:
+                    return Response({'error': 'Product category is not active'}, status=status.HTTP_400_BAD_REQUEST)
+            except ProductVariant.DoesNotExist:
+                return Response({'error': 'Variant not found or not available'}, status=status.HTTP_404_NOT_FOUND)
+        else:
+            return Response(
+                {'error': 'Valid product_id or variant_id is required'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
         if variant.stock == 0:
-            return Response({'error': 'This item is out of stock'}, 
-                          status=status.HTTP_400_BAD_REQUEST)
-        
+            return Response({'error': 'This item is out of stock'}, status=status.HTTP_400_BAD_REQUEST)
+
         cart_item, created = CartItem.objects.get_or_create(
             cart=cart,
             variant=variant,
             defaults={'quantity': quantity}
         )
-        
+
         if not created:
             cart_item.quantity += quantity
-        
+
         if cart_item.quantity > variant.stock:
-            return Response({'error': 'Insufficient stock'}, 
-                          status=status.HTTP_400_BAD_REQUEST)
-        
-        cart_item.save()  # Triggers cart.update_totals()
+            return Response({'error': 'Insufficient stock'}, status=status.HTTP_400_BAD_REQUEST)
+
+        cart_item.save()
         serializer = CartSerializer(cart)
-        return Response(serializer.data)
-    
+        return Response(serializer.data)  
 
 class UpdateCartItemView(APIView):
     permission_classes = [IsAuthenticated]
@@ -560,11 +560,14 @@ class AddToWishlistView(APIView):
     def post(self, request):
         wishlist, _ = Wishlist.objects.get_or_create(user=request.user)
         variant_id = request.data.get('variant')
-        
-        if not variant_id or not str(variant_id).isdigit():
-            return Response({'error': 'Valid variant_id is required'}, 
-                           status=status.HTTP_400_BAD_REQUEST)
-
+        product_id = request.data.get('product')
+        if product_id and str(product_id).isdigit():
+            product = get_object_or_404(Product, id=product_id, is_active=True)
+            variant = product.variants.filter(is_default=True, is_active=True, available=True).first()
+        elif variant_id and str(variant_id).isdigit():
+            variant = get_object_or_404(ProductVariant, id=variant_id, available=True, is_active=True)
+        else:
+            return Response({'error': 'Valid product or variant is required'}, status=status.HTTP_400_BAD_REQUEST)
         if wishlist.items.count() >= 50: 
             return Response({'error': 'Wishlist cannot exceed 50 items'}, 
                            status=status.HTTP_400_BAD_REQUEST)
