@@ -183,24 +183,24 @@ const ManageAddresses = () => {
       <div className="container mx-auto px-4">
         {/* Breadcrumb */}
         <div className="flex items-center text-sm text-gray-500 mb-6">
-          <span className="hover:text-[#7a2828] cursor-pointer transition-colors">Home</span>
+          <span className="hover:text-[#023d12]  cursor-pointer transition-colors">Home</span>
           <ChevronRight className="h-4 w-4 mx-2" />
-          <span className="hover:text-[#7a2828] cursor-pointer transition-colors">Account</span>
+          <span className="hover:text-[#023d12]  cursor-pointer transition-colors">Account</span>
           <ChevronRight className="h-4 w-4 mx-2" />
-          <span className="text-[#7a2828] font-medium">Addresses</span>
+          <span className="text-[#023d12]  font-medium">Addresses</span>
         </div>
 
         <Card className="max-w-3xl mx-auto border-[#e6d2d2] shadow-md overflow-hidden">
-          <CardHeader className="flex flex-row items-center justify-between bg-gradient-to-r from-[#7a2828]/5 to-transparent">
+          <CardHeader className="flex flex-row items-center justify-between bg-gradient-to-r from-[#023d12] /5 to-transparent">
             <div>
               <CardTitle className="text-2xl font-semibold text-gray-800 flex items-center">
-                <MapPin className="mr-2 h-5 w-5 text-[#7a2828]" />
+                <MapPin className="mr-2 h-5 w-5 text-[#023d12] " />
                 Manage Addresses
               </CardTitle>
               <CardDescription className="text-gray-500 mt-1">Add or edit your delivery addresses</CardDescription>
             </div>
             <Button
-              className="bg-[#7a2828] hover:bg-[#5a1d1d] text-white transition-all duration-300 shadow-sm hover:shadow-md"
+              className="bg-[#023d12]  hover:bg-[#5a1d1d] text-white transition-all duration-300 shadow-sm hover:shadow-md"
               type="button"
               onClick={() => navigate("/addaddress")}
             >
@@ -227,14 +227,14 @@ const ManageAddresses = () => {
 
             {loading ? (
               <div className="flex justify-center items-center py-12">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#7a2828]"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#023d12] "></div>
               </div>
             ) : addresses.length === 0 ? (
               <div className="text-center py-12 bg-gray-50 rounded-lg border border-dashed border-gray-300">
                 <MapPin className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-gray-700 mb-2">No addresses found</h3>
                 <p className="text-gray-500 mb-4">Add a new address to get started</p>
-                <Button className="bg-[#7a2828] hover:bg-[#5a1d1d] text-white" onClick={() => navigate("/addaddress")}>
+                <Button className="bg-[#023d12]  hover:bg-[#5a1d1d] text-white" onClick={() => navigate("/addaddress")}>
                   <Plus className="mr-2 h-4 w-4" /> Add New Address
                 </Button>
               </div>
@@ -245,22 +245,22 @@ const ManageAddresses = () => {
                     key={address.id}
                     className={`border rounded-lg overflow-hidden transition-all duration-300 ${
                       address.isDefault
-                        ? "border-[#7a2828] bg-[#7a2828]/5 shadow-sm"
-                        : "border-gray-200 hover:border-[#7a2828]/30 hover:shadow-md"
+                        ? "border-[#023d12]  bg-[#023d12] /5 shadow-sm"
+                        : "border-gray-200 hover:border-[#023d12] /30 hover:shadow-md"
                     }`}
                   >
                     {editingAddressId === address.id ? (
                       // Edit Form
                       <div className="p-5 space-y-4">
                         <div className="flex justify-between items-center border-b border-gray-100 pb-3">
-                          <h3 className="font-medium text-lg text-[#7a2828] flex items-center">
+                          <h3 className="font-medium text-lg text-[#023d12]  flex items-center">
                             <Edit className="h-4 w-4 mr-2" />
                             Edit Address
                           </h3>
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="h-8 w-8 p-0 rounded-full hover:bg-[#7a2828]/10 hover:text-[#7a2828] transition-colors"
+                            className="h-8 w-8 p-0 rounded-full hover:bg-[#023d12] /10 hover:text-[#023d12]  transition-colors"
                             onClick={cancelEditing}
                           >
                             <X className="h-4 w-4" />
@@ -277,7 +277,7 @@ const ManageAddresses = () => {
                               value={editForm.name}
                               onChange={handleFormChange}
                               placeholder="Enter full name"
-                              className="border-gray-300 focus:border-[#7a2828] focus:ring-[#7a2828]"
+                              className="border-gray-300 focus:border-[#023d12]  focus:ring-[#023d12] "
                             />
                           </div>
                           <div className="space-y-2">
@@ -290,7 +290,7 @@ const ManageAddresses = () => {
                               value={editForm.mobile_number}
                               onChange={handleFormChange}
                               placeholder="Enter mobile number"
-                              className="border-gray-300 focus:border-[#7a2828] focus:ring-[#7a2828]"
+                              className="border-gray-300 focus:border-[#023d12]  focus:ring-[#023d12] "
                             />
                           </div>
                           <div className="space-y-2">
@@ -303,7 +303,7 @@ const ManageAddresses = () => {
                               value={editForm.house_no}
                               onChange={handleFormChange}
                               placeholder="Enter house number or building name"
-                              className="border-gray-300 focus:border-[#7a2828] focus:ring-[#7a2828]"
+                              className="border-gray-300 focus:border-[#023d12]  focus:ring-[#023d12] "
                             />
                           </div>
                           <div className="space-y-2">
@@ -316,7 +316,7 @@ const ManageAddresses = () => {
                               value={editForm.landmark}
                               onChange={handleFormChange}
                               placeholder="Enter nearby landmark"
-                              className="border-gray-300 focus:border-[#7a2828] focus:ring-[#7a2828]"
+                              className="border-gray-300 focus:border-[#023d12]  focus:ring-[#023d12] "
                             />
                           </div>
                           <div className="space-y-2">
@@ -329,7 +329,7 @@ const ManageAddresses = () => {
                               value={editForm.city}
                               onChange={handleFormChange}
                               placeholder="Enter city"
-                              className="border-gray-300 focus:border-[#7a2828] focus:ring-[#7a2828]"
+                              className="border-gray-300 focus:border-[#023d12]  focus:ring-[#023d12] "
                             />
                           </div>
                           <div className="space-y-2">
@@ -342,7 +342,7 @@ const ManageAddresses = () => {
                               value={editForm.state}
                               onChange={handleFormChange}
                               placeholder="Enter state"
-                              className="border-gray-300 focus:border-[#7a2828] focus:ring-[#7a2828]"
+                              className="border-gray-300 focus:border-[#023d12]  focus:ring-[#023d12] "
                             />
                           </div>
                           <div className="space-y-2">
@@ -355,7 +355,7 @@ const ManageAddresses = () => {
                               value={editForm.pin_code}
                               onChange={handleFormChange}
                               placeholder="Enter pin code"
-                              className="border-gray-300 focus:border-[#7a2828] focus:ring-[#7a2828]"
+                              className="border-gray-300 focus:border-[#023d12]  focus:ring-[#023d12] "
                             />
                           </div>
                           <div className="space-y-2">
@@ -365,7 +365,7 @@ const ManageAddresses = () => {
                             <Select value={editForm.type} onValueChange={handleTypeChange}>
                               <SelectTrigger
                                 id="type"
-                                className="border-gray-300 focus:border-[#7a2828] focus:ring-[#7a2828]"
+                                className="border-gray-300 focus:border-[#023d12]  focus:ring-[#023d12] "
                               >
                                 <SelectValue placeholder="Select type" />
                               </SelectTrigger>
@@ -379,7 +379,7 @@ const ManageAddresses = () => {
                         </div>
                         <div className="flex flex-wrap gap-3 pt-3 border-t border-gray-100 mt-4">
                           <Button
-                            className="bg-[#7a2828] hover:bg-[#5a1d1d] text-white transition-all duration-300"
+                            className="bg-[#023d12]  hover:bg-[#5a1d1d] text-white transition-all duration-300"
                             onClick={() => updateAddress(address.id)}
                             disabled={!validateForm() || actionLoading}
                           >
@@ -449,8 +449,8 @@ const ManageAddresses = () => {
                               <div
                                 className={`p-2 rounded-full ${
                                   address.isDefault
-                                    ? "bg-[#7a2828]/10 text-[#7a2828]"
-                                    : "bg-gray-100 text-gray-600 group-hover:bg-[#7a2828]/5 group-hover:text-[#7a2828] transition-colors"
+                                    ? "bg-[#023d12] /10 text-[#023d12] "
+                                    : "bg-gray-100 text-gray-600 group-hover:bg-[#023d12] /5 group-hover:text-[#023d12]  transition-colors"
                                 }`}
                               >
                                 {address.type === "Home" ? (
@@ -466,7 +466,7 @@ const ManageAddresses = () => {
                                 {address.isDefault && (
                                   <Badge
                                     variant="outline"
-                                    className="mt-1 text-xs bg-[#7a2828]/5 text-[#7a2828] border-[#7a2828]/20"
+                                    className="mt-1 text-xs bg-[#023d12] /5 text-[#023d12]  border-[#023d12] /20"
                                   >
                                     Default Address
                                   </Badge>
@@ -480,7 +480,7 @@ const ManageAddresses = () => {
                                     <Button
                                       variant="ghost"
                                       size="sm"
-                                      className="h-8 w-8 p-0 rounded-full opacity-70 hover:opacity-100 hover:bg-[#7a2828]/10 hover:text-[#7a2828] transition-all"
+                                      className="h-8 w-8 p-0 rounded-full opacity-70 hover:opacity-100 hover:bg-[#023d12] /10 hover:text-[#023d12]  transition-all"
                                       onClick={() => startEditing(address)}
                                     >
                                       <Edit className="h-4 w-4" />
@@ -527,12 +527,12 @@ const ManageAddresses = () => {
                               <Button
                                 variant="outline"
                                 size="sm"
-                                className="text-xs h-8 border-[#7a2828]/30 text-[#7a2828] hover:bg-[#7a2828]/5 hover:border-[#7a2828] transition-all"
+                                className="text-xs h-8 border-[#023d12] /30 text-[#023d12]  hover:bg-[#023d12] /5 hover:border-[#023d12]  transition-all"
                                 onClick={() => setDefaultAddress(address.id)}
                                 disabled={actionLoading}
                               >
                                 {actionLoading ? (
-                                  <div className="w-3 h-3 border-2 border-[#7a2828] border-t-transparent rounded-full animate-spin mr-1"></div>
+                                  <div className="w-3 h-3 border-2 border-[#023d12]  border-t-transparent rounded-full animate-spin mr-1"></div>
                                 ) : (
                                   <Check className="h-3 w-3 mr-1" />
                                 )}
@@ -551,7 +551,7 @@ const ManageAddresses = () => {
 
           <CardFooter className="bg-gray-50 border-t border-gray-200 px-6 py-4">
             <div className="text-sm text-gray-500 flex items-center">
-              <AlertCircle className="h-4 w-4 mr-2 text-[#7a2828]" />
+              <AlertCircle className="h-4 w-4 mr-2 text-[#023d12] " />
               Your default address will be used for all deliveries unless specified otherwise.
             </div>
           </CardFooter>

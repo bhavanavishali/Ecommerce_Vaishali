@@ -159,14 +159,14 @@ const SalesReport = () => {
           orderId: row.orderId,
           date: row.date,
           user: row.user,
-          orderMrp: `₹ ${Number(row.orderMrp).toFixed(2)}`,
-          itemDiscount: `₹ ${Number(row.itemDiscount).toFixed(2)}`,
-          itemTax: `₹ ${Number(row.itemTax).toFixed(2)}`,
-          orderSubtotal: `₹ ${Number(row.orderSubtotal).toFixed(2)}`,
-          couponDiscount: `₹ ${Number(row.couponDiscount).toFixed(2)}`,
-          shippingCharge: `₹ ${Number(row.shippingCharge).toFixed(2)}`,
-          refund_amount: `₹ ${Number(row.refund_amount).toFixed(2)}`,
-          totalAmount: `₹ ${Number(row.totalAmount).toFixed(2)}`,
+          orderMrp: `£ ${Number(row.orderMrp).toFixed(2)}`,
+          itemDiscount: `£ ${Number(row.itemDiscount).toFixed(2)}`,
+          itemTax: `£ ${Number(row.itemTax).toFixed(2)}`,
+          orderSubtotal: `£ ${Number(row.orderSubtotal).toFixed(2)}`,
+          couponDiscount: `£ ${Number(row.couponDiscount).toFixed(2)}`,
+          shippingCharge: `£ ${Number(row.shippingCharge).toFixed(2)}`,
+          refund_amount: `£ ${Number(row.refund_amount).toFixed(2)}`,
+          totalAmount: `£ ${Number(row.totalAmount).toFixed(2)}`,
           paymentMethod: row.paymentMethod,
         })
       })
@@ -269,7 +269,7 @@ const SalesReport = () => {
                     [
                       { text: "TOTAL REVENUE", style: "summaryLabel" },
                       {
-                        text: `₹ ${totalAmount.toLocaleString("en-IN", { minimumFractionDigits: 2 })}`,
+                        text: `£ ${totalAmount.toLocaleString("en-IN", { minimumFractionDigits: 2 })}`,
                         style: "summaryValue",
                       },
                     ],
@@ -311,35 +311,35 @@ const SalesReport = () => {
                   { text: row.date || "", style: index % 2 === 0 ? "tableCell" : "tableCellAlt" },
                   { text: row.user || "", style: index % 2 === 0 ? "tableCell" : "tableCellAlt" },
                   {
-                    text: `₹ ${Number(row.orderMrp).toFixed(2)}`,
+                    text: `£ ${Number(row.orderMrp).toFixed(2)}`,
                     style: index % 2 === 0 ? "tableCellNumber" : "tableCellNumberAlt",
                   },
                   {
-                    text: `₹ ${Number(row.itemDiscount).toFixed(2)}`,
+                    text: `£ ${Number(row.itemDiscount).toFixed(2)}`,
                     style: index % 2 === 0 ? "tableCellNumber" : "tableCellNumberAlt",
                   },
                   {
-                    text: `₹ ${Number(row.itemTax).toFixed(2)}`,
+                    text: `£ ${Number(row.itemTax).toFixed(2)}`,
                     style: index % 2 === 0 ? "tableCellNumber" : "tableCellNumberAlt",
                   },
                   {
-                    text: `₹ ${Number(row.orderSubtotal).toFixed(2)}`,
+                    text: `£ ${Number(row.orderSubtotal).toFixed(2)}`,
                     style: index % 2 === 0 ? "tableCellNumber" : "tableCellNumberAlt",
                   },
                   {
-                    text: `₹ ${Number(row.couponDiscount).toFixed(2)}`,
+                    text: `£ ${Number(row.couponDiscount).toFixed(2)}`,
                     style: index % 2 === 0 ? "tableCellNumber" : "tableCellNumberAlt",
                   },
                   {
-                    text: `₹ ${Number(row.shippingCharge).toFixed(2)}`,
+                    text: `£ ${Number(row.shippingCharge).toFixed(2)}`,
                     style: index % 2 === 0 ? "tableCellNumber" : "tableCellNumberAlt",
                   },
                   {
-                    text: `₹ ${Number(row.refund_amount).toFixed(2)}`,
+                    text: `£ ${Number(row.refund_amount).toFixed(2)}`,
                     style: index % 2 === 0 ? "tableCellNumber" : "tableCellNumberAlt",
                   },
                   {
-                    text: `₹ ${Number(row.totalAmount).toFixed(2)}`,
+                    text: `£ ${Number(row.totalAmount).toFixed(2)}`,
                     style: index % 2 === 0 ? "tableCellNumberBold" : "tableCellNumberBoldAlt",
                   },
                   { text: row.paymentMethod || "", style: index % 2 === 0 ? "tableCell" : "tableCellAlt" },
@@ -349,14 +349,14 @@ const SalesReport = () => {
                   { text: "GRAND TOTALS", style: "totalRowHeader", colSpan: 3, alignment: "center" },
                   "",
                   "",
-                  { text: `₹ ${totalOrderMrp.toFixed(2)}`, style: "totalRowValue" },
-                  { text: `₹ ${totalItemDiscount.toFixed(2)}`, style: "totalRowValue" },
-                  { text: `₹ ${totalItemTax.toFixed(2)}`, style: "totalRowValue" },
-                  { text: `₹ ${totalOrderSubtotal.toFixed(2)}`, style: "totalRowValue" },
-                  { text: `₹ ${totalCouponDiscount.toFixed(2)}`, style: "totalRowValue" },
-                  { text: `₹ ${totalShippingCharge.toFixed(2)}`, style: "totalRowValue" },
-                  { text: `₹ ${totalRefundAmount.toFixed(2)}`, style: "totalRowValue" },
-                  { text: `₹ ${totalAmount.toFixed(2)}`, style: "totalRowValueBold" },
+                  { text: `£ ${totalOrderMrp.toFixed(2)}`, style: "totalRowValue" },
+                  { text: `£ ${totalItemDiscount.toFixed(2)}`, style: "totalRowValue" },
+                  { text: `£ ${totalItemTax.toFixed(2)}`, style: "totalRowValue" },
+                  { text: `£ ${totalOrderSubtotal.toFixed(2)}`, style: "totalRowValue" },
+                  { text: `£ ${totalCouponDiscount.toFixed(2)}`, style: "totalRowValue" },
+                  { text: `£ ${totalShippingCharge.toFixed(2)}`, style: "totalRowValue" },
+                  { text: `£ ${totalRefundAmount.toFixed(2)}`, style: "totalRowValue" },
+                  { text: `£ ${totalAmount.toFixed(2)}`, style: "totalRowValueBold" },
                   { text: "", style: "totalRowValue" },
                 ],
               ],
@@ -514,7 +514,7 @@ const SalesReport = () => {
 
   return (
     <div className="bg-white rounded-xl shadow-sm p-6 max-w-7xl mx-auto">
-      <h1 className="text-2xl font-bold text-[#7a2828] mb-6">Sales Report</h1>
+      <h1 className="text-2xl font-bold text-[#023d12]  mb-6">Sales Report</h1>
 
       {error && <div className="text-red-500 mb-4">{error}</div>}
 
@@ -577,7 +577,7 @@ const SalesReport = () => {
         </Popover>
 
         <Button
-          className="bg-[#7a2828] hover:bg-[#7a2828] text-white"
+          className="bg-[#023d12]  hover:bg-[#023d12]  text-white"
           onClick={handleApplyFilter}
           disabled={loading || downloadLoading || filterType !== "custom"}
         >
@@ -591,7 +591,7 @@ const SalesReport = () => {
             <div className="flex flex-col">
               <span className="text-sm font-medium text-gray-500 mb-2">Total Sales</span>
               <span className="text-3xl font-bold">
-                ₹ {(Number(totalSales) || 0).toLocaleString("en-IN", { minimumFractionDigits: 2 })}
+                £ {(Number(totalSales) || 0).toLocaleString("en-IN", { minimumFractionDigits: 2 })}
               </span>
             </div>
           </CardContent>
@@ -602,7 +602,7 @@ const SalesReport = () => {
             <div className="flex flex-col">
               <span className="text-sm font-medium text-gray-500 mb-2">Total Discount</span>
               <span className="text-3xl font-bold">
-                ₹ {(Number(summary.totalDiscount) || 0).toLocaleString("en-IN", { minimumFractionDigits: 2 })}
+                £ {(Number(summary.totalDiscount) || 0).toLocaleString("en-IN", { minimumFractionDigits: 2 })}
               </span>
             </div>
           </CardContent>
@@ -675,28 +675,28 @@ const SalesReport = () => {
         <Table>
           <TableHeader className="bg-gray-50">
             <TableRow>
-              <TableHead className="font-medium text-[#7a2828]">Order ID</TableHead>
-              <TableHead className="font-medium text-[#7a2828]">Date</TableHead>
-              <TableHead className="font-medium text-[#7a2828]">User</TableHead>
-              <TableHead className="font-medium text-[#7a2828]">
+              <TableHead className="font-medium text-[#023d12] ">Order ID</TableHead>
+              <TableHead className="font-medium text-[#023d12] ">Date</TableHead>
+              <TableHead className="font-medium text-[#023d12] ">User</TableHead>
+              <TableHead className="font-medium text-[#023d12] ">
                 <div className="flex items-center">
                   Order MRP
                   <ArrowUpDown className="ml-2 h-4 w-4" />
                 </div>
               </TableHead>
-              <TableHead className="font-medium text-[#7a2828]">Item Discount</TableHead>
-              <TableHead className="font-medium text-[#7a2828]">Item Tax</TableHead>
-              <TableHead className="font-medium text-[#7a2828]">Order Subtotal</TableHead>
-              <TableHead className="font-medium text-[#7a2828]">Refund Amount</TableHead>
-              <TableHead className="font-medium text-[#7a2828]">Coupon Discount</TableHead>
-              <TableHead className="font-medium text-[#7a2828]">Shipping Charge</TableHead>
-              <TableHead className="font-medium text-[#7a2828]">
+              <TableHead className="font-medium text-[#023d12] ">Item Discount</TableHead>
+              <TableHead className="font-medium text-[#023d12] ">Item Tax</TableHead>
+              <TableHead className="font-medium text-[#023d12] ">Order Subtotal</TableHead>
+              <TableHead className="font-medium text-[#023d12] ">Refund Amount</TableHead>
+              <TableHead className="font-medium text-[#023d12] ">Coupon Discount</TableHead>
+              <TableHead className="font-medium text-[#023d12] ">Shipping Charge</TableHead>
+              <TableHead className="font-medium text-[#023d12] ">
                 <div className="flex items-center">
                   Total Amount
                   <ArrowUpDown className="ml-2 h-4 w-4" />
                 </div>
               </TableHead>
-              <TableHead className="font-medium text-[#7a2828]">Payment Method</TableHead>
+              <TableHead className="font-medium text-[#023d12] ">Payment Method</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -718,14 +718,14 @@ const SalesReport = () => {
                   <TableCell className="font-medium">{row.orderId}</TableCell>
                   <TableCell>{row.date}</TableCell>
                   <TableCell>{row.user}</TableCell>
-                  <TableCell>₹ {Number(row.orderMrp).toFixed(2)}</TableCell>
-                  <TableCell>₹ {Number(row.itemDiscount).toFixed(2)}</TableCell>
-                  <TableCell>₹ {Number(row.itemTax).toFixed(2)}</TableCell>
-                  <TableCell>₹ {Number(row.totalAmount).toFixed(2)}</TableCell>
-                  <TableCell>₹ {Number(row.refund_amount).toFixed(2)}</TableCell>
-                  <TableCell>₹ {Number(row.couponDiscount).toFixed(2)}</TableCell>
-                  <TableCell>₹ {Number(row.shippingCharge).toFixed(2)}</TableCell>
-                  <TableCell className="font-semibold">₹ {Number(row.orderSubtotal).toFixed(2)}</TableCell>
+                  <TableCell>£ {Number(row.orderMrp).toFixed(2)}</TableCell>
+                  <TableCell>£ {Number(row.itemDiscount).toFixed(2)}</TableCell>
+                  <TableCell>£ {Number(row.itemTax).toFixed(2)}</TableCell>
+                  <TableCell>£ {Number(row.totalAmount).toFixed(2)}</TableCell>
+                  <TableCell>£ {Number(row.refund_amount).toFixed(2)}</TableCell>
+                  <TableCell>£ {Number(row.couponDiscount).toFixed(2)}</TableCell>
+                  <TableCell>£ {Number(row.shippingCharge).toFixed(2)}</TableCell>
+                  <TableCell className="font-semibold">£ {Number(row.orderSubtotal).toFixed(2)}</TableCell>
                   <TableCell>{row.paymentMethod}</TableCell>
                 </TableRow>
               ))

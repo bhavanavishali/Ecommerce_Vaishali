@@ -70,14 +70,14 @@ const TrendingCard = ({ product, onClick }) => {
         </div>
 
         <div className="absolute top-3 right-3">
-          <span className="px-2 py-0.5 text-[10px] font-semibold text-white bg-[#832729] rounded-sm uppercase tracking-wide">
+          <span className="px-2 py-0.5 text-[10px] font-semibold text-white bg-[#023d12]  rounded-sm uppercase tracking-wide">
             {product.badge}
           </span>
         </div>
       </div>
 
       <div className="px-3 py-3 md:px-4 md:py-4">
-        <h3 className="font-serif text-sm md:text-base text-gray-900 line-clamp-2 mb-2 min-h-[2.5rem] group-hover:text-[#832729] transition-colors">
+        <h3 className="font-serif text-sm md:text-base text-gray-900 line-clamp-2 mb-2 min-h-[2.5rem] group-hover:text-[#023d12]  transition-colors">
           {product.name}
         </h3>
         <div className="flex items-baseline gap-2 flex-wrap">

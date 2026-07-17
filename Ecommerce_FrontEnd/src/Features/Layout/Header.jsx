@@ -73,8 +73,8 @@ const Header = () => {
 
   const typeButtonClass = (type) =>
     activeType === type
-      ? "text-[#832729] font-semibold"
-      : "text-gray-600 font-medium hover:text-[#832729] transition-colors";
+      ? "text-[#023d12]  font-semibold"
+      : "text-gray-600 font-medium hover:text-[#023d12]  transition-colors";
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 4);
@@ -129,20 +129,20 @@ const Header = () => {
   };
 
   const iconBtnClass =
-    "p-1 text-[#832729] hover:opacity-70 transition-opacity relative";
+    "p-1 text-[#023d12]  hover:opacity-70 transition-opacity relative";
 
   const renderTypeButtons = (className = "") => (
     <div className={`flex items-center justify-center gap-10 ${className}`}>
       <button
         type="button"
-        onClick={() => navigate("/user/home?product_type=clothing")}
+        onClick={() => navigate("/category/all?product_type=clothing")}
         className={`text-sm tracking-wide ${typeButtonClass("clothing")}`}
       >
         Clothing
       </button>
       <button
         type="button"
-        onClick={() => navigate("/user/home?product_type=imitation_jewelry")}
+        onClick={() => navigate("/category/all?product_type=imitation_jewelry")}
         className={`text-sm tracking-wide ${typeButtonClass("imitation_jewelry")}`}
       >
         Jewellery
@@ -153,9 +153,9 @@ const Header = () => {
   return (
     <>
       <header
-        className={`w-full sticky top-0 z-50 bg-white transition-shadow duration-300 ${
-          isScrolled ? "shadow-md" : "shadow-sm"
-        }`}
+      className={`w-full sticky top-0 z-50 bg-[#FAF3E0] border-b border-[#D4AF37]/30 transition-shadow duration-300 ${
+    isScrolled ? "shadow-lg" : "shadow-sm"
+  }`}
       >
         {/* Tier 1 — Logo | Clothing/Jewellery | Icons */}
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10">
@@ -168,7 +168,7 @@ const Header = () => {
             >
               <img
                 src="/logo 1.png"
-                alt="Vaishali Gold Logo"
+                alt="KeralaLooms Logo"
                 className="h-12 lg:h-14 w-auto object-contain"
               />
             </a>
@@ -182,14 +182,14 @@ const Header = () => {
 
             {/* Right icons — Tanishq-style minimal line icons */}
             <div className="flex items-center gap-4 lg:gap-5 flex-shrink-0">
-              <button
+              {/* <button
                 type="button"
                 className={`${iconBtnClass} hidden sm:block`}
                 onClick={() => navigate("/user/home?product_type=imitation_jewelry")}
                 aria-label="Jewellery collection"
               >
                 <Gem className="h-[22px] w-[22px]" strokeWidth={1.5} />
-              </button>
+              </button> */}
 
               <button
                 type="button"
@@ -219,10 +219,10 @@ const Header = () => {
                       </button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-52">
-                      <DropdownMenuLabel className="text-[#832729]">
+                      <DropdownMenuLabel className="text-[#023d12]">
                         {capitalizeFirstLetter(user.username || user.email)}
                       </DropdownMenuLabel>
-                      <DropdownMenuSeparator />
+                      {/* <DropdownMenuSeparator />
                       <DropdownMenuItem onClick={() => navigate("/userprofile")}>
                         <User className="h-4 w-4 mr-2" />
                         Profile
@@ -231,7 +231,7 @@ const Header = () => {
                         <ShoppingBag className="h-4 w-4 mr-2" />
                         My Orders
                       </DropdownMenuItem>
-                      <DropdownMenuSeparator />
+                      <DropdownMenuSeparator /> */}
                       <DropdownMenuItem
                         className="text-red-600 focus:text-red-600"
                         onClick={handleLogout}
@@ -274,14 +274,14 @@ const Header = () => {
                       <Menu className="h-[22px] w-[22px]" strokeWidth={1.5} />
                     </button>
                   </SheetTrigger>
-                  <SheetContent side="right" className="w-[300px] p-0">
+                  <SheetContent side="right" className="w-[300px] p-0 bg-white">
                     <div className="flex flex-col h-full">
-                      <div className="p-6 bg-[#832729] text-white">
+                      <div className="p-6 bg-[#023d12] text-white">
                         {isAuthenticated ? (
                           <div className="flex items-center gap-3">
                             <Avatar className="h-10 w-10 border-2 border-white/40">
                               <AvatarImage src={user.avatar || "/placeholder.svg"} />
-                              <AvatarFallback className="bg-white text-[#832729]">
+                              <AvatarFallback className="bg-white text-[#023d12]">
                                 {getInitials(user.username || user.email)}
                               </AvatarFallback>
                             </Avatar>
@@ -294,7 +294,7 @@ const Header = () => {
                           </div>
                         ) : (
                           <Button
-                            className="w-full bg-white text-[#832729] hover:bg-gray-100"
+                            className="w-full bg-white text-[#023d12] hover:bg-gray-100"
                             onClick={() => setIsLoginModalOpen(true)}
                           >
                             <LogIn className="h-4 w-4 mr-2" />
@@ -308,43 +308,43 @@ const Header = () => {
                       <nav className="flex-1 overflow-auto p-3">
                         <Button
                           variant="ghost"
-                          className="w-full justify-start text-[#832729]"
+                          className="w-full justify-start text-[#023d12]"
                           onClick={() => navigate("/")}
                         >
                           <Home className="h-4 w-4 mr-3" />
                           Home
                         </Button>
-                        <Button
+                        {/* <Button
                           variant="ghost"
-                          className="w-full justify-start text-[#832729]"
+                          className="w-full justify-start text-[#023d12]"
                           onClick={() => navigate("/user/home")}
                         >
                           <Store className="h-4 w-4 mr-3" />
                           Shop All
-                        </Button>
+                        </Button> */}
                         {isAuthenticated && (
                           <>
-                            <Button
+                            {/* <Button
                               variant="ghost"
-                              className="w-full justify-start text-[#832729]"
+                              className="w-full justify-start text-[#023d12]"
                               onClick={() => navigate("/userprofile")}
                             >
                               <User className="h-4 w-4 mr-3" />
                               Profile
-                            </Button>
-                            <Button
+                            </Button> */}
+                            {/* <Button
                               variant="ghost"
-                              className="w-full justify-start text-[#832729]"
+                              className="w-full justify-start text-[#023d12]"
                               onClick={() => navigate("/myorders")}
                             >
                               <ShoppingBag className="h-4 w-4 mr-3" />
                               My Orders
-                            </Button>
+                            </Button> */}
                           </>
                         )}
                         <Button
                           variant="ghost"
-                          className="w-full justify-start text-[#832729]"
+                          className="w-full justify-start text-[#023d12]"
                           onClick={() =>
                             isAuthenticated ? navigate("/wishlist") : setIsLoginModalOpen(true)
                           }
@@ -354,7 +354,7 @@ const Header = () => {
                         </Button>
                         <Button
                           variant="ghost"
-                          className="w-full justify-start text-[#832729]"
+                          className="w-full justify-start text-[#023d12]"
                           onClick={() =>
                             isAuthenticated ? navigate("/cart") : setIsLoginModalOpen(true)
                           }
@@ -362,7 +362,7 @@ const Header = () => {
                           <ShoppingBag className="h-4 w-4 mr-3" />
                           Cart
                           {totalItems > 0 && (
-                            <Badge className="ml-auto bg-[#832729]">{totalItems}</Badge>
+                            <Badge className="ml-auto bg-[#023d12]">{totalItems}</Badge>
                           )}
                         </Button>
 
@@ -377,7 +377,7 @@ const Header = () => {
                                 <Button
                                   key={category}
                                   variant="ghost"
-                                  className="w-full justify-start text-[#832729]"
+                                  className="w-full justify-start text-[#023d12] "
                                   onClick={() =>
                                     navigate(`/category/${encodeURIComponent(category)}`)
                                   }
@@ -421,14 +421,14 @@ const Header = () => {
         {/* Tier 2 — Category navigation */}
         <div className="border-t border-gray-200 bg-white">
           <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10">
-            <nav className="hidden md:flex items-center w-full py-3">
+            <nav className="hidden md:flex items-center w-full py-3 overflow-x-auto scrollbar-hide gap-2">
               <button
                 type="button"
-                onClick={() => navigate("/user/home")}
-                className="flex-1 flex items-center justify-center gap-2 min-w-0 transition-opacity hover:opacity-70"
+                onClick={() => navigate("/category/all")}
+                className="flex-shrink-0 flex items-center justify-center gap-2 px-4 transition-opacity hover:opacity-70"
               >
-                <Grid3X3 className="h-5 w-5 text-[#832729] flex-shrink-0" strokeWidth={1.5} />
-                <span className="text-sm font-medium text-[#832729] truncate">
+                <Grid3X3 className="h-5 w-5 text-[#023d12] flex-shrink-0" strokeWidth={1.5} />
+                <span className="text-sm font-medium text-[#023d12] whitespace-nowrap">
                   All Products
                 </span>
               </button>
@@ -443,12 +443,12 @@ const Header = () => {
                     key={category}
                     type="button"
                     onClick={() => navigate(categoryPath)}
-                    className={`flex-1 flex items-center justify-center gap-2 min-w-0 transition-opacity hover:opacity-70 ${
+                    className={`flex-shrink-0 flex items-center justify-center gap-2 px-4 transition-opacity hover:opacity-70 ${
                       isActive ? "opacity-100" : "opacity-90"
                     }`}
                   >
-                    <Icon className="h-5 w-5 text-[#832729] flex-shrink-0" strokeWidth={1.5} />
-                    <span className="text-sm font-medium text-[#832729] truncate capitalize">
+                    <Icon className="h-5 w-5 text-[#023d12] flex-shrink-0" strokeWidth={1.5} />
+                    <span className="text-sm font-medium text-[#023d12] whitespace-nowrap capitalize">
                       {category}
                     </span>
                   </button>
@@ -460,11 +460,11 @@ const Header = () => {
             <nav className="md:hidden flex items-center gap-6 py-3 overflow-x-auto scrollbar-hide">
               <button
                 type="button"
-                onClick={() => navigate("/user/home")}
+                onClick={() => navigate("/category/all")}
                 className="flex items-center gap-2 flex-shrink-0"
               >
-                <Grid3X3 className="h-4 w-4 text-[#832729]" strokeWidth={1.5} />
-                <span className="text-xs font-medium text-[#832729] whitespace-nowrap">
+                <Grid3X3 className="h-4 w-4 text-[#023d12]" strokeWidth={1.5} />
+                <span className="text-xs font-medium text-[#023d12] whitespace-nowrap">
                   All Products
                 </span>
               </button>
@@ -477,8 +477,8 @@ const Header = () => {
                     onClick={() => navigate(`/category/${encodeURIComponent(category)}`)}
                     className="flex items-center gap-1.5 flex-shrink-0"
                   >
-                    <Icon className="h-4 w-4 text-[#832729]" strokeWidth={1.5} />
-                    <span className="text-xs font-medium text-[#832729] whitespace-nowrap capitalize">
+                    <Icon className="h-4 w-4 text-[#023d12]" strokeWidth={1.5} />
+                    <span className="text-xs font-medium text-[#056022] whitespace-nowrap capitalize">
                       {category}
                     </span>
                   </button>

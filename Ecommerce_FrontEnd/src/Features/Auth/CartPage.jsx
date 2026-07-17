@@ -33,7 +33,7 @@ export default function ShoppingCartComponent() {
 
   const BASE_URL = import.meta.env.VITE_BASE_URL
   const MAX_QUANTITY_PER_PRODUCT = 10 
-  const formatPrice = (value) => `₹${Number(value || 0).toLocaleString("en-IN")}`
+  const formatPrice = (value) => `£${Number(value || 0).toLocaleString("en-IN")}`
 
   useEffect(() => {
     if (!cart) {
@@ -210,20 +210,20 @@ export default function ShoppingCartComponent() {
       {/* Header Section */}
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-4">
-          <ShoppingCart className="w-8 h-8 text-[#8c2a2a]" />
-          <h1 className="text-3xl font-bold text-gray-900">Shopping Cart</h1>
+          <ShoppingCart className="w-8 h-8 text-[#0B3D2E]" />
+          <h1 className="text-3xl font-bold text-[#1E2C24]">Shopping Cart</h1>
         </div>
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <Badge variant="secondary" className="bg-[#8c2a2a]/10 text-[#8c2a2a] px-3 py-1 text-sm">
+            <Badge variant="secondary" className="bg-[#0B3D2E]/10 text-[#0B3D2E] px-3 py-1 text-sm">
               {totalItems} {totalItems === 1 ? "item" : "items"}
             </Badge>
-            <span className="text-xl font-semibold text-gray-900">₹{cart.final_total.toLocaleString("en-IN")}</span>
+            <span className="text-xl font-semibold text-[#1E2C24]">£{cart.final_total.toLocaleString("en-IN")}</span>
           </div>
           <Button
             variant="outline"
             onClick={() => navigate("/user/home")}
-            className="hidden sm:flex items-center gap-2 hover:bg-gray-50 rounded-lg border-[#8c2a2a]/20 text-[#8c2a2a] hover:text-[#7a2424]"
+            className="hidden sm:flex items-center gap-2 hover:bg-[#F7F3EB] rounded-lg border-[#E8DFC6] text-[#0B3D2E] hover:text-[#0B3D2E]"
           >
             <Package className="w-4 h-4" />
             Continue Shopping
@@ -239,12 +239,12 @@ export default function ShoppingCartComponent() {
             return (
               <Card
                 key={item.id}
-                className="overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-white rounded-2xl"
+                className="overflow-hidden border border-[#E8DFC6] shadow-lg hover:shadow-xl transition-all duration-300 bg-white rounded-2xl"
               >
                 <CardContent className="p-0">
                   <div className="flex flex-col lg:flex-row">
                     {/* Product Image */}
-                    <div className="w-full lg:w-48 h-48 lg:h-auto bg-gray-50 flex items-center justify-center p-4">
+                    <div className="w-full lg:w-48 h-48 lg:h-auto bg-[#F7F3EB] flex items-center justify-center p-4">
                       <img
                         src={
                           item.primary_image
@@ -262,7 +262,7 @@ export default function ShoppingCartComponent() {
                       <div className="flex flex-col h-full">
                         <div className="flex-grow">
                           <div className="flex items-center gap-2 mb-3">
-                            <h3 className="text-xl font-semibold text-gray-900 line-clamp-2">{item.product.name}</h3>
+                            <h3 className="text-xl font-semibold text-[#1E2C24] line-clamp-2">{item.product.name}</h3>
                             {isItemUnavailable && (
                               <Badge variant="destructive" className="bg-red-600 text-white px-2 py-1 text-xs">
                                 Unavailable
@@ -271,24 +271,24 @@ export default function ShoppingCartComponent() {
                           </div>
 
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
-                            <div className="flex items-center gap-2 text-sm text-gray-600">
+                            <div className="flex items-center gap-2 text-sm text-[#4B4B4B]">
                               <Tag className="w-4 h-4" />
                               <span>Price: {formatPrice(item.variant.total_price)}</span>
                             </div>
-                            <div className="flex items-center gap-2 text-sm text-gray-600">
+                            <div className="flex items-center gap-2 text-sm text-[#4B4B4B]">
                               <span>Type: {item.product.product_type === "clothing" ? "Clothing" : "Imitation Jewelry"}</span>
                             </div>
-                            <div className="flex items-center gap-2 text-sm text-gray-600 sm:col-span-2">
+                            <div className="flex items-center gap-2 text-sm text-[#4B4B4B] sm:col-span-2">
                               <Package className="w-4 h-4" />
                               <span>Category: {item.product.category || "N/A"}</span>
                             </div>
                             {item.product.size && (
-                              <div className="flex items-center gap-2 text-sm text-gray-600">
+                              <div className="flex items-center gap-2 text-sm text-[#4B4B4B]">
                                 <span>Size: {item.product.size}</span>
                               </div>
                             )}
                             {item.product.color && (
-                              <div className="flex items-center gap-2 text-sm text-gray-600">
+                              <div className="flex items-center gap-2 text-sm text-[#4B4B4B]">
                                 <span>Color: {item.product.color}</span>
                               </div>
                             )}
@@ -296,50 +296,50 @@ export default function ShoppingCartComponent() {
 
                           {/* Quantity Control */}
                           <div className="mb-4">
-                            <span className="text-sm text-gray-600 mb-2 block">Quantity:</span>
-                            <div className="flex items-center border-2 border-gray-200 rounded-lg overflow-hidden bg-white w-fit">
+                            <span className="text-sm text-[#4B4B4B] mb-2 block">Quantity:</span>
+                            <div className="flex items-center border-2 border-[#E8DFC6] rounded-lg overflow-hidden bg-white w-fit">
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className="h-10 w-10 rounded-none hover:bg-gray-100 disabled:opacity-50"
+                                className="h-10 w-10 rounded-none hover:bg-[#F7F3EB] disabled:opacity-50"
                                 onClick={() => updateQuantity(item.id, item.quantity - 1)}
                                 disabled={loading || item.quantity <= 1 || isItemUnavailable}
                               >
                                 <Minus className="w-4 h-4" />
                               </Button>
-                              <div className="h-10 w-16 flex items-center justify-center border-x border-gray-200 font-medium bg-gray-50">
+                              <div className="h-10 w-16 flex items-center justify-center border-x border-[#E8DFC6] font-medium bg-[#F7F3EB]">
                                 {item.quantity}
                               </div>
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className="h-10 w-10 rounded-none hover:bg-gray-100 disabled:opacity-50"
+                                className="h-10 w-10 rounded-none hover:bg-[#F7F3EB] disabled:opacity-50"
                                 onClick={() => handleIncreaseQuantity(item.id, item.quantity, item.variant.stock, item.product.name)}
                                 disabled={loading || item.quantity >= Math.min(item.variant.stock, MAX_QUANTITY_PER_PRODUCT) || isItemUnavailable}
                               >
                                 <Plus className="w-4 h-4" />
                               </Button>
                             </div>
-                            <p className="text-xs text-gray-500 mt-1">
+                            <p className="text-xs text-[#4B4B4B] mt-1">
                               {item.variant.stock} items available (Max {MAX_QUANTITY_PER_PRODUCT} per product)
                             </p>
                           </div>
 
                           {/* Price Breakdown */}
-                          <div className="bg-gray-50 rounded-lg p-4 mb-4">
+                          <div className="bg-[#F7F3EB] rounded-lg p-4 mb-4">
                             <div className="space-y-2 text-sm">
                               <div className="flex justify-between">
-                                <span className="text-gray-600">Subtotal:</span>
+                                <span className="text-[#4B4B4B]">Subtotal:</span>
                                 <span className="font-medium">{formatPrice(item.variant.base_price)}</span>
                               </div>
                               <div className="flex justify-between">
-                                <span className="text-gray-600">Discount:</span>
-                                <span className="font-medium text-green-600">
+                                <span className="text-[#4B4B4B]">Discount:</span>
+                                <span className="font-medium text-[#14532D]">
                                   -{formatPrice(item.variant.discount_amount)}
                                 </span>
                               </div>
                               <div className="flex justify-between">
-                                <span className="text-gray-600">Tax:</span>
+                                <span className="text-[#4B4B4B]">Tax:</span>
                                 <span className="font-medium">{formatPrice(item.variant.tax_amount)}</span>
                               </div>
                             </div>
@@ -348,7 +348,7 @@ export default function ShoppingCartComponent() {
 
                         {/* Price and Remove Button */}
                         <div className="flex justify-between items-center">
-                          <div className="text-2xl font-bold text-green-600">
+                          <div className="text-2xl font-bold text-[#0B3D2E]">
                             {formatPrice(item.variant.total_price)}
                           </div>
                           <Button
@@ -373,17 +373,17 @@ export default function ShoppingCartComponent() {
 
         {/* Order Summary */}
         <div className="space-y-6">
-          <Card className="border-0 shadow-lg rounded-2xl overflow-hidden">
+          <Card className="border border-[#E8DFC6] shadow-lg rounded-2xl overflow-hidden">
             <CardContent className="p-6">
-              <h3 className="text-xl font-semibold text-gray-900 mb-6 flex items-center gap-2">
+              <h3 className="text-xl font-semibold text-[#1E2C24] mb-6 flex items-center gap-2">
                 <Receipt className="w-5 h-5" />
                 Order Summary
               </h3>
 
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Subtotal:</span>
-                  <span className="font-medium">₹{cart.final_subtotal.toLocaleString("en-IN")}</span>
+                  <span className="text-[#4B4B4B]">Subtotal:</span>
+                  <span className="font-medium">£{cart.final_subtotal.toLocaleString("en-IN")}</span>
                 </div>
 
                 <div className="flex justify-between items-center">
@@ -391,7 +391,7 @@ export default function ShoppingCartComponent() {
                     <Tag className="w-4 h-4" />
                     Discount:
                   </span>
-                  <span className="font-medium text-green-600">-₹{cart.final_discount.toLocaleString("en-IN")}</span>
+                  <span className="font-medium text-green-600">-£{cart.final_discount.toLocaleString("en-IN")}</span>
                 </div>
 
                 <div className="flex justify-between items-center">
@@ -399,19 +399,19 @@ export default function ShoppingCartComponent() {
                     <Truck className="w-4 h-4" />
                     Shipping:
                   </span>
-                  <span className="font-medium">₹{cart.shipping.toLocaleString("en-IN")}</span>
+                  <span className="font-medium">£{cart.shipping.toLocaleString("en-IN")}</span>
                 </div>
 
                 <div className="flex justify-between items-center">
                   <span className="text-gray-600">Tax:</span>
-                  <span className="font-medium">₹{cart.final_tax.toLocaleString("en-IN")}</span>
+                  <span className="font-medium">£{cart.final_tax.toLocaleString("en-IN")}</span>
                 </div>
 
                 <Separator className="my-4" />
 
                 <div className="flex justify-between items-center text-lg font-semibold">
                   <span>Total:</span>
-                  <span className="text-[#8c2a2a]">₹{cart.final_total.toLocaleString("en-IN")}</span>
+                  <span className="text-[#8c2a2a]">£{cart.final_total.toLocaleString("en-IN")}</span>
                 </div>
 
                 <p className="text-xs text-gray-500 text-center">(Inclusive of all taxes)</p>

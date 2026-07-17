@@ -52,7 +52,7 @@ const UserProfile= () => {
             <div className="h-24 w-24 rounded-full bg-gray-200 flex items-center justify-center">
               <User className="h-12 w-12 text-gray-400" />
             </div>
-            <button className="absolute bottom-0 right-0 bg-[#7a2828] text-white p-1.5 rounded-full">
+            <button className="absolute bottom-0 right-0 bg-[#023d12]  text-white p-1.5 rounded-full">
               <Camera className="h-4 w-4" />
             </button>
           </div>
@@ -66,7 +66,7 @@ const UserProfile= () => {
                   onClick={() => setActivePage(item.id)}
                   className={cn(
                     "flex items-center w-full px-4 py-2.5 rounded-md text-sm font-medium transition-colors",
-                    activePage === item.id ? "bg-[#7a2828] text-white" : "text-gray-600 hover:bg-gray-100",
+                    activePage === item.id ? "bg-[#023d12]  text-white" : "text-gray-600 hover:bg-gray-100",
                   )}
                 >
                   <item.icon className="mr-3 h-5 w-5" />

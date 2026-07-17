@@ -50,7 +50,7 @@ const activeType = searchParams.get("product_type");
 const pillClass = (type) =>
   activeType === type
     ? "rounded-full bg-gray-200 px-5 py-2 text-sm font-semibold text-black"
-    : "text-sm font-semibold text-black hover:text-[#7a2828]";
+    : "text-sm font-semibold text-black hover:text-[#023d12] ";
 
 const Header = () => {
   const { cart } = useCart();
@@ -157,7 +157,7 @@ const Header = () => {
 
     <button
       onClick={() => navigate("/user/home?product_type=imitation_jewelry")}
-      className="text-sm font-semibold text-black hover:text-[#7a2828] transition"
+      className="text-sm font-semibold text-black hover:text-[#023d12]  transition"
     >
       Jewelry
     </button>
@@ -170,7 +170,7 @@ const Header = () => {
             {/* Welcome Message */}
             {isAuthenticated && (
               <div className="hidden lg:flex items-center px-4 py-1.5 rounded-full bg-white/80 backdrop-blur-sm border border-amber-100 shadow-sm">
-                <span className="text-[#7a2828] font-medium">
+                <span className="text-[#023d12]  font-medium">
                   Welcome {capitalizeFirstLetter(user.username || user.email)}
                 </span>
               </div>
@@ -184,7 +184,7 @@ const Header = () => {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-10 w-10 rounded-full bg-white/80 backdrop-blur-sm text-[#7a2828] hover:bg-[#7a2828] hover:text-white transition-all duration-300 shadow-sm hover:shadow-md"
+                    className="h-10 w-10 rounded-full bg-white/80 backdrop-blur-sm text-[#023d12]  hover:bg-[#023d12]  hover:text-white transition-all duration-300 shadow-sm hover:shadow-md"
                     onClick={() => navigate("/user/home")}
                     aria-label="Home"
                   >
@@ -195,15 +195,15 @@ const Header = () => {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-10 w-10 rounded-full bg-white/80 backdrop-blur-sm text-[#7a2828] hover:bg-[#7a2828] hover:text-white transition-all duration-300 shadow-sm hover:shadow-md relative"
+                    className="h-10 w-10 rounded-full bg-white/80 backdrop-blur-sm text-[#023d12]  hover:bg-[#023d12]  hover:text-white transition-all duration-300 shadow-sm hover:shadow-md relative"
                     onClick={() => navigate("/cart")}
                     aria-label="Shopping Cart"
                   >
                     <ShoppingCart className="h-5 w-5" />
                     {totalItems > 0 && (
                       <span className="absolute -top-1 -right-1 flex h-5 w-5">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#7a2828] opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-5 w-5 bg-[#7a2828] text-white text-xs font-bold items-center justify-center">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#023d12]  opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-5 w-5 bg-[#023d12]  text-white text-xs font-bold items-center justify-center">
                           {totalItems}
                         </span>
                       </span>
@@ -214,7 +214,7 @@ const Header = () => {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-10 w-10 rounded-full bg-white/80 backdrop-blur-sm text-[#7a2828] hover:bg-[#7a2828] hover:text-white transition-all duration-300 shadow-sm hover:shadow-md"
+                    className="h-10 w-10 rounded-full bg-white/80 backdrop-blur-sm text-[#023d12]  hover:bg-[#023d12]  hover:text-white transition-all duration-300 shadow-sm hover:shadow-md"
                     onClick={() => navigate("/wishlist")}
                     aria-label="Wishlist"
                   >
@@ -228,14 +228,14 @@ const Header = () => {
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-10 w-10 rounded-full bg-white/80 backdrop-blur-sm text-[#7a2828] hover:bg-[#7a2828] hover:text-white transition-all duration-300 shadow-sm hover:shadow-md relative group"
+                          className="h-10 w-10 rounded-full bg-white/80 backdrop-blur-sm text-[#023d12]  hover:bg-[#023d12]  hover:text-white transition-all duration-300 shadow-sm hover:shadow-md relative group"
                           aria-label="User Profile"
                         >
                           <Avatar className="h-7 w-7 border border-amber-200 group-hover:border-white transition-all duration-300">
                             <AvatarImage
                               src={user.avatar || "/placeholder.svg"}
                             />
-                            <AvatarFallback className="bg-amber-100 text-[#7a2828] text-sm font-medium">
+                            <AvatarFallback className="bg-amber-100 text-[#023d12]  text-sm font-medium">
                               {getInitials(user.username || user.email)}
                             </AvatarFallback>
                           </Avatar>
@@ -246,7 +246,7 @@ const Header = () => {
                         align="end"
                         className="bg-white w-56 p-2 rounded-xl border-amber-200"
                       >
-                        <DropdownMenuLabel className="flex items-center gap-2 text-[#7a2828]">
+                        <DropdownMenuLabel className="flex items-center gap-2 text-[#023d12] ">
                           <User className="h-4 w-4" />
                           My Account
                         </DropdownMenuLabel>
@@ -255,7 +255,7 @@ const Header = () => {
                           className="rounded-lg cursor-pointer hover:bg-amber-50 focus:bg-amber-50 transition-all duration-200"
                           onClick={() => navigate("/userprofile")}
                         >
-                          <User className="h-4 w-4 mr-2 text-[#7a2828]" />
+                          <User className="h-4 w-4 mr-2 text-[#023d12] " />
                           Profile
                         </DropdownMenuItem>
 
@@ -276,7 +276,7 @@ const Header = () => {
                   {/* Login Button - Only shown when user is NOT logged in */}
                   <Button
                     variant="ghost"
-                    className="px-4 py-2 rounded-xl bg-white/80 backdrop-blur-sm text-[#7a2828] hover:bg-[#7a2828] hover:text-white transition-all duration-300 shadow-sm hover:shadow-md flex items-center gap-2"
+                    className="px-4 py-2 rounded-xl bg-white/80 backdrop-blur-sm text-[#023d12]  hover:bg-[#023d12]  hover:text-white transition-all duration-300 shadow-sm hover:shadow-md flex items-center gap-2"
                     onClick={handleLogin}
                     aria-label="Login"
                   >
@@ -295,15 +295,15 @@ const Header = () => {
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-10 w-10 rounded-full bg-white/80 backdrop-blur-sm text-[#7a2828] hover:bg-[#7a2828] hover:text-white transition-all duration-300 shadow-sm hover:shadow-md relative"
+                className="h-10 w-10 rounded-full bg-white/80 backdrop-blur-sm text-[#023d12]  hover:bg-[#023d12]  hover:text-white transition-all duration-300 shadow-sm hover:shadow-md relative"
                 onClick={() => navigate("/cart")}
                 aria-label="Shopping Cart"
               >
                 <ShoppingCart className="h-5 w-5" />
                 {totalItems > 0 && (
                   <span className="absolute -top-1 -right-1 flex h-5 w-5">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#7a2828] opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-5 w-5 bg-[#7a2828] text-white text-xs font-bold items-center justify-center">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#023d12]  opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-5 w-5 bg-[#023d12]  text-white text-xs font-bold items-center justify-center">
                       {totalItems}
                     </span>
                   </span>
@@ -317,7 +317,7 @@ const Header = () => {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-10 w-10 rounded-full bg-white/80 backdrop-blur-sm text-[#7a2828] hover:bg-[#7a2828] hover:text-white transition-all duration-300 shadow-sm hover:shadow-md"
+                  className="h-10 w-10 rounded-full bg-white/80 backdrop-blur-sm text-[#023d12]  hover:bg-[#023d12]  hover:text-white transition-all duration-300 shadow-sm hover:shadow-md"
                   aria-label="Open menu"
                 >
                   <Menu className="h-5 w-5" />
@@ -328,14 +328,14 @@ const Header = () => {
                 className="bg-white w-[300px] sm:w-[350px] p-0"
               >
                 <div className="h-full flex flex-col">
-                  <div className="p-6 bg-gradient-to-r from-[#7a2828] to-[#9a3a3a] text-white">
+                  <div className="p-6 bg-gradient-to-r from-[#023d12]  to-[#9a3a3a] text-white">
                     <div className="flex items-center gap-4 mb-6">
                       {user && (
                         <Avatar className="h-12 w-12 border-2 border-white/50">
                           <AvatarImage
                             src={user.avatar || "/placeholder.svg"}
                           />
-                          <AvatarFallback className="bg-amber-100 text-[#7a2828] text-lg font-medium">
+                          <AvatarFallback className="bg-amber-100 text-[#023d12]  text-lg font-medium">
                             {getInitials(user.username || user.email)}
                           </AvatarFallback>
                         </Avatar>
@@ -352,7 +352,7 @@ const Header = () => {
                           </>
                         ) : (
                           <Button
-                            className="bg-white text-[#7a2828] hover:bg-amber-100 hover:text-[#7a2828]"
+                            className="bg-white text-[#023d12]  hover:bg-amber-100 hover:text-[#023d12] "
                             onClick={handleLogin}
                           >
                             Sign In
@@ -379,7 +379,7 @@ const Header = () => {
                       <Input
                         type="text"
                         placeholder="Search products..."
-                        className="rounded-full border-amber-200 focus:border-[#7a2828] focus:ring-[#7a2828]/20"
+                        className="rounded-full border-amber-200 focus:border-[#023d12]  focus:ring-[#023d12] /20"
                       />
                     </div>
 
@@ -387,7 +387,7 @@ const Header = () => {
                       <div className="px-3">
                         <Button
                           variant="ghost"
-                          className="w-full justify-start rounded-lg mb-1 hover:bg-amber-50 hover:text-[#7a2828]"
+                          className="w-full justify-start rounded-lg mb-1 hover:bg-amber-50 hover:text-[#023d12] "
                           onClick={() => navigate("/")}
                         >
                           <Home className="h-5 w-5 mr-3" />
@@ -397,7 +397,7 @@ const Header = () => {
                           <>
                             <Button
                               variant="ghost"
-                              className="w-full justify-start rounded-lg mb-1 hover:bg-amber-50 hover:text-[#7a2828]"
+                              className="w-full justify-start rounded-lg mb-1 hover:bg-amber-50 hover:text-[#023d12] "
                               onClick={() => navigate("/user/home")}
                             >
                               <LayoutDashboard className="h-5 w-5 mr-3" />
@@ -405,7 +405,7 @@ const Header = () => {
                             </Button>
                             <Button
                               variant="ghost"
-                              className="w-full justify-start rounded-lg mb-1 hover:bg-amber-50 hover:text-[#7a2828]"
+                              className="w-full justify-start rounded-lg mb-1 hover:bg-amber-50 hover:text-[#023d12] "
                               onClick={() => navigate("/userprofile")}
                             >
                               <User className="h-5 w-5 mr-3" />
@@ -414,7 +414,7 @@ const Header = () => {
 
                             <Button
                               variant="ghost"
-                              className="w-full justify-start rounded-lg mb-1 hover:bg-amber-50 hover:text-[#7a2828]"
+                              className="w-full justify-start rounded-lg mb-1 hover:bg-amber-50 hover:text-[#023d12] "
                               onClick={() => navigate("/wishlist")}
                             >
                               <Heart className="h-5 w-5 mr-3" />
@@ -423,13 +423,13 @@ const Header = () => {
 
                             <Button
                               variant="ghost"
-                              className="w-full justify-start rounded-lg mb-1 hover:bg-amber-50 hover:text-[#7a2828]"
+                              className="w-full justify-start rounded-lg mb-1 hover:bg-amber-50 hover:text-[#023d12] "
                               onClick={() => navigate("/cart")}
                             >
                               <ShoppingCart className="h-5 w-5 mr-3" />
                               Cart
                               {totalItems > 0 && (
-                                <Badge className="ml-auto bg-[#7a2828]">
+                                <Badge className="ml-auto bg-[#023d12] ">
                                   {totalItems}
                                 </Badge>
                               )}
@@ -471,7 +471,7 @@ const Header = () => {
               <li>
                 <a
                   href="/"
-                  className="text-gray-700 hover:text-[#7a2828] font-medium transition-all duration-300 hover:underline decoration-[#7a2828] decoration-2 underline-offset-8"
+                  className="text-gray-700 hover:text-[#023d12]  font-medium transition-all duration-300 hover:underline decoration-[#023d12]  decoration-2 underline-offset-8"
                 >
                   Home
                 </a>
@@ -479,7 +479,7 @@ const Header = () => {
               <li>
                 <a
                   href="/user/home"
-                  className="text-gray-700 hover:text-[#7a2828] font-medium transition-all duration-300 hover:underline decoration-[#7a2828] decoration-2 underline-offset-8"
+                  className="text-gray-700 hover:text-[#023d12]  font-medium transition-all duration-300 hover:underline decoration-[#023d12]  decoration-2 underline-offset-8"
                 >
                   Shop
                 </a>
@@ -488,7 +488,7 @@ const Header = () => {
               <li>
                 <a
                   href="/about"
-                  className="text-gray-700 hover:text-[#7a2828] font-medium transition-all duration-300 hover:underline decoration-[#7a2828] decoration-2 underline-offset-8"
+                  className="text-gray-700 hover:text-[#023d12]  font-medium transition-all duration-300 hover:underline decoration-[#023d12]  decoration-2 underline-offset-8"
                 >
                   About Us
                 </a>
@@ -496,7 +496,7 @@ const Header = () => {
               <li>
                 <a
                   href="/contact"
-                  className="text-gray-700 hover:text-[#7a2828] font-medium transition-all duration-300 hover:underline decoration-[#7a2828] decoration-2 underline-offset-8"
+                  className="text-gray-700 hover:text-[#023d12]  font-medium transition-all duration-300 hover:underline decoration-[#023d12]  decoration-2 underline-offset-8"
                 >
                   Contact
                 </a>

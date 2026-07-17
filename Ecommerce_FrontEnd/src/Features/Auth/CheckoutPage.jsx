@@ -448,7 +448,7 @@
 //     if (selectedPayment === "cod" && isCodDisabled) {
 //       handleApiError(
 //         new Error("Cash on Delivery is not available"),
-//         "Cash on Delivery is not available for orders above ₹1000.",
+//         "Cash on Delivery is not available for orders above £1000.",
 //       )
 //       return
 //     }
@@ -982,7 +982,7 @@
 //                           </Label>
 //                           <p className="text-sm text-gray-500 mt-1">
 //                             {isCodDisabled
-//                               ? "Cash on Delivery is not available for orders above ₹1000"
+//                               ? "Cash on Delivery is not available for orders above £1000"
 //                               : "Pay when you receive your order"}
 //                           </p>
 //                         </div>
@@ -1445,7 +1445,7 @@ export default function CheckoutPage() {
       .join("\n")
 
     const encoded = encodeURIComponent(lines)
-    window.open(`https://wa.me/918943801278?text=${encoded}`, "_blank", "noopener,noreferrer")
+    window.open(`https://wa.me/447553387651?text=${encoded}`, "_blank", "noopener,noreferrer")
   }
 
   const cartItems =
@@ -1467,13 +1467,13 @@ export default function CheckoutPage() {
   const shipping = cart?.shipping || 0
   const isCodDisabled = total > 100000
 
-  const formatPrice = (price) => {
-    return new Intl.NumberFormat("en-IN", {
-      style: "currency",
-      currency: "INR",
-      maximumFractionDigits: 0,
-    }).format(price)
-  }
+const formatPrice = (price) =>
+  new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(price || 0);
 
   const validateAddress = (address) => {
     const errors = []
@@ -1691,7 +1691,7 @@ export default function CheckoutPage() {
     if (selectedPayment === "cod" && isCodDisabled) {
       handleApiError(
         new Error("Cash on Delivery is not available"),
-        "Cash on Delivery is not available for orders above ₹1000.",
+        "Cash on Delivery is not available for orders above £1000.",
       )
       return
     }
@@ -2339,7 +2339,7 @@ export default function CheckoutPage() {
                   type="button"
                   disabled={addresses.length === 0 || !cart?.items?.length}
                   onClick={handleWhatsAppOrder}
-                  className="w-full flex items-center justify-center gap-3 rounded-lg bg-[#25D366] hover:bg-[#1ebe5d] active:bg-[#19a852] disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold text-base py-4 px-6 transition-all duration-200 shadow-md hover:shadow-lg"
+                  className="w-full flex items-center justify-center gap-3 rounded-lg bg-[#087d33] hover:bg-[#1ebe5d] active:bg-[#19a852] disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold text-base py-4 px-6 transition-all duration-200 shadow-md hover:shadow-lg"
                 >
                   <svg viewBox="0 0 32 32" fill="currentColor" className="h-5 w-5 flex-shrink-0" aria-hidden="true">
                     <path d="M16.003 2.667C8.636 2.667 2.667 8.636 2.667 16c0 2.348.636 4.636 1.845 6.636L2.667 29.333l6.909-1.812A13.31 13.31 0 0 0 16.003 29.333c7.367 0 13.33-5.967 13.33-13.333 0-7.364-5.963-13.333-13.33-13.333zm0 24.4a11.08 11.08 0 0 1-5.636-1.536l-.403-.24-4.1 1.076 1.094-4.003-.263-.412A11.067 11.067 0 0 1 4.933 16c0-6.107 4.963-11.067 11.07-11.067S27.067 9.893 27.067 16c0 6.11-4.96 11.067-11.064 11.067zm6.073-8.294c-.332-.167-1.966-.97-2.27-1.08-.303-.112-.524-.168-.745.167-.22.335-.854 1.08-1.048 1.302-.193.22-.386.248-.718.083-.332-.167-1.4-.515-2.666-1.643-.984-.878-1.647-1.963-1.84-2.295-.193-.332-.021-.512.146-.677.15-.148.332-.387.498-.58.167-.193.222-.332.333-.553.112-.22.056-.415-.028-.58-.083-.167-.745-1.797-1.02-2.462-.27-.647-.545-.56-.745-.57l-.635-.012c-.22 0-.58.083-.883.415-.304.332-1.158 1.133-1.158 2.763s1.186 3.205 1.351 3.428c.166.22 2.333 3.56 5.653 4.994.79.34 1.406.543 1.887.695.793.251 1.515.216 2.085.131.636-.094 1.966-.804 2.243-1.581.277-.777.277-1.44.193-1.58-.083-.14-.304-.222-.636-.39z"/>

@@ -97,7 +97,7 @@
 //                     <div className="absolute bottom-0 left-0 right-0 bg-white/80 p-3 transition-all duration-500 group-hover:bg-white/90">
 //                       <h3 className="text-sm font-medium transition-all duration-300 group-hover:text-amber-800">{item.name}</h3>
 //                       <p className="text-xs text-gray-500 transition-all duration-300 group-hover:text-amber-700">
-//                         ₹{parseFloat(item.price).toLocaleString("en-IN", { minimumFractionDigits: 2 })}
+//                         £{parseFloat(item.price).toLocaleString("en-IN", { minimumFractionDigits: 2 })}
 //                       </p>
 //                     </div>
 //                     <div className="absolute top-2 right-2 opacity-0 transition-opacity duration-500 group-hover:opacity-100">
@@ -157,14 +157,14 @@ const PageLoader = () => (
   <div className="fixed inset-0 bg-gradient-to-br from-amber-50 to-orange-100 flex items-center justify-center z-50">
     <div className="text-center">
       <div className="relative">
-        <div className="w-20 h-20 border-4 border-[#7a2828]/20 rounded-full animate-spin border-t-[#7a2828]"></div>
+        <div className="w-20 h-20 border-4 border-[#023d12] /20 rounded-full animate-spin border-t-[#023d12] "></div>
         <div className="absolute inset-0 w-20 h-20 border-4 border-transparent rounded-full animate-pulse border-t-amber-400"></div>
       </div>
-      <p className="mt-4 text-[#7a2828] font-serif text-lg animate-pulse">Loading Exquisite Jewelry...</p>
+      <p className="mt-4 text-[#023d12]  font-serif text-lg animate-pulse">Loading Exquisite Jewelry...</p>
       <div className="flex justify-center mt-2 space-x-1">
-        <div className="w-2 h-2 bg-[#7a2828] rounded-full animate-bounce"></div>
+        <div className="w-2 h-2 bg-[#023d12]  rounded-full animate-bounce"></div>
         <div className="w-2 h-2 bg-amber-500 rounded-full animate-bounce" style={{ animationDelay: "0.1s" }}></div>
-        <div className="w-2 h-2 bg-[#7a2828] rounded-full animate-bounce" style={{ animationDelay: "0.2s" }}></div>
+        <div className="w-2 h-2 bg-[#023d12]  rounded-full animate-bounce" style={{ animationDelay: "0.2s" }}></div>
       </div>
     </div>
   </div>
@@ -240,7 +240,7 @@ export default function Landingpage() {
                   alt={`Banner ${index + 1}`}
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-r from-[#7a2828]/20 to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-[#023d12] /20 to-transparent"></div>
               </div>
             ))}
 
@@ -251,7 +251,7 @@ export default function Landingpage() {
                   key={index}
                   onClick={() => setCurrentBannerIndex(index)}
                   className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                    index === currentBannerIndex ? "bg-[#7a2828] scale-125" : "bg-white/50 hover:bg-white/80"
+                    index === currentBannerIndex ? "bg-[#023d12]  scale-125" : "bg-white/50 hover:bg-white/80"
                   }`}
                 />
               ))}
@@ -264,8 +264,8 @@ export default function Landingpage() {
         {/* Recommended For You */}
         <section className="py-16 container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-serif text-[#7a2828] mb-4">Recommended For You</h2>
-            <div className="w-24 h-1 bg-gradient-to-r from-[#7a2828] to-amber-500 mx-auto rounded-full"></div>
+            <h2 className="text-3xl md:text-4xl font-serif text-[#023d12]  mb-4">Recommended For You</h2>
+            <div className="w-24 h-1 bg-gradient-to-r from-[#023d12]  to-amber-500 mx-auto rounded-full"></div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
@@ -286,7 +286,7 @@ export default function Landingpage() {
                     />
 
                     {/* Gradient Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#7a2828]/30 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"></div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#023d12] /30 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"></div>
 
                     {/* Heart Icon */}
                     <div className="absolute top-3 right-3 opacity-0 transition-all duration-500 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0">
@@ -295,24 +295,24 @@ export default function Landingpage() {
                         size="icon"
                         className="bg-white/90 hover:bg-white rounded-full shadow-lg backdrop-blur-sm"
                       >
-                        <Heart className="h-4 w-4 text-[#7a2828] hover:fill-current transition-all duration-300" />
+                        <Heart className="h-4 w-4 text-[#023d12]  hover:fill-current transition-all duration-300" />
                       </Button>
                     </div>
 
                     {/* Quick View Button */}
                     <div className="absolute inset-x-4 bottom-4 opacity-0 transition-all duration-500 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0">
-                      <Button className="w-full bg-[#7a2828] hover:bg-[#5a1f1f] text-white rounded-full transition-all duration-300 hover:scale-105">
+                      <Button className="w-full bg-[#023d12]  hover:bg-[#5a1f1f] text-white rounded-full transition-all duration-300 hover:scale-105">
                         Quick View
                       </Button>
                     </div>
                   </div>
 
                   <div className="p-4 bg-gradient-to-b from-white to-amber-50/30">
-                    <h3 className="text-sm md:text-base font-medium transition-all duration-300 group-hover:text-[#7a2828] mb-2">
+                    <h3 className="text-sm md:text-base font-medium transition-all duration-300 group-hover:text-[#023d12]  mb-2">
                       {item.name}
                     </h3>
-                    <p className="text-lg font-bold text-[#7a2828] transition-all duration-300 group-hover:scale-105">
-                      ₹{Number.parseFloat(item.price).toLocaleString("en-IN", { minimumFractionDigits: 2 })}
+                    <p className="text-lg font-bold text-[#023d12]  transition-all duration-300 group-hover:scale-105">
+                      £{Number.parseFloat(item.price).toLocaleString("en-IN", { minimumFractionDigits: 2 })}
                     </p>
                     
                   </div>
@@ -326,8 +326,8 @@ export default function Landingpage() {
         <section className="py-16 bg-gradient-to-br from-amber-50 to-orange-50">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-serif text-[#7a2828] mb-4">Connect With Us</h2>
-              <div className="w-24 h-1 bg-gradient-to-r from-[#7a2828] to-amber-500 mx-auto rounded-full"></div>
+              <h2 className="text-3xl md:text-4xl font-serif text-[#023d12]  mb-4">Connect With Us</h2>
+              <div className="w-24 h-1 bg-gradient-to-r from-[#023d12]  to-amber-500 mx-auto rounded-full"></div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
@@ -336,10 +336,10 @@ export default function Landingpage() {
                   icon: MapPin,
                   title: "Find a Store",
                   desc: "Locate our stores near you",
-                  color: "from-red-500 to-[#7a2828]",
+                  color: "from-red-500 to-[#023d12] ",
                 },
                 { icon: Phone, title: "Call Us", desc: "1800-123-4567", color: "from-amber-500 to-orange-500" },
-                { icon: Mail, title: "Email Us", desc: "care@tanishq.com", color: "from-[#7a2828] to-red-600" },
+                { icon: Mail, title: "Email Us", desc: "care@tanishq.com", color: "from-[#023d12]  to-red-600" },
               ].map((item, index) => (
                 <Card
                   key={index}
@@ -356,14 +356,14 @@ export default function Landingpage() {
                     >
                       <item.icon className="h-8 w-8 text-white" />
                     </div>
-                    <h3 className="font-bold text-lg mb-3 transition-all duration-300 group-hover:text-[#7a2828]">
+                    <h3 className="font-bold text-lg mb-3 transition-all duration-300 group-hover:text-[#023d12] ">
                       {item.title}
                     </h3>
                     <p className="text-gray-600 transition-all duration-300 group-hover:text-gray-800">{item.desc}</p>
                   </div>
 
                   {/* Hover Border Effect */}
-                  <div className="absolute inset-0 rounded-2xl border-2 border-transparent group-hover:border-[#7a2828]/20 transition-all duration-500"></div>
+                  <div className="absolute inset-0 rounded-2xl border-2 border-transparent group-hover:border-[#023d12] /20 transition-all duration-500"></div>
                 </Card>
               ))}
             </div>

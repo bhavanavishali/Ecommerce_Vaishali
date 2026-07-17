@@ -159,7 +159,7 @@ export default function InvoicePage() {
                 </div>
               </div>
               <div className="flex flex-col items-end">
-                <h1 className="text-2xl font-bold text-[#7a2828]">INVOICE</h1>
+                <h1 className="text-2xl font-bold text-[#023d12] ">INVOICE</h1>
                 <div className="flex gap-2 mt-2 download-buttons">
                   <Button
                     variant="outline"
@@ -211,7 +211,7 @@ export default function InvoicePage() {
                 <div>
                   <h3 className="text-sm font-medium text-amber-800">Shipping Address</h3>
                   <div className="mt-2 p-3 bg-amber-50 rounded-md border border-amber-100">
-                    <p className="font-medium text-[#7a2828]">{invoice.order_address?.name}</p>
+                    <p className="font-medium text-[#023d12] ">{invoice.order_address?.name}</p>
                     <p className="text-sm text-gray-600">{invoice.order_address?.house_no}</p>
                     <p className="text-sm text-gray-600">{invoice.order_address?.city}</p>
                     <p className="text-sm text-gray-600">
@@ -229,13 +229,13 @@ export default function InvoicePage() {
               <h3 className="text-sm font-medium text-amber-800 mb-3">Order Items</h3>
               <div className="rounded-md border border-amber-200 overflow-hidden">
                 <Table>
-                  <TableHeader className="bg-[#7a2828]/5">
+                  <TableHeader className="bg-[#023d12] /5">
                     <TableRow>
-                      <TableHead className="text-[#7a2828]">Item</TableHead>
-                      <TableHead className="text-[#7a2828] text-center">Qty</TableHead>
-                      <TableHead className="text-[#7a2828] text-right">Gross Weight</TableHead>
-                      <TableHead className="text-[#7a2828] text-right">Item Subtotal</TableHead>
-                      <TableHead className="text-[#7a2828]">Status</TableHead>
+                      <TableHead className="text-[#023d12] ">Item</TableHead>
+                      <TableHead className="text-[#023d12]  text-center">Qty</TableHead>
+                      <TableHead className="text-[#023d12]  text-right">Gross Weight</TableHead>
+                      <TableHead className="text-[#023d12]  text-right">Item Subtotal</TableHead>
+                      <TableHead className="text-[#023d12] ">Status</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -244,7 +244,7 @@ export default function InvoicePage() {
                         <TableCell className="font-medium">{item.product.name}</TableCell>
                         <TableCell className="text-center">{item.quantity}</TableCell>
                         <TableCell className="text-right">{item.variant.gross_weight} g</TableCell>
-                        <TableCell className="text-right font-medium">₹ {item.subtotal.toFixed(2)}</TableCell>
+                        <TableCell className="text-right font-medium">£ {item.subtotal.toFixed(2)}</TableCell>
                         <TableCell>
                           <Badge
                             variant="outline"
@@ -264,38 +264,38 @@ export default function InvoicePage() {
               <div className="w-full md:w-72 space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-500">Item Prices</span>
-                  <span>₹ {invoice.total_amount.toFixed(2)}</span>
+                  <span>£ {invoice.total_amount.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-500">Product Discount</span>
-                  <span className="text-red-600">- ₹ {invoice.total_discount.toFixed(2)}</span>
+                  <span className="text-red-600">- £ {invoice.total_discount.toFixed(2)}</span>
                 </div>
                  
                  <div className="flex justify-between text-sm">
                   <span className="text-gray-500">Tax</span>
                  <span>
-                ₹ {invoice?.total_tax ? invoice.total_tax.toFixed(2) : '0.00'}
+                £ {invoice?.total_tax ? invoice.total_tax.toFixed(2) : '0.00'}
               </span>
                 </div>
                  <div className="flex justify-between text-sm">
                   <span className="text-gray-500">Coupon Discount</span>
-                  <span className="text-red-600"> ₹ {invoice.coupon_discount.toFixed(2)}</span>
+                  <span className="text-red-600"> £ {invoice.coupon_discount.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-500">Shipping Charge</span>
-                 <span>₹ {invoice?.shipping ? invoice.shipping.toFixed(2) : "0.00"}</span>
+                 <span>£ {invoice?.shipping ? invoice.shipping.toFixed(2) : "0.00"}</span>
                 </div>
                 <Separator className="my-2 bg-amber-200" />
                 <div className="flex justify-between font-medium">
-                  <span className="text-[#7a2828]">Grand Total</span>
-                  <span className="text-[#7a2828]">₹ {invoice.final_total.toFixed(2)}</span>
+                  <span className="text-[#023d12] ">Grand Total</span>
+                  <span className="text-[#023d12] ">£ {invoice.final_total.toFixed(2)}</span>
                 </div>
               </div>
             </div>
           </CardContent>
 
           <CardFooter className="flex flex-col items-center p-6 bg-amber-50 border-t border-amber-100">
-            <p className="text-center text-[#7a2828] font-medium">Thank you for shopping with Vaishali Gold!</p>
+            <p className="text-center text-[#023d12]  font-medium">Thank you for shopping with Vaishali Gold!</p>
             <p className="text-center text-sm text-gray-600 mt-1">
               If you have any questions about your order, please contact our customer service.
             </p>

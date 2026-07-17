@@ -260,7 +260,7 @@
 //           }}
 //         >
 //           <DialogTrigger asChild>
-//             <Button className="bg-[#7a2828] hover:bg-red-600 text-white">
+//             <Button className="bg-[#023d12]  hover:bg-red-600 text-white">
 //               Create Coupon
 //             </Button>
 //           </DialogTrigger>
@@ -268,7 +268,7 @@
 //             <DialogHeader>
 //               <DialogTitle className="text-xl font-semibold text-gray-800">
 //                 {isEditing ? "Edit Coupon" : "Create Coupon"}
-//                 <div className="h-1 w-12 bg-[#7a2828] mt-1"></div>
+//                 <div className="h-1 w-12 bg-[#023d12]  mt-1"></div>
 //               </DialogTitle>
 //             </DialogHeader>
 //             {error && (
@@ -468,7 +468,7 @@
 //               <div className="flex space-x-2 mt-4">
 //                 <Button
 //                   type="submit"
-//                   className="bg-[#7a2828] hover:bg-[#7a2828] text-white"
+//                   className="bg-[#023d12]  hover:bg-[#023d12]  text-white"
 //                 >
 //                   {isEditing ? "Update Coupon" : "Create Coupon"}
 //                 </Button>
@@ -873,7 +873,7 @@ export default function CouponManagement() {
             }}
           >
             <DialogTrigger asChild>
-              <Button className="bg-[#7a2828] hover:bg-red-600 text-white">
+              <Button className="bg-[#023d12]  hover:bg-red-600 text-white">
                 Create Coupon
               </Button>
             </DialogTrigger>
@@ -881,7 +881,7 @@ export default function CouponManagement() {
               <DialogHeader>
                 <DialogTitle className="text-xl font-semibold text-gray-800">
                   {isEditing ? "Edit Coupon" : "Create Coupon"}
-                  <div className="h-1 w-12 bg-[#7a2828] mt-1"></div>
+                  <div className="h-1 w-12 bg-[#023d12]  mt-1"></div>
                 </DialogTitle>
               </DialogHeader>
               {error && (
@@ -1049,7 +1049,7 @@ export default function CouponManagement() {
                 <div className="flex space-x-2 mt-4">
                   <Button
                     type="submit"
-                    className="bg-[#7a2828] hover:bg-[#7a2828] text-white"
+                    className="bg-[#023d12]  hover:bg-[#023d12]  text-white"
                   >
                     {isEditing ? "Update Coupon" : "Create Coupon"}
                   </Button>

@@ -142,10 +142,10 @@ const AddAddress = () => {
   return (
     <div className="py-8 px-4 max-w-3xl mx-auto">
       <Card className="border border-[#e9d9b6] shadow-lg overflow-hidden bg-gradient-to-b from-[#fffbf0] to-[#fff9e6]">
-        <div className="absolute top-0 left-0 w-full h-1 bg-[#7a2828]"></div>
+        <div className="absolute top-0 left-0 w-full h-1 bg-[#023d12] "></div>
 
         <CardHeader className="pb-6 border-b border-[#e9d9b6]">
-          <CardTitle className="text-2xl font-serif text-[#7a2828]">Add New Address</CardTitle>
+          <CardTitle className="text-2xl font-serif text-[#023d12] ">Add New Address</CardTitle>
           <CardDescription className="text-[#a67c52]">
             Fill in the details to add a new delivery address
           </CardDescription>
@@ -155,14 +155,14 @@ const AddAddress = () => {
           <CardContent className="space-y-8 pt-8">
           
             {error && (
-              <div className="bg-[#7a2828]/10 border border-[#7a2828] p-4 rounded-md">
-                <p className="text-[#7a2828] text-sm">{error}</p>
+              <div className="bg-[#023d12] /10 border border-[#023d12]  p-4 rounded-md">
+                <p className="text-[#023d12]  text-sm">{error}</p>
               </div>
             )}
 
             {/* Address Type Selection */}
             <div className="space-y-2">
-              <Label className="text-[#7a2828] font-medium">Address Type <span className="text-[#7a2828]">*</span></Label>
+              <Label className="text-[#023d12]  font-medium">Address Type <span className="text-[#023d12] ">*</span></Label>
               <RadioGroup
                 value={formData.address_type}
                 onValueChange={handleRadioChange}
@@ -170,25 +170,25 @@ const AddAddress = () => {
               >
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="home" id="home" />
-                  <Label htmlFor="home" className="flex items-center text-[#7a2828]">
+                  <Label htmlFor="home" className="flex items-center text-[#023d12] ">
                     <Home className="w-4 h-4 mr-1" /> Home
                   </Label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="work" id="work" />
-                  <Label htmlFor="work" className="flex items-center text-[#7a2828]">
+                  <Label htmlFor="work" className="flex items-center text-[#023d12] ">
                     <Building className="w-4 h-4 mr-1" /> Work
                   </Label>
                 </div>
               </RadioGroup>
-              {errors?.address_type && <p className="text-[#7a2828] text-sm mt-1">{errors.address_type}</p>}
+              {errors?.address_type && <p className="text-[#023d12]  text-sm mt-1">{errors.address_type}</p>}
             </div>
 
             {/* Contact Information */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label htmlFor="name" className="text-[#7a2828] font-medium">
-                  Full Name <span className="text-[#7a2828]">*</span>
+                <Label htmlFor="name" className="text-[#023d12]  font-medium">
+                  Full Name <span className="text-[#023d12] ">*</span>
                 </Label>
                 <Input
                   id="name"
@@ -196,14 +196,14 @@ const AddAddress = () => {
                   placeholder="Enter your full name"
                   value={formData.name}
                   onChange={handleChange}
-                  className={`border-[#e9d9b6] focus:border-[#7a2828] focus:ring-[#7a2828]/20 transition-all duration-300 hover:border-[#d4b78c] ${errors.name ? 'border-[#7a2828]' : ''}`}
+                  className={`border-[#e9d9b6] focus:border-[#023d12]  focus:ring-[#023d12] /20 transition-all duration-300 hover:border-[#d4b78c] ${errors.name ? 'border-[#023d12] ' : ''}`}
                 />
-                {errors?.name && <p className="text-[#7a2828] text-sm mt-1">{errors.name}</p>}
+                {errors?.name && <p className="text-[#023d12]  text-sm mt-1">{errors.name}</p>}
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="mobile_number" className="text-[#7a2828] font-medium">
-                  Mobile Number <span className="text-[#7a2828]">*</span>
+                <Label htmlFor="mobile_number" className="text-[#023d12]  font-medium">
+                  Mobile Number <span className="text-[#023d12] ">*</span>
                 </Label>
                 <Input
                   id="mobile_number"
@@ -211,15 +211,15 @@ const AddAddress = () => {
                   placeholder="10-digit mobile number"
                   value={formData.mobile_number}
                   onChange={handleChange}
-                  className={`border-[#e9d9b6] focus:border-[#7a2828] focus:ring-[#7a2828]/20 transition-all duration-300 hover:border-[#d4b78c] ${errors.mobile_number ? 'border-[#7a2828]' : ''}`}
+                  className={`border-[#e9d9b6] focus:border-[#023d12]  focus:ring-[#023d12] /20 transition-all duration-300 hover:border-[#d4b78c] ${errors.mobile_number ? 'border-[#023d12] ' : ''}`}
                 />
-                {errors?.mobile_number && <p className="text-[#7a2828] text-sm mt-1">{errors.mobile_number}</p>}
+                {errors?.mobile_number && <p className="text-[#023d12]  text-sm mt-1">{errors.mobile_number}</p>}
               </div>
             </div>
 
             {/* Alternate Number */}
             <div className="space-y-2">
-              <Label htmlFor="alternate_number" className="text-[#7a2828] font-medium">
+              <Label htmlFor="alternate_number" className="text-[#023d12]  font-medium">
                 Alternate Number 
               </Label>
               <Input
@@ -228,15 +228,15 @@ const AddAddress = () => {
                 placeholder="Alternate contact number"
                 value={formData.alternate_number}
                 onChange={handleChange}
-                className={`border-[#e9d9b6] focus:border-[#7a2828] focus:ring-[#7a2828]/20 transition-all duration-300 hover:border-[#d4b78c] ${errors.alternate_number ? 'border-[#7a2828]' : ''}`}
+                className={`border-[#e9d9b6] focus:border-[#023d12]  focus:ring-[#023d12] /20 transition-all duration-300 hover:border-[#d4b78c] ${errors.alternate_number ? 'border-[#023d12] ' : ''}`}
               />
-              {errors?.alternate_number && <p className="text-[#7a2828] text-sm mt-1">{errors.alternate_number}</p>}
+              {errors?.alternate_number && <p className="text-[#023d12]  text-sm mt-1">{errors.alternate_number}</p>}
             </div>
 
             {/* Address Details */}
             <div className="space-y-2">
-              <Label htmlFor="house_no" className="text-[#7a2828] font-medium">
-                House No., Building Name <span className="text-[#7a2828]">*</span>
+              <Label htmlFor="house_no" className="text-[#023d12]  font-medium">
+                House No., Building Name <span className="text-[#023d12] ">*</span>
               </Label>
               <Input
                 id="house_no"
@@ -244,13 +244,13 @@ const AddAddress = () => {
                 placeholder="House no., Floor, Building name"
                 value={formData.house_no}
                 onChange={handleChange}
-                className={`border-[#e9d9b6] focus:border-[#7a2828] focus:ring-[#7a2828]/20 transition-all duration-300 hover:border-[#d4b78c] ${errors.house_no ? 'border-[#7a2828]' : ''}`}
+                className={`border-[#e9d9b6] focus:border-[#023d12]  focus:ring-[#023d12] /20 transition-all duration-300 hover:border-[#d4b78c] ${errors.house_no ? 'border-[#023d12] ' : ''}`}
               />
-              {errors?.house_no && <p className="text-[#7a2828] text-sm mt-1">{errors.house_no}</p>}
+              {errors?.house_no && <p className="text-[#023d12]  text-sm mt-1">{errors.house_no}</p>}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="landmark" className="text-[#7a2828] font-medium">
+              <Label htmlFor="landmark" className="text-[#023d12]  font-medium">
                 Landmark 
               </Label>
               <Input
@@ -259,15 +259,15 @@ const AddAddress = () => {
                 placeholder="Nearby landmark for easy navigation"
                 value={formData.landmark}
                 onChange={handleChange}
-                className={`border-[#e9d9b6] focus:border-[#7a2828] focus:ring-[#7a2828]/20 transition-all duration-300 hover:border-[#d4b78c] ${errors.landmark ? 'border-[#7a2828]' : ''}`}
+                className={`border-[#e9d9b6] focus:border-[#023d12]  focus:ring-[#023d12] /20 transition-all duration-300 hover:border-[#d4b78c] ${errors.landmark ? 'border-[#023d12] ' : ''}`}
               />
-              {errors?.landmark && <p className="text-[#7a2828] text-sm mt-1">{errors.landmark}</p>}
+              {errors?.landmark && <p className="text-[#023d12]  text-sm mt-1">{errors.landmark}</p>}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label htmlFor="city" className="text-[#7a2828] font-medium">
-                  City <span className="text-[#7a2828]">*</span>
+                <Label htmlFor="city" className="text-[#023d12]  font-medium">
+                  City <span className="text-[#023d12] ">*</span>
                 </Label>
                 <Input
                   id="city"
@@ -275,19 +275,19 @@ const AddAddress = () => {
                   placeholder="Enter your city"
                   value={formData.city}
                   onChange={handleChange}
-                  className={`border-[#e9d9b6] focus:border-[#7a2828] focus:ring-[#7a2828]/20 transition-all duration-300 hover:border-[#d4b78c] ${errors.city ? 'border-[#7a2828]' : ''}`}
+                  className={`border-[#e9d9b6] focus:border-[#023d12]  focus:ring-[#023d12] /20 transition-all duration-300 hover:border-[#d4b78c] ${errors.city ? 'border-[#023d12] ' : ''}`}
                 />
-                {errors?.city && <p className="text-[#7a2828] text-sm mt-1">{errors.city}</p>}
+                {errors?.city && <p className="text-[#023d12]  text-sm mt-1">{errors.city}</p>}
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="state" className="text-[#7a2828] font-medium">
-                  State <span className="text-[#7a2828]">*</span>
+                <Label htmlFor="state" className="text-[#023d12]  font-medium">
+                  State <span className="text-[#023d12] ">*</span>
                 </Label>
                 <Select value={formData.state} onValueChange={(value) => handleSelectChange(value, "state")}>
                   <SelectTrigger
                     id="state"
-                    className={`border-[#e9d9b6] focus:border-[#7a2828] focus:ring-[#7a2828]/20 transition-all duration-300 hover:border-[#d4b78c] ${errors.state ? 'border-[#7a2828]' : ''}`}
+                    className={`border-[#e9d9b6] focus:border-[#023d12]  focus:ring-[#023d12] /20 transition-all duration-300 hover:border-[#d4b78c] ${errors.state ? 'border-[#023d12] ' : ''}`}
                   >
                     <SelectValue placeholder="Select state" />
                   </SelectTrigger>
@@ -296,20 +296,20 @@ const AddAddress = () => {
                       <SelectItem
                         key={state}
                         value={state}
-                        className="hover:bg-[#7a2828]/10 focus:bg-[#7a2828]/10 cursor-pointer"
+                        className="hover:bg-[#023d12] /10 focus:bg-[#023d12] /10 cursor-pointer"
                       >
                         {state}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
-                {errors?.state && <p className="text-[#7a2828] text-sm mt-1">{errors.state}</p>}
+                {errors?.state && <p className="text-[#023d12]  text-sm mt-1">{errors.state}</p>}
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="pin_code" className="text-[#7a2828] font-medium">
-                PIN Code <span className="text-[#7a2828]">*</span>
+              <Label htmlFor="pin_code" className="text-[#023d12]  font-medium">
+                PIN Code <span className="text-[#023d12] ">*</span>
               </Label>
               <Input
                 id="pin_code"
@@ -317,9 +317,9 @@ const AddAddress = () => {
                 placeholder="6-digit PIN code"
                 value={formData.pin_code}
                 onChange={handleChange}
-                className={`border-[#e9d9b6] focus:border-[#7a2828] focus:ring-[#7a2828]/20 transition-all duration-300 hover:border-[#d4b78c] ${errors.pin_code ? 'border-[#7a2828]' : ''}`}
+                className={`border-[#e9d9b6] focus:border-[#023d12]  focus:ring-[#023d12] /20 transition-all duration-300 hover:border-[#d4b78c] ${errors.pin_code ? 'border-[#023d12] ' : ''}`}
               />
-              {errors?.pin_code && <p className="text-[#7a2828] text-sm mt-1">{errors.pin_code}</p>}
+              {errors?.pin_code && <p className="text-[#023d12]  text-sm mt-1">{errors.pin_code}</p>}
             </div>
           </CardContent>
 
@@ -328,14 +328,14 @@ const AddAddress = () => {
               variant="outline"
               type="button"
               onClick={() => navigate(-1)}
-              className="border-[#d4b78c] text-[#a67c52] hover:bg-[#f8f0dd] hover:text-[#7a2828] transition-all duration-300"
+              className="border-[#d4b78c] text-[#a67c52] hover:bg-[#f8f0dd] hover:text-[#023d12]  transition-all duration-300"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               Cancel
             </Button>
             <Button
               type="submit"
-              className="bg-[#7a2828] hover:bg-[#5e1e1e] text-white transition-all duration-300 shadow-md hover:shadow-lg"
+              className="bg-[#023d12]  hover:bg-[#5e1e1e] text-white transition-all duration-300 shadow-md hover:shadow-lg"
               disabled={isSubmitting}
             >
               {isSubmitting ? (

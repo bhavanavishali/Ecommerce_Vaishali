@@ -2,10 +2,10 @@
 
 const SectionTitle = ({ title }) => (
   <div className="text-center mb-8 md:mb-10">
-    <h2 className="font-serif text-2xl md:text-[28px] text-gray-900 tracking-wide">{title}</h2>
+    <h2 className="font-serif text-2xl md:text-[28px] text-[#1E2C24] tracking-wide">{title}</h2>
     <div className="flex justify-center mt-3">
-      <div className="relative w-24 h-px bg-gray-300">
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-0.5 bg-gray-900" />
+      <div className="relative w-24 h-px bg-[#E8DFC6]">
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-0.5 bg-[#0B3D2E]" />
       </div>
     </div>
   </div>
@@ -46,7 +46,7 @@ const FeaturedCard = ({ item, onClick }) => {
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
         
         <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
-          <h3 className="font-serif text-xl md:text-2xl text-white mb-2 group-hover:text-[#d4a574] transition-colors">
+          <h3 className="font-serif text-xl md:text-2xl text-white mb-2 group-hover:text-[#D4AF37] transition-colors">
             {item.title}
           </h3>
           <p className="text-sm md:text-base text-gray-200 line-clamp-2 mb-4">
@@ -66,7 +66,7 @@ const FeaturedCard = ({ item, onClick }) => {
 
 const Featured = ({ onItemClick }) => {
   return (
-    <section className="w-full bg-white py-10 md:py-14 border-t border-gray-100">
+    <section className="w-full bg-[#FFFDF8] py-10 md:py-14 border-t border-[#E8DFC6]">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10">
         <SectionTitle title="Featured" />
 

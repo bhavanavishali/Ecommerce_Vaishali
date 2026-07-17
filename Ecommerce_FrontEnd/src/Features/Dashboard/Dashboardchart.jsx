@@ -64,7 +64,7 @@ export default function AdminDashboard() {
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6 text-[#7a2828]">Admin Dashboard</h1>
+      <h1 className="text-3xl font-bold mb-6 text-[#023d12] ">Admin Dashboard</h1>
 
       {/* Time filter buttons */}
       <div className="flex gap-2 mb-6">
@@ -106,10 +106,10 @@ export default function AdminDashboard() {
               <BarChart data={salesData}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
                 <XAxis dataKey={getXAxisKey()} tickLine={false} axisLine={false} />
-                <YAxis tickLine={false} axisLine={false} tickFormatter={(value) => `₹${value}`} />
+                <YAxis tickLine={false} axisLine={false} tickFormatter={(value) => `£${value}`} />
                 <ChartTooltip
                   cursor={false}
-                  content={<ChartTooltipContent indicator="dashed" formatter={(value) => `₹${value}`} />}
+                  content={<ChartTooltipContent indicator="dashed" formatter={(value) => `£${value}`} />}
                 />
                 <Bar dataKey="sales" fill="var(--color-sales)" radius={4} />
               </BarChart>

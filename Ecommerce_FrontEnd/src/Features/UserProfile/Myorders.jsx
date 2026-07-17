@@ -123,7 +123,7 @@ const MyOrders = () => {
                     <td className="p-4 font-medium">{order.order_number}</td>
                     <td className="p-4 text-gray-600">{formatDate(order.created_at)}</td>
                     <td className="p-4">{order.items?.length || 0} items</td>
-                    <td className="p-4 font-medium">₹{order.final_total}</td>
+                    <td className="p-4 font-medium">£{order.final_total}</td>
                     
                     <td className="p-4 text-right">
                     <Button variant="secondary" className="bg-red-800 text-white hover:bg-red-700"

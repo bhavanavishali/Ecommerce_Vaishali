@@ -6,7 +6,7 @@
 import { useState, useEffect } from "react"
 import { useDebounce } from "use-debounce"
 import { useNavigate } from "react-router-dom"
-import { Search, Pencil, Plus, Lock, Unlock, Percent, Filter, Package, TrendingUp, MoreVertical } from "lucide-react"
+import { Search, Pencil, Plus, Lock, Unlock, Percent, Filter, Package, TrendingUp, MoreVertical, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
@@ -43,6 +43,8 @@ export default function ProductTable() {
   const [isOfferModalOpen, setIsOfferModalOpen] = useState(false)
   const [selectedProductId, setSelectedProductId] = useState(null)
   const [offerPercentage, setOfferPercentage] = useState("")
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+  const [productToDelete, setProductToDelete] = useState(null)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -113,6 +115,26 @@ export default function ProductTable() {
     setSelectedProductId(productId)
     setOfferPercentage(product.discount ? product.discount.toString() : "")
     setIsOfferModalOpen(true)
+  }
+
+  const openDeleteModal = (productId) => {
+    const product = products.find((p) => p.id === productId)
+    setProductToDelete(product)
+    setIsDeleteModalOpen(true)
+  }
+
+  const handleDeleteProduct = async () => {
+    if (!productToDelete) return
+
+    try {
+      await api.delete(`productapp/products/${productToDelete.id}/`)
+      setProducts(products.filter((p) => p.id !== productToDelete.id))
+      setIsDeleteModalOpen(false)
+      setProductToDelete(null)
+    } catch (err) {
+      console.error("Error deleting product:", err)
+      alert("Failed to delete product. Please try again.")
+    }
   }
 
   const filteredProducts = products.filter(
@@ -401,6 +423,15 @@ export default function ProductTable() {
                             >
                               <Percent className="h-4 w-4 text-purple-500" />
                             </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => openDeleteModal(product.id)}
+                              className="h-8 w-8 p-0 hover:bg-red-100"
+                              title="Delete Product"
+                            >
+                              <Trash2 className="h-4 w-4 text-red-500" />
+                            </Button>
                           </div>
                         </td>
                       </tr>
@@ -465,6 +496,10 @@ export default function ProductTable() {
                             <DropdownMenuItem onClick={() => openOfferModal(product.id)}>
                               <Percent className="h-4 w-4 mr-2" />
                               Add/Edit Discount
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => openDeleteModal(product.id)} className="text-red-600">
+                              <Trash2 className="h-4 w-4 mr-2" />
+                              Delete Product
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
@@ -581,6 +616,29 @@ export default function ProductTable() {
                 </Button>
               </DialogFooter>
             </form>
+          </DialogContent>
+        </Dialog>
+
+        {/* Delete Confirmation Modal */}
+        <Dialog open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
+          <DialogContent className="sm:max-w-md bg-white">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2 text-red-600">
+                <Trash2 className="h-5 w-5" />
+                Delete Product
+              </DialogTitle>
+              <DialogDescription>
+                Are you sure you want to delete "{productToDelete?.name}"? This action cannot be undone.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter className="gap-2">
+              <Button type="button" variant="outline" onClick={() => setIsDeleteModalOpen(false)}>
+                Cancel
+              </Button>
+              <Button type="button" variant="destructive" onClick={handleDeleteProduct}>
+                Delete Product
+              </Button>
+            </DialogFooter>
           </DialogContent>
         </Dialog>
       </div>

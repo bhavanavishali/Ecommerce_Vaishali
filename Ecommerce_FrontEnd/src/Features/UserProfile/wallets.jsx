@@ -44,11 +44,11 @@ const WalletPage = () => {
         <CardDescription>Manage your wallet balance and transactions</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="bg-gradient-to-r from-[#7a2828] to-red-200 rounded-lg p-6 text-white mb-6">
+        <div className="bg-gradient-to-r from-[#023d12]  to-red-200 rounded-lg p-6 text-white mb-6">
           <div className="flex justify-between items-start">
             <div>
               <p className="text-sm opacity-80">Available Balance</p>
-              <h2 className="text-3xl font-bold mt-1">₹{balance.toFixed(2)}</h2>
+              <h2 className="text-3xl font-bold mt-1">£{balance.toFixed(2)}</h2>
             </div>
             <CreditCard className="h-8 w-8 opacity-80" />
           </div>
@@ -87,7 +87,7 @@ const WalletPage = () => {
                   <p
                     className={`font-medium ${transaction.transaction_type === "credit" ? "text-green-600" : "text-red-600"}`}
                   >
-                    {transaction.transaction_type === "credit" ? "+" : "-"}₹
+                    {transaction.transaction_type === "credit" ? "+" : "-"}£
                     {(parseFloat(transaction.amount) || 0).toFixed(2)}
                   </p>
                 </div>
@@ -117,7 +117,7 @@ const WalletPage = () => {
                       </div>
                     </div>
                     <p className="font-medium text-green-600">
-                      +₹{(parseFloat(transaction.amount) || 0).toFixed(2)}
+                      +£{(parseFloat(transaction.amount) || 0).toFixed(2)}
                     </p>
                   </div>
                 ))
@@ -146,7 +146,7 @@ const WalletPage = () => {
                       </div>
                     </div>
                     <p className="font-medium text-red-600">
-                      -₹{(parseFloat(transaction.amount) || 0).toFixed(2)}
+                      -£{(parseFloat(transaction.amount) || 0).toFixed(2)}
                     </p>
                   </div>
                 ))

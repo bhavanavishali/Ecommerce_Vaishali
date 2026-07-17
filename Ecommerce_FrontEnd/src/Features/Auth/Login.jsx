@@ -10,7 +10,8 @@ import { useNavigate, Link, useParams } from "react-router-dom"
 import api from "../../api"
 import { setAuthData } from "@/Redux/authslice"
 import Swal from "sweetalert2"
-import { Loader2, Crown, Gem, Sparkles } from "lucide-react"
+import { Loader2, Sparkles, Eye, EyeOff ,ShieldCheck, Lock, Truck } from "lucide-react"
+import GoogleLoginButton from "./GoogleLoginButton"
 
 function Login() {
   const [formData, setFormData] = useState({
@@ -26,6 +27,7 @@ function Login() {
   const [isResetPasswordModal, setIsResetPasswordModal] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
 
   const dispatch = useDispatch()
   const navigate = useNavigate()
@@ -129,13 +131,13 @@ function Login() {
   // Loading screen
   if (isLoading) {
     return (
-      <div className="fixed inset-0 bg-gradient-to-br from-amber-50 via-white to-amber-100 flex items-center justify-center">
+      <div className="fixed inset-0 bg-gradient-to-br from-[#FFFDF7] via-[#FFF7E6] to-[#FFFFFF] flex items-center justify-center">
         <div className="text-center">
           <div className="relative mb-8">
-            <div className="w-20 h-20 border-4 border-[#7a2828] border-t-transparent rounded-full animate-spin mx-auto"></div>
-            <Crown className="w-8 h-8 text-[#7a2828] absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
+            <div className="w-20 h-20 border-4 border-[#0B3D2E] border-t-transparent rounded-full animate-spin mx-auto"></div>
+            
           </div>
-          <div className="flex items-center justify-center gap-2 text-[#7a2828] font-semibold text-lg">
+          <div className="flex items-center justify-center gap-2 text-[#0B3D2E] font-semibold text-lg">
             <Sparkles className="w-5 h-5 animate-pulse" />
             <span>Loading Luxury Experience</span>
             <Sparkles className="w-5 h-5 animate-pulse" />
@@ -146,31 +148,27 @@ function Login() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-amber-100 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-[#FFFDF7] via-[#FFF7E6] to-[#FFFFFF] relative overflow-hidden">
       {/* Decorative elements */}
       <div className="absolute top-10 left-10 opacity-20">
-        <Gem className="w-16 h-16 text-[#7a2828] animate-pulse" />
+       
       </div>
       <div className="absolute top-20 right-20 opacity-20">
-        <Crown className="w-12 h-12 text-[#7a2828] animate-pulse" />
+       
       </div>
       <div className="absolute bottom-20 left-20 opacity-20">
-        <Sparkles className="w-14 h-14 text-[#7a2828] animate-pulse" />
+        <Sparkles className="w-14 h-14 text-[#0B3D2E] animate-pulse" />
       </div>
 
       <div className="flex min-h-screen w-full relative z-10">
         {/* Left side with logo */}
         <div className="hidden lg:flex w-1/2 items-center justify-center p-8 relative">
-          <div className="absolute inset-0 bg-gradient-to-br from-[#7a2828]/5 to-amber-100/30 backdrop-blur-sm"></div>
-          <div className="relative z-10 text-center">
-            <div className="mb-8 p-8 bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl border border-amber-200">
+          <div className="absolute inset-0 bg-gradient-to-br from-[#023d12] /5 to-amber-100/30 backdrop-blur-sm"></div>
+          <div className="relative z-15 text-center">
+            {/* <div className="mb-8 p-8 bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl border border-amber-200"> */}
               <img src={Logo || "/placeholder.svg"} alt="Vaishali Gold Logo" className="max-w-md mx-auto" />
-            </div>
-            <div className="flex items-center justify-center gap-3 text-[#7a2828] font-semibold text-xl">
-              <Crown className="w-6 h-6" />
-              <span>Premium Gold Jewelry</span>
-              <Crown className="w-6 h-6" />
-            </div>
+            {/* </div> */}
+            
           </div>
         </div>
 
@@ -179,17 +177,17 @@ function Login() {
           <div className="w-full max-w-md">
             {/* Mobile logo */}
             <div className="lg:hidden text-center mb-8">
-              <div className="inline-block p-4 bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-amber-200">
+              {/* <div className="inline-block p-4 bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-amber-200"> */}
                 <img src={Logo || "/placeholder.svg"} alt="Vaishali Gold Logo" className="max-w-32 mx-auto" />
-              </div>
+              {/* </div> */}
             </div>
 
-            <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl border border-amber-200 p-6 sm:p-8">
+            <div className="bg-[rgba(255,255,255,0.95)] backdrop-blur-[16px] rounded-2xl sm:rounded-[32px] shadow-[0_30px_60px_rgba(0,0,0,0.12)] p-5 sm:p-8">
               <div className="text-center mb-8">
                 <div className="flex items-center justify-center gap-2 mb-4">
-                  <Gem className="w-8 h-8 text-[#7a2828]" />
-                  <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-[#7a2828]">Welcome Back</h1>
-                  <Gem className="w-8 h-8 text-[#7a2828]" />
+                 
+                  <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#0B3D2E]">Welcome Back</h1>
+                
                 </div>
                 <p className="text-gray-600 font-medium">Sign in to your luxury account</p>
               </div>
@@ -203,26 +201,30 @@ function Login() {
                       placeholder="Enter your email"
                       value={formData.email}
                       onChange={handleChange}
-                      className="h-14 rounded-xl bg-gradient-to-r from-amber-50 to-white px-4 border-2 border-amber-200 focus:border-[#7a2828] transition-all duration-300 text-gray-800 placeholder:text-gray-500"
+                      className="h-12 sm:h-14 rounded-2xl border border-[#E5C96A] bg-white focus:ring-2 focus:ring-[#0B3D2E] px-14 text-base sm:text-lg"
                     />
                     <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                      <Sparkles className="w-5 h-5 text-[#7a2828] opacity-50" />
+                      <Sparkles className="w-5 h-5 text-[#0B3D2E] opacity-50" />
                     </div>
                   </div>
                 </div>
                 <div className="space-y-2">
                   <div className="relative">
                     <Input
-                      type="password"
+                      type={showPassword ? "text" : "password"}
                       name="password"
                       placeholder="Enter your password"
                       value={formData.password}
                       onChange={handleChange}
-                      className="h-14 rounded-xl bg-gradient-to-r from-amber-50 to-white px-4 border-2 border-amber-200 focus:border-[#7a2828] transition-all duration-300 text-gray-800 placeholder:text-gray-500"
+                      className="h-12 sm:h-14 rounded-2xl border border-[#E5C96A] bg-white focus:ring-2 focus:ring-[#0B3D2E] px-14 text-base sm:text-lg pr-12"
                     />
-                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                      <Crown className="w-5 h-5 text-[#7a2828] opacity-50" />
-                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#0B3D2E] opacity-50 hover:opacity-70 transition-opacity"
+                    >
+                      {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    </button>
                   </div>
                 </div>
 
@@ -232,38 +234,60 @@ function Login() {
                   </div>
                 )}
 
+              
                 <Button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="h-14 w-full rounded-xl bg-gradient-to-r from-[#7a2828] to-[#8b3333] text-white hover:from-[#6a2323] hover:to-[#7a2828] transition-all duration-300 shadow-lg hover:shadow-xl font-semibold text-lg disabled:opacity-50"
-                >
-                  {isSubmitting ? (
-                    <div className="flex items-center gap-2">
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                      <span>Signing In...</span>
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-2">
-                      <Crown className="w-5 h-5" />
-                      <span>Sign In</span>
-                    </div>
-                  )}
-                </Button>
+  type="submit"
+  disabled={isSubmitting}
+  className="group relative h-12 sm:h-14 w-full overflow-hidden rounded-2xl bg-gradient-to-r from-[#0B3D2E] via-[#14532D] to-[#8B6B1F] text-base sm:text-lg font-semibold tracking-wide text-white shadow-xl transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl disabled:cursor-not-allowed disabled:opacity-60"
+>
+  {/* Shine Effect */}
+  <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/25 to-transparent transition-transform duration-700 group-hover:translate-x-full"></span>
+
+  {/* Content */}
+  <span className="relative flex items-center justify-center gap-3">
+    {isSubmitting ? (
+      <>
+        <Loader2 className="h-5 w-5 animate-spin" />
+        <span>Signing In...</span>
+      </>
+    ) : (
+      <>
+        
+        <span>Sign In</span>
+      </>
+    )}
+  </span>
+</Button>
               </form>
 
               <div className="mt-8 text-center space-y-4">
                 <button
                   onClick={() => setIsModalOpen(true)}
-                  className="text-[#7a2828] hover:text-[#6a2323] font-medium hover:underline transition-colors duration-200"
+                  className="text-[#023d12]  hover:text-[#6a2323] font-medium hover:underline transition-colors duration-200"
                 >
                   Forgot Password?
                 </button>
+
+                <div className="relative my-6">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-amber-200"></div>
+                  </div>
+                  <div className="relative flex justify-center text-sm">
+                    <span className="px-4 bg-white text-gray-600 font-medium">Or continue with</span>
+                  </div>
+                </div>
+
+                <div className="flex justify-center">
+                  <div className="w-full">
+                    <GoogleLoginButton />
+                  </div>
+                </div>
 
                 <div className="border-t border-amber-200 pt-4">
                   <span className="text-gray-600">Don't have an account? </span>
                   <Link
                     to="/signup"
-                    className="text-[#7a2828] hover:text-[#6a2323] font-semibold hover:underline transition-colors duration-200"
+                    className="text-[#023d12]  hover:text-[#6a2323] font-semibold hover:underline transition-colors duration-200"
                   >
                     Create Account
                   </Link>
@@ -278,9 +302,9 @@ function Login() {
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full border border-amber-200 overflow-hidden">
-            <div className="bg-gradient-to-r from-[#7a2828] to-[#8b3333] p-6 text-white">
+            <div className="bg-gradient-to-r from-[#023d12]  to-[#8b3333] p-6 text-white">
               <div className="flex items-center gap-3">
-                <Crown className="w-6 h-6" />
+                
                 <h2 className="text-2xl font-bold">Reset Password</h2>
               </div>
               <p className="mt-2 opacity-90">Enter your email to receive reset instructions</p>
@@ -294,15 +318,15 @@ function Login() {
                     placeholder="Enter your email address"
                     value={resetEmail}
                     onChange={(e) => setResetEmail(e.target.value)}
-                    className="h-12 rounded-xl bg-gradient-to-r from-amber-50 to-white px-4 border-2 border-amber-200 focus:border-[#7a2828] transition-all duration-300"
+                    className="h-12 rounded-xl bg-gradient-to-r from-amber-50 to-white px-4 border-2 border-amber-200 focus:border-[#023d12]  transition-all duration-300"
                   />
-                  <Sparkles className="w-5 h-5 text-[#7a2828] opacity-50 absolute right-3 top-1/2 transform -translate-y-1/2" />
+                  <Sparkles className="w-5 h-5 text-[#023d12]  opacity-50 absolute right-3 top-1/2 transform -translate-y-1/2" />
                 </div>
 
                 <div className="flex gap-3 pt-2">
                   <Button
                     type="submit"
-                    className="h-12 flex-1 rounded-xl bg-gradient-to-r from-[#7a2828] to-[#8b3333] text-white hover:from-[#6a2323] hover:to-[#7a2828] transition-all duration-300 font-semibold"
+                    className="h-12 flex-1 rounded-xl bg-gradient-to-r from-[#023d12]  to-[#8b3333] text-white hover:from-[#6a2323] hover:to-[#023d12]  transition-all duration-300 font-semibold"
                   >
                     Send Reset Link
                   </Button>

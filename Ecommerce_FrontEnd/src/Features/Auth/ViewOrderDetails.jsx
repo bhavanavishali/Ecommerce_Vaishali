@@ -473,11 +473,11 @@
 //         <div className="flex flex-col items-center gap-6 text-center">
 //           <div className="relative w-24 h-24">
 //             <div className="absolute inset-0 rounded-full border-4 border-[#e5d1d1] opacity-25"></div>
-//             <div className="absolute inset-0 rounded-full border-4 border-t-transparent border-[#7a2828] animate-spin"></div>
+//             <div className="absolute inset-0 rounded-full border-4 border-t-transparent border-[#023d12]  animate-spin"></div>
 //           </div>
 //           <div className="space-y-2">
 //             <h3 className="text-2xl font-bold text-[#441717]">Loading Order Details</h3>
-//             <p className="text-[#7a2828]">Please wait while we fetch your order information...</p>
+//             <p className="text-[#023d12] ">Please wait while we fetch your order information...</p>
 //           </div>
 //         </div>
 //       </div>
@@ -497,7 +497,7 @@
 //                 <h3 className="text-2xl font-bold text-red-800">Error Loading Order</h3>
 //                 <p className="text-red-600">{error}</p>
 //                 <Button
-//                   className="mt-4 bg-gradient-to-r from-[#7a2828] to-[#441717] hover:from-[#5e1f1f] hover:to-[#2a0e0e] text-white"
+//                   className="mt-4 bg-gradient-to-r from-[#023d12]  to-[#441717] hover:from-[#5e1f1f] hover:to-[#2a0e0e] text-white"
 //                   onClick={() => navigate("/myorders")}
 //                 >
 //                   Return to Orders
@@ -523,7 +523,7 @@
 //                 <h3 className="text-2xl font-bold text-amber-800">Order Not Found</h3>
 //                 <p className="text-amber-600">We couldn't find the order you're looking for.</p>
 //                 <Button
-//                   className="mt-4 bg-gradient-to-r from-[#7a2828] to-[#441717] hover:from-[#5e1f1f] hover:to-[#2a0e0e] text-white"
+//                   className="mt-4 bg-gradient-to-r from-[#023d12]  to-[#441717] hover:from-[#5e1f1f] hover:to-[#2a0e0e] text-white"
 //                   onClick={() => navigate("/myorders")}
 //                 >
 //                   Return to Orders
@@ -559,7 +559,7 @@
 //         <Button
 //           variant="ghost"
 //           size="sm"
-//           className="mb-6 text-[#7a2828] hover:text-[#2a0e0e] hover:bg-[#f3e9e9] transition-all duration-300 group flex items-center"
+//           className="mb-6 text-[#023d12]  hover:text-[#2a0e0e] hover:bg-[#f3e9e9] transition-all duration-300 group flex items-center"
 //           onClick={() => navigate("/myorders")}
 //         >
 //           <ArrowLeft className="h-5 w-5 mr-2 group-hover:-translate-x-1 transition-transform duration-300" />
@@ -568,19 +568,19 @@
 
 //         {/* Breadcrumb */}
 //         <nav className="flex items-center text-sm text-gray-600 mb-8 overflow-x-auto pb-2 font-medium">
-//   <Link to="/" className="flex items-center hover:text-[#7a2828] transition-colors duration-200">
+//   <Link to="/" className="flex items-center hover:text-[#023d12]  transition-colors duration-200">
 //     <Home className="h-4 w-4 mr-1" />
 //     Home
 //   </Link>
 //   <ChevronRight className="h-4 w-4 mx-2 flex-shrink-0 text-gray-400" />
   
-//   <Link to="/userprofile" className="hover:text-[#7a2828] transition-colors duration-200 whitespace-nowrap">
+//   <Link to="/userprofile" className="hover:text-[#023d12]  transition-colors duration-200 whitespace-nowrap">
 //     My Account
 //   </Link>
 
 //   <ChevronRight className="h-4 w-4 mx-2 flex-shrink-0 text-gray-400" />
   
-//   <span className="text-[#7a2828] font-semibold whitespace-nowrap">
+//   <span className="text-[#023d12]  font-semibold whitespace-nowrap">
 //     Order #{order.order_number}
 //   </span>
 // </nav>
@@ -590,10 +590,10 @@
 //   <CardContent className="p-8 relative z-10">
 //     <div className="flex items-center justify-between gap-3 mb-6">
 //       <div className="flex items-center gap-3">
-//         <div className="bg-gradient-to-r from-[#7a2828] to-[#b8860b] p-2 rounded-lg shadow-md">
+//         <div className="bg-gradient-to-r from-[#023d12]  to-[#b8860b] p-2 rounded-lg shadow-md">
 //           <Package className="h-6 w-6 text-white" />
 //         </div>
-//         <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#7a2828] to-[#b8860b]">
+//         <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#023d12]  to-[#b8860b]">
 //           Order Status
 //         </h2>
 //       </div>
@@ -619,7 +619,7 @@
 //               <Button
 //                 variant="destructive"
 //                 size="sm"
-//                 className="bg-gradient-to-r from-[#7a2828] to-[#5e1f1f] hover:from-[#5e1f1f] hover:to-[#441717] text-white font-semibold px-4 py-2 transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-md hover:shadow-lg"
+//                 className="bg-gradient-to-r from-[#023d12]  to-[#5e1f1f] hover:from-[#5e1f1f] hover:to-[#441717] text-white font-semibold px-4 py-2 transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-md hover:shadow-lg"
 //                 disabled={isCancellingItem || isReturningItem}
 //               >
 //                 <XCircle className="h-5 w-5 mr-2" />
@@ -649,7 +649,7 @@
 //                     value={cancelReasonType}
 //                     className="col-span-3"
 //                   >
-//                     <SelectTrigger className="bg-white border-red-200 focus:ring-[#7a2828]">
+//                     <SelectTrigger className="bg-white border-red-200 focus:ring-[#023d12] ">
 //                       <SelectValue placeholder="Select a reason" />
 //                     </SelectTrigger>
 //                     <SelectContent className="bg-white border-red-200">
@@ -669,7 +669,7 @@
 //                       id="reason-details"
 //                       value={cancelReason}
 //                       onChange={(e) => setCancelReason(e.target.value)}
-//                       className="col-span-3 border-red-200 focus:ring-[#7a2828]"
+//                       className="col-span-3 border-red-200 focus:ring-[#023d12] "
 //                       placeholder="Provide more details"
 //                     />
 //                   </div>
@@ -689,7 +689,7 @@
 //                 </Button>
 //                 <Button
 //                   onClick={handleCancelOrder}
-//                   className="bg-gradient-to-r from-[#7a2828] to-[#5e1f1f] hover:from-[#5e1f1f] hover:to-[#441717] text-white"
+//                   className="bg-gradient-to-r from-[#023d12]  to-[#5e1f1f] hover:from-[#5e1f1f] hover:to-[#441717] text-white"
 //                   disabled={isCancellingItem || isReturningItem}
 //                 >
 //                   Submit
@@ -782,7 +782,7 @@
 //                       <div
 //                         className={`rounded-full h-14 w-14 flex items-center justify-center ${
 //                           isActive()
-//                             ? "bg-gradient-to-br from-[#7a2828] to-[#b8860b] text-white"
+//                             ? "bg-gradient-to-br from-[#023d12]  to-[#b8860b] text-white"
 //                             : "bg-gray-200 text-gray-500"
 //                         } font-bold text-lg group-hover:shadow-lg group-hover:shadow-purple-300 transition-all duration-300 transform group-hover:scale-110`}
 //                       >
@@ -790,7 +790,7 @@
 //                       </div>
 //                       <p
 //                         className={`mt-3 font-semibold text-sm ${
-//                           isActive() ? "text-gray-800 group-hover:text-[#7a2828]" : "text-gray-500"
+//                           isActive() ? "text-gray-800 group-hover:text-[#023d12] " : "text-gray-500"
 //                         } transition-colors duration-200`}
 //                       >
 //                         {step.label}
@@ -809,7 +809,7 @@
 //                       </p>
 //                     </div>
 //                   </TooltipTrigger>
-//                   <TooltipContent className="bg-gradient-to-r from-[#7a2828] to-[#b8860b] text-white border-none shadow-lg">
+//                   <TooltipContent className="bg-gradient-to-r from-[#023d12]  to-[#b8860b] text-white border-none shadow-lg">
 //                     <p>{getTooltipContent()}</p>
 //                   </TooltipContent>
 //                 </Tooltip>
@@ -821,7 +821,7 @@
 
 //       <div className="absolute top-7 left-0 right-0 h-2 bg-gray-200 -z-10 rounded-full">
 //         <div
-//           className="h-full bg-gradient-to-r from-[#7a2828] to-[#b8860b] transition-all duration-1000 rounded-full"
+//           className="h-full bg-gradient-to-r from-[#023d12]  to-[#b8860b] transition-all duration-1000 rounded-full"
 //           style={{
 //             width: (() => {
 //               const filteredSteps = [
@@ -873,10 +873,10 @@
 //   <CardContent className="p-8 relative z-10">
 //     <div className="flex items-center justify-between gap-3 mb-6">
 //       <div className="flex items-center gap-3">
-//         <div className="bg-gradient-to-r from-[#7a2828] to-[#b8860b] p-2 rounded-lg shadow-md">
+//         <div className="bg-gradient-to-r from-[#023d12]  to-[#b8860b] p-2 rounded-lg shadow-md">
 //           <Package className="h-6 w-6 text-white" />
 //         </div>
-//         <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#7a2828] to-[#b8860b]">
+//         <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#023d12]  to-[#b8860b]">
 //           Order Status
 //         </h2>
 //       </div>
@@ -902,7 +902,7 @@
 //               <Button
 //                 variant="destructive"
 //                 size="sm"
-//                 className="bg-gradient-to-r from-[#7a2828] to-[#5e1f1f] hover:from-[#5e1f1f] hover:to-[#441717] text-white font-semibold px-4 py-2 transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-md hover:shadow-lg"
+//                 className="bg-gradient-to-r from-[#023d12]  to-[#5e1f1f] hover:from-[#5e1f1f] hover:to-[#441717] text-white font-semibold px-4 py-2 transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-md hover:shadow-lg"
 //                 disabled={isCancellingItem || isReturningItem}
 //               >
 //                 <XCircle className="h-5 w-5 mr-2" />
@@ -932,7 +932,7 @@
 //                     value={cancelReasonType}
 //                     className="col-span-3"
 //                   >
-//                     <SelectTrigger className="bg-white border-red-200 focus:ring-[#7a2828]">
+//                     <SelectTrigger className="bg-white border-red-200 focus:ring-[#023d12] ">
 //                       <SelectValue placeholder="Select a reason" />
 //                     </SelectTrigger>
 //                     <SelectContent className="bg-white border-red-200">
@@ -952,7 +952,7 @@
 //                       id="reason-details"
 //                       value={cancelReason}
 //                       onChange={(e) => setCancelReason(e.target.value)}
-//                       className="col-span-3 border-red-200 focus:ring-[#7a2828]"
+//                       className="col-span-3 border-red-200 focus:ring-[#023d12] "
 //                       placeholder="Provide more details"
 //                     />
 //                   </div>
@@ -972,7 +972,7 @@
 //                 </Button>
 //                 <Button
 //                   onClick={handleCancelOrder}
-//                   className="bg-gradient-to-r from-[#7a2828] to-[#5e1f1f] hover:from-[#5e1f1f] hover:to-[#441717] text-white"
+//                   className="bg-gradient-to-r from-[#023d12]  to-[#5e1f1f] hover:from-[#5e1f1f] hover:to-[#441717] text-white"
 //                   disabled={isCancellingItem || isReturningItem}
 //                 >
 //                   Submit
@@ -1065,7 +1065,7 @@
 //                       <div
 //                         className={`rounded-full h-14 w-14 flex items-center justify-center ${
 //                           isActive()
-//                             ? "bg-gradient-to-br from-[#7a2828] to-[#b8860b] text-white"
+//                             ? "bg-gradient-to-br from-[#023d12]  to-[#b8860b] text-white"
 //                             : "bg-gray-200 text-gray-500"
 //                         } font-bold text-lg group-hover:shadow-lg group-hover:shadow-purple-300 transition-all duration-300 transform group-hover:scale-110`}
 //                       >
@@ -1073,7 +1073,7 @@
 //                       </div>
 //                       <p
 //                         className={`mt-3 font-semibold text-sm ${
-//                           isActive() ? "text-gray-800 group-hover:text-[#7a2828]" : "text-gray-500"
+//                           isActive() ? "text-gray-800 group-hover:text-[#023d12] " : "text-gray-500"
 //                         } transition-colors duration-200`}
 //                       >
 //                         {step.label}
@@ -1092,7 +1092,7 @@
 //                       </p>
 //                     </div>
 //                   </TooltipTrigger>
-//                   <TooltipContent className="bg-gradient-to-r from-[#7a2828] to-[#b8860b] text-white border-none shadow-lg">
+//                   <TooltipContent className="bg-gradient-to-r from-[#023d12]  to-[#b8860b] text-white border-none shadow-lg">
 //                     <p>{getTooltipContent()}</p>
 //                   </TooltipContent>
 //                 </Tooltip>
@@ -1104,7 +1104,7 @@
 
 //       <div className="absolute top-7 left-0 right-0 h-2 bg-gray-200 -z-10 rounded-full">
 //         <div
-//           className="h-full bg-gradient-to-r from-[#7a2828] to-[#b8860b] transition-all duration-1000 rounded-full"
+//           className="h-full bg-gradient-to-r from-[#023d12]  to-[#b8860b] transition-all duration-1000 rounded-full"
 //           style={{
 //             width: (() => {
 //               const filteredSteps = [
@@ -1176,7 +1176,7 @@
 //         {/* Payment Failed Alert */}
 //         {order.payment_status === "pending" && order.payment_method === "card" && (
 //           <Card className="mb-8 border-none shadow-lg hover:shadow-xl transition-all duration-500 overflow-hidden relative">
-//             <div className="absolute inset-0 bg-gradient-to-r from-[#b8860b] to-[#7a2828] opacity-10"></div>
+//             <div className="absolute inset-0 bg-gradient-to-r from-[#b8860b] to-[#023d12]  opacity-10"></div>
 //             <CardContent className="p-8 relative z-10">
 //               <div className="flex items-start gap-4">
 //                 <div className="bg-amber-100 p-3 rounded-full shadow-md">
@@ -1216,7 +1216,7 @@
 //           <TabsList className="grid grid-cols-2 w-full max-w-md mx-auto bg-[#f3e9e9] p-1 rounded-lg">
 //             <TabsTrigger
 //               value="items"
-//               className="data-[state=active]:bg-white data-[state=active]:text-[#7a2828] data-[state=active]:shadow-sm rounded-md transition-all duration-200"
+//               className="data-[state=active]:bg-white data-[state=active]:text-[#023d12]  data-[state=active]:shadow-sm rounded-md transition-all duration-200"
 //             >
 //               <div className="flex items-center gap-2">
 //                 <ShoppingBag className="h-4 w-4" />
@@ -1225,7 +1225,7 @@
 //             </TabsTrigger>
 //             <TabsTrigger
 //               value="details"
-//               className="data-[state=active]:bg-white data-[state=active]:text-[#7a2828] data-[state=active]:shadow-sm rounded-md transition-all duration-200"
+//               className="data-[state=active]:bg-white data-[state=active]:text-[#023d12]  data-[state=active]:shadow-sm rounded-md transition-all duration-200"
 //             >
 //               <div className="flex items-center gap-2">
 //                 <CreditCard className="h-4 w-4" />
@@ -1239,10 +1239,10 @@
 //               <div className="absolute inset-0 bg-gradient-to-br from-[#f8f3f3] to-[#f7f2e9] opacity-50"></div>
 //               <CardContent className="p-8 relative z-10">
 //                 <div className="flex items-center gap-3 mb-6">
-//                   <div className="bg-gradient-to-r from-[#7a2828] to-[#b8860b] p-2 rounded-lg shadow-md">
+//                   <div className="bg-gradient-to-r from-[#023d12]  to-[#b8860b] p-2 rounded-lg shadow-md">
 //                     <Package className="h-6 w-6 text-white" />
 //                   </div>
-//                   <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#7a2828] to-[#b8860b]">
+//                   <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#023d12]  to-[#b8860b]">
 //                     Order Items
 //                   </h2>
 //                 </div>
@@ -1263,11 +1263,11 @@
 //                     </div>
 //                     <div className="flex-1">
 //                       <div className="flex justify-between items-center">
-//                         <h3 className="font-semibold text-lg group-hover:text-[#7a2828] transition-colors duration-200">
+//                         <h3 className="font-semibold text-lg group-hover:text-[#023d12]  transition-colors duration-200">
 //                           {item.product.name}
 //                         </h3>
-//                         <span className="font-semibold text-[#7a2828] group-hover:scale-110 transition-transform duration-200">
-//                           ₹{item.final_price}
+//                         <span className="font-semibold text-[#023d12]  group-hover:scale-110 transition-transform duration-200">
+//                           £{item.final_price}
 //                         </span>
 //                       </div>
 //                       <p className="text-sm text-gray-600 mt-2 line-clamp-2 group-hover:text-gray-800 transition-colors duration-200">
@@ -1276,7 +1276,7 @@
 //                       <div className="flex flex-wrap justify-between mt-3 text-sm text-gray-600 items-center gap-2">
 //                         <div className="flex flex-wrap items-center gap-3">
 //                           <span className="bg-gray-100 px-2 py-1 rounded-md group-hover:bg-white transition-colors duration-200">
-//                             Price: ₹{item.final_price}
+//                             Price: £{item.final_price}
 //                           </span>
 //                           <span className="text-[#d9b3b3]">•</span>
 //                           <span className="bg-gray-100 px-2 py-1 rounded-md group-hover:bg-white transition-colors duration-200">
@@ -1308,7 +1308,7 @@
 //                               <Button
 //                                 variant="destructive"
 //                                 size="sm"
-//                                 className="bg-gradient-to-r from-[#7a2828] to-[#5e1f1f] hover:from-[#5e1f1f] hover:to-[#441717] text-white font-semibold px-4 py-2 transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-md hover:shadow-lg"
+//                                 className="bg-gradient-to-r from-[#023d12]  to-[#5e1f1f] hover:from-[#5e1f1f] hover:to-[#441717] text-white font-semibold px-4 py-2 transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-md hover:shadow-lg"
 //                                 disabled={isCancellingItem || isReturningItem}
 //                               >
 //                                 {isCancellingItem && selectedItem?.id === item.id ? (
@@ -1347,7 +1347,7 @@
 //                                     value={itemCancelReasonType}
 //                                     className="col-span-3"
 //                                   >
-//                                     <SelectTrigger className="bg-white border-red-200 focus:ring-[#7a2828]">
+//                                     <SelectTrigger className="bg-white border-red-200 focus:ring-[#023d12] ">
 //                                       <SelectValue placeholder="Select a reason" />
 //                                     </SelectTrigger>
 //                                     <SelectContent className="bg-white border-red-200">
@@ -1370,7 +1370,7 @@
 //                                       id="item-reason-details"
 //                                       value={itemCancelReason}
 //                                       onChange={(e) => setItemCancelReason(e.target.value)}
-//                                       className="col-span-3 border-red-200 focus:ring-[#7a2828]"
+//                                       className="col-span-3 border-red-200 focus:ring-[#023d12] "
 //                                       placeholder="Provide more details"
 //                                     />
 //                                   </div>
@@ -1391,7 +1391,7 @@
 //                                 </Button>
 //                                 <Button
 //                                   onClick={handleCancelItem}
-//                                   className="bg-gradient-to-r from-[#7a2828] to-[#5e1f1f] hover:from-[#5e1f1f] hover:to-[#441717] text-white"
+//                                   className="bg-gradient-to-r from-[#023d12]  to-[#5e1f1f] hover:from-[#5e1f1f] hover:to-[#441717] text-white"
 //                                   disabled={isCancellingItem || isReturningItem}
 //                                 >
 //                                   Submit
@@ -1417,7 +1417,7 @@
 //                               <Button
 //                                 variant="outline"
 //                                 size="sm"
-//                                 className="border-[#7a2828] text-[#7a2828] hover:bg-[#7a2828] hover:text-white font-semibold px-4 py-2 transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-md hover:shadow-lg"
+//                                 className="border-[#023d12]  text-[#023d12]  hover:bg-[#023d12]  hover:text-white font-semibold px-4 py-2 transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-md hover:shadow-lg"
 //                                 disabled={isCancellingItem || isReturningItem}
 //                               >
 //                                 <RotateCcw className="h-5 w-5 mr-2" />
@@ -1426,7 +1426,7 @@
 //                             </DialogTrigger>
 //                             <DialogContent className="sm:max-w-md bg-white rounded-xl shadow-2xl border-none">
 //                               <DialogHeader>
-//                                 <DialogTitle className="text-2xl font-bold text-[#7a2828]">
+//                                 <DialogTitle className="text-2xl font-bold text-[#023d12] ">
 //                                   Request Item Return
 //                                 </DialogTitle>
 //                                 <DialogDescription className="text-gray-600">
@@ -1452,7 +1452,7 @@
 //                                     value={itemReturnReasonType}
 //                                     className="col-span-3"
 //                                   >
-//                                     <SelectTrigger className="bg-white border-[#e5d1d1] focus:ring-[#7a2828]">
+//                                     <SelectTrigger className="bg-white border-[#e5d1d1] focus:ring-[#023d12] ">
 //                                       <SelectValue placeholder="Select a reason" />
 //                                     </SelectTrigger>
 //                                     <SelectContent className="bg-white border-[#e5d1d1]">
@@ -1475,7 +1475,7 @@
 //                                       id="item-return-reason-details"
 //                                       value={itemReturnReason}
 //                                       onChange={(e) => setItemReturnReason(e.target.value)}
-//                                       className="col-span-3 border-[#e5d1d1] focus:ring-[#7a2828]"
+//                                       className="col-span-3 border-[#e5d1d1] focus:ring-[#023d12] "
 //                                       placeholder="Provide more details"
 //                                     />
 //                                   </div>
@@ -1490,13 +1490,13 @@
 //                                     setItemReturnReasonType("");
 //                                     setSelectedItem(null);
 //                                   }}
-//                                   className="border-[#e5d1d1] text-[#7a2828] hover:bg-[#f8f3f3]"
+//                                   className="border-[#e5d1d1] text-[#023d12]  hover:bg-[#f8f3f3]"
 //                                 >
 //                                   Cancel
 //                                 </Button>
 //                                 <Button
 //                                   onClick={handleReturnItem}
-//                                   className="bg-gradient-to-r from-[#7a2828] to-[#5e1f1f] hover:from-[#5e1f1f] hover:to-[#441717] text-white"
+//                                   className="bg-gradient-to-r from-[#023d12]  to-[#5e1f1f] hover:from-[#5e1f1f] hover:to-[#441717] text-white"
 //                                   disabled={isCancellingItem || isReturningItem}
 //                                 >
 //                                   Submit
@@ -1547,10 +1547,10 @@
 //                 <div className="absolute inset-0 bg-gradient-to-br from-[#f8f3f3] to-[#f7f2e9] opacity-50"></div>
 //                 <CardContent className="p-8 relative z-10">
 //                   <div className="flex items-center gap-3 mb-6">
-//                     <div className="bg-gradient-to-r from-[#7a2828] to-[#b8860b] p-2 rounded-lg shadow-md">
+//                     <div className="bg-gradient-to-r from-[#023d12]  to-[#b8860b] p-2 rounded-lg shadow-md">
 //                       <CreditCard className="h-6 w-6 text-white" />
 //                     </div>
-//                     <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#7a2828] to-[#b8860b]">
+//                     <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#023d12]  to-[#b8860b]">
 //                       Order Summary
 //                     </h2>
 //                   </div>
@@ -1558,31 +1558,31 @@
 //                   <div className="space-y-4">
 //                     <div className="flex justify-between">
 //                       <span className="text-gray-600">Iteam Prices</span>
-//                       <span className="font-semibold">₹{order.total_amount}</span>
+//                       <span className="font-semibold">£{order.total_amount}</span>
 //                     </div>
 //                     <div className="flex justify-between">
 //                       <span className="text-gray-600">Product  Discount</span>
-//                       <span className="text-red-600">− ₹{order.total_discount}</span>
+//                       <span className="text-red-600">− £{order.total_discount}</span>
 //                     </div>
 //                     <div className="flex justify-between">
 //                       <span className="text-gray-600">Tax </span>
-//                       <span className="font-semibold">₹{order.total_tax}</span>
+//                       <span className="font-semibold">£{order.total_tax}</span>
 //                     </div>
                     
                     
 
 //                     <div className="flex justify-between">
 //                       <span className="text-gray-600">Coupon Discount</span>
-//                       <span className="text-red-600">− ₹{order.coupon_discount}</span>
+//                       <span className="text-red-600">− £{order.coupon_discount}</span>
 //                     </div>
 //                     <div className="flex justify-between">
 //                       <span className="text-gray-600">Shipping</span>
-//                       <span className="font-semibold">₹{order.shipping}</span>
+//                       <span className="font-semibold">£{order.shipping}</span>
 //                     </div>
 //                     <Separator className="my-4 bg-gradient-to-r from-[#e5d1d1] to-[#f0e6c9] h-0.5 rounded-full" />
 //                     <div className="flex justify-between">
-//                       <span className="font-semibold text-[#7a2828]">Grand Total</span>
-//                       <span className="font-semibold text-[#7a2828]">₹{order.final_total}</span>
+//                       <span className="font-semibold text-[#023d12] ">Grand Total</span>
+//                       <span className="font-semibold text-[#023d12] ">£{order.final_total}</span>
 //                     </div>
 //                     <div className="flex justify-between mt-4">
 //                       <span className="text-gray-600">Payment Method</span>
@@ -1591,7 +1591,7 @@
 //                   </div>
 //                   <Button
 //                     variant="outline"
-//                     className="w-full mt-8 flex items-center justify-center gap-3 border-[#7a2828] text-[#7a2828] hover:bg-gradient-to-r hover:from-[#7a2828] hover:to-[#b8860b] hover:text-white font-semibold py-3 transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg"
+//                     className="w-full mt-8 flex items-center justify-center gap-3 border-[#023d12]  text-[#023d12]  hover:bg-gradient-to-r hover:from-[#023d12]  hover:to-[#b8860b] hover:text-white font-semibold py-3 transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg"
 //                     onClick={() => navigate(`/invoice/${order.id}/`)}
 //                     disabled={order.status !== "delivered" || isCancellingItem || isReturningItem}
 //                   >
@@ -1605,23 +1605,23 @@
 //                 <div className="absolute inset-0 bg-gradient-to-br from-[#f3e9e9] to-[#f7f2e9] opacity-50"></div>
 //                 <CardContent className="p-8 relative z-10">
 //                   <div className="flex items-center gap-3 mb-6">
-//                     <div className="bg-gradient-to-r from-[#7a2828] to-[#b8860b] p-2 rounded-lg shadow-md">
+//                     <div className="bg-gradient-to-r from-[#023d12]  to-[#b8860b] p-2 rounded-lg shadow-md">
 //                       <MapPin className="h-6 w-6 text-white" />
 //                     </div>
-//                     <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#7a2828] to-[#b8860b]">
+//                     <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#023d12]  to-[#b8860b]">
 //                       Shipping Information
 //                     </h2>
 //                   </div>
 //                   <Separator className="mb-8 bg-gradient-to-r from-[#e5d1d1] to-[#f0e6c9] h-0.5 rounded-full" />
 //                   <div className="space-y-4">
 //                     <div className="flex items-start gap-3">
-//                       <User className="h-5 w-5 text-[#7a2828] mt-1" />
+//                       <User className="h-5 w-5 text-[#023d12]  mt-1" />
 //                       <div>
 //                         <p className="font-semibold">{order.order_address.name}</p>
 //                       </div>
 //                     </div>
 //                     <div className="flex items-start gap-3">
-//                       <MapPin className="h-5 w-5 text-[#7a2828] mt-1" />
+//                       <MapPin className="h-5 w-5 text-[#023d12]  mt-1" />
 //                       <div>
 //                         <p className="text-gray-600">
 //                           {order.order_address.house_no}, {order.order_address.landmark}
@@ -1632,15 +1632,15 @@
 //                       </div>
 //                     </div>
 //                     <div className="flex items-start gap-3">
-//                       <Phone className="h-5 w-5 text-[#7a2828] mt-1" />
+//                       <Phone className="h-5 w-5 text-[#023d12]  mt-1" />
 //                       <p className="text-gray-600">{order.order_address.phone || "+91 9876543210"}</p>
 //                     </div>
 //                     <div className="flex items-start gap-3">
-//                       <Mail className="h-5 w-5 text-[#7a2828] mt-1" />
+//                       <Mail className="h-5 w-5 text-[#023d12]  mt-1" />
 //                       <p className="text-gray-600">{order.user.email}</p>
 //                     </div>
 //                     <div className="flex items-start gap-3">
-//                       <Calendar className="h-5 w-5 text-[#7a2828] mt-1" />
+//                       <Calendar className="h-5 w-5 text-[#023d12]  mt-1" />
 //                       <p className="text-gray-600">Expected Delivery: {estDeliveryDate}</p>
 //                     </div>
 //                   </div>
@@ -2131,11 +2131,11 @@ const ViewOrderDetails = () => {
         <div className="flex flex-col items-center gap-6 text-center">
           <div className="relative w-24 h-24">
             <div className="absolute inset-0 rounded-full border-4 border-[#e5d1d1] opacity-25"></div>
-            <div className="absolute inset-0 rounded-full border-4 border-t-transparent border-[#7a2828] animate-spin"></div>
+            <div className="absolute inset-0 rounded-full border-4 border-t-transparent border-[#023d12]  animate-spin"></div>
           </div>
           <div className="space-y-2">
             <h3 className="text-2xl font-bold text-[#441717]">Loading Order Details</h3>
-            <p className="text-[#7a2828]">Please wait while we fetch your order information...</p>
+            <p className="text-[#023d12] ">Please wait while we fetch your order information...</p>
           </div>
         </div>
       </div>
@@ -2155,7 +2155,7 @@ const ViewOrderDetails = () => {
                 <h3 className="text-2xl font-bold text-red-800">Error Loading Order</h3>
                 <p className="text-red-600">{error}</p>
                 <Button
-                  className="mt-4 bg-gradient-to-r from-[#7a2828] to-[#441717] hover:from-[#5e1f1f] hover:to-[#2a0e0e] text-white"
+                  className="mt-4 bg-gradient-to-r from-[#023d12]  to-[#441717] hover:from-[#5e1f1f] hover:to-[#2a0e0e] text-white"
                   onClick={() => navigate("/myorders")}
                 >
                   Return to Orders
@@ -2181,7 +2181,7 @@ const ViewOrderDetails = () => {
                 <h3 className="text-2xl font-bold text-amber-800">Order Not Found</h3>
                 <p className="text-amber-600">We couldn't find the order you're looking for.</p>
                 <Button
-                  className="mt-4 bg-gradient-to-r from-[#7a2828] to-[#441717] hover:from-[#5e1f1f] hover:to-[#2a0e0e] text-white"
+                  className="mt-4 bg-gradient-to-r from-[#023d12]  to-[#441717] hover:from-[#5e1f1f] hover:to-[#2a0e0e] text-white"
                   onClick={() => navigate("/myorders")}
                 >
                   Return to Orders
@@ -2217,7 +2217,7 @@ const ViewOrderDetails = () => {
         <Button
           variant="ghost"
           size="sm"
-          className="mb-6 text-[#7a2828] hover:text-[#2a0e0e] hover:bg-[#f3e9e9] transition-all duration-300 group flex items-center"
+          className="mb-6 text-[#023d12]  hover:text-[#2a0e0e] hover:bg-[#f3e9e9] transition-all duration-300 group flex items-center"
           onClick={() => navigate("/myorders")}
         >
           <ArrowLeft className="h-5 w-5 mr-2 group-hover:-translate-x-1 transition-transform duration-300" />
@@ -2226,19 +2226,19 @@ const ViewOrderDetails = () => {
 
         {/* Breadcrumb */}
         <nav className="flex items-center text-sm text-gray-600 mb-8 overflow-x-auto pb-2 font-medium">
-          <Link to="/" className="flex items-center hover:text-[#7a2828] transition-colors duration-200">
+          <Link to="/" className="flex items-center hover:text-[#023d12]  transition-colors duration-200">
             <Home className="h-4 w-4 mr-1" />
             Home
           </Link>
           <ChevronRight className="h-4 w-4 mx-2 flex-shrink-0 text-gray-400" />
           
-          <Link to="/userprofile" className="hover:text-[#7a2828] transition-colors duration-200 whitespace-nowrap">
+          <Link to="/userprofile" className="hover:text-[#023d12]  transition-colors duration-200 whitespace-nowrap">
             My Account
           </Link>
 
           <ChevronRight className="h-4 w-4 mx-2 flex-shrink-0 text-gray-400" />
           
-          <span className="text-[#7a2828] font-semibold whitespace-nowrap">
+          <span className="text-[#023d12]  font-semibold whitespace-nowrap">
             Order #{order.order_number}
           </span>
         </nav>
@@ -2249,10 +2249,10 @@ const ViewOrderDetails = () => {
           <CardContent className="p-8 relative z-10">
             <div className="flex items-center justify-between gap-3 mb-6">
               <div className="flex items-center gap-3">
-                <div className="bg-gradient-to-r from-[#7a2828] to-[#b8860b] p-2 rounded-lg shadow-md">
+                <div className="bg-gradient-to-r from-[#023d12]  to-[#b8860b] p-2 rounded-lg shadow-md">
                   <Package className="h-6 w-6 text-white" />
                 </div>
-                <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#7a2828] to-[#b8860b]">
+                <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#023d12]  to-[#b8860b]">
                   Order Status
                 </h2>
               </div>
@@ -2278,7 +2278,7 @@ const ViewOrderDetails = () => {
                       <Button
                         variant="destructive"
                         size="sm"
-                        className="bg-gradient-to-r from-[#7a2828] to-[#5e1f1f] hover:from-[#5e1f1f] hover:to-[#441717] text-white font-semibold px-4 py-2 transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-md hover:shadow-lg"
+                        className="bg-gradient-to-r from-[#023d12]  to-[#5e1f1f] hover:from-[#5e1f1f] hover:to-[#441717] text-white font-semibold px-4 py-2 transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-md hover:shadow-lg"
                         disabled={isCancellingItem || isReturningItem}
                       >
                         <XCircle className="h-5 w-5 mr-2" />
@@ -2308,7 +2308,7 @@ const ViewOrderDetails = () => {
                             value={cancelReasonType}
                             className="col-span-3"
                           >
-                            <SelectTrigger className="bg-white border-red-200 focus:ring-[#7a2828]">
+                            <SelectTrigger className="bg-white border-red-200 focus:ring-[#023d12] ">
                               <SelectValue placeholder="Select a reason" />
                             </SelectTrigger>
                             <SelectContent className="bg-white border-red-200">
@@ -2328,7 +2328,7 @@ const ViewOrderDetails = () => {
                               id="reason-details"
                               value={cancelReason}
                               onChange={(e) => setCancelReason(e.target.value)}
-                              className="col-span-3 border-red-200 focus:ring-[#7a2828]"
+                              className="col-span-3 border-red-200 focus:ring-[#023d12] "
                               placeholder="Provide more details"
                             />
                           </div>
@@ -2348,7 +2348,7 @@ const ViewOrderDetails = () => {
                         </Button>
                         <Button
                           onClick={handleCancelOrder}
-                          className="bg-gradient-to-r from-[#7a2828] to-[#5e1f1f] hover:from-[#5e1f1f] hover:to-[#441717] text-white"
+                          className="bg-gradient-to-r from-[#023d12]  to-[#5e1f1f] hover:from-[#5e1f1f] hover:to-[#441717] text-white"
                           disabled={isCancellingItem || isReturningItem}
                         >
                           Submit
@@ -2363,7 +2363,7 @@ const ViewOrderDetails = () => {
                       <Button
                         variant="outline"
                         size="sm"
-                        className="border-[#7a2828] text-[#7a2828] hover:bg-[#7a2828] hover:text-white font-semibold px-4 py-2 transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-md hover:shadow-lg"
+                        className="border-[#023d12]  text-[#023d12]  hover:bg-[#023d12]  hover:text-white font-semibold px-4 py-2 transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-md hover:shadow-lg"
                         disabled={isCancellingItem || isReturningItem}
                       >
                         <RotateCcw className="h-5 w-5 mr-2" />
@@ -2372,7 +2372,7 @@ const ViewOrderDetails = () => {
                     </DialogTrigger>
                     <DialogContent className="sm:max-w-md bg-white rounded-xl shadow-2xl border-none">
                       <DialogHeader>
-                        <DialogTitle className="text-2xl font-bold text-[#7a2828]">Return Order</DialogTitle>
+                        <DialogTitle className="text-2xl font-bold text-[#023d12] ">Return Order</DialogTitle>
                         <DialogDescription className="text-gray-600">
                           Please select the reason for returning your order
                           {returnReasonType === "other" ? " and provide details." : "."}
@@ -2393,7 +2393,7 @@ const ViewOrderDetails = () => {
                             value={returnReasonType}
                             className="col-span-3"
                           >
-                            <SelectTrigger className="bg-white border-[#e5d1d1] focus:ring-[#7a2828]">
+                            <SelectTrigger className="bg-white border-[#e5d1d1] focus:ring-[#023d12] ">
                               <SelectValue placeholder="Select a reason" />
                             </SelectTrigger>
                             <SelectContent className="bg-white border-[#e5d1d1]">
@@ -2413,7 +2413,7 @@ const ViewOrderDetails = () => {
                               id="return-reason-details"
                               value={returnReason}
                               onChange={(e) => setReturnReason(e.target.value)}
-                              className="col-span-3 border-[#e5d1d1] focus:ring-[#7a2828]"
+                              className="col-span-3 border-[#e5d1d1] focus:ring-[#023d12] "
                               placeholder="Provide more details"
                             />
                           </div>
@@ -2427,13 +2427,13 @@ const ViewOrderDetails = () => {
                             setReturnReason("");
                             setReturnReasonType("");
                           }}
-                          className="border-[#e5d1d1] text-[#7a2828] hover:bg-[#f8f3f3]"
+                          className="border-[#e5d1d1] text-[#023d12]  hover:bg-[#f8f3f3]"
                         >
                           Cancel
                         </Button>
                         <Button
                           onClick={handleReturnOrder}
-                          className="bg-gradient-to-r from-[#7a2828] to-[#5e1f1f] hover:from-[#5e1f1f] hover:to-[#441717] text-white"
+                          className="bg-gradient-to-r from-[#023d12]  to-[#5e1f1f] hover:from-[#5e1f1f] hover:to-[#441717] text-white"
                           disabled={isCancellingItem || isReturningItem}
                         >
                           Submit
@@ -2526,7 +2526,7 @@ const ViewOrderDetails = () => {
                               <div
                                 className={`rounded-full h-14 w-14 flex items-center justify-center ${
                                   isActive()
-                                    ? "bg-gradient-to-br from-[#7a2828] to-[#b8860b] text-white"
+                                    ? "bg-gradient-to-br from-[#023d12]  to-[#b8860b] text-white"
                                     : "bg-gray-200 text-gray-500"
                                 } font-bold text-lg group-hover:shadow-lg group-hover:shadow-purple-300 transition-all duration-300 transform group-hover:scale-110`}
                               >
@@ -2534,7 +2534,7 @@ const ViewOrderDetails = () => {
                               </div>
                               <p
                                 className={`mt-3 font-semibold text-sm ${
-                                  isActive() ? "text-gray-800 group-hover:text-[#7a2828]" : "text-gray-500"
+                                  isActive() ? "text-gray-800 group-hover:text-[#023d12] " : "text-gray-500"
                                 } transition-colors duration-200`}
                               >
                                 {step.label}
@@ -2553,7 +2553,7 @@ const ViewOrderDetails = () => {
                               </p>
                             </div>
                           </TooltipTrigger>
-                          <TooltipContent className="bg-gradient-to-r from-[#7a2828] to-[#b8860b] text-white border-none shadow-lg">
+                          <TooltipContent className="bg-gradient-to-r from-[#023d12]  to-[#b8860b] text-white border-none shadow-lg">
                             <p>{getTooltipContent()}</p>
                           </TooltipContent>
                         </Tooltip>
@@ -2565,7 +2565,7 @@ const ViewOrderDetails = () => {
 
               <div className="absolute top-7 left-0 right-0 h-2 bg-gray-200 -z-10 rounded-full">
                 <div
-                  className="h-full bg-gradient-to-r from-[#7a2828] to-[#b8860b] transition-all duration-1000 rounded-full"
+                  className="h-full bg-gradient-to-r from-[#023d12]  to-[#b8860b] transition-all duration-1000 rounded-full"
                   style={{
                     width: (() => {
                       const filteredSteps = [
@@ -2634,7 +2634,7 @@ const ViewOrderDetails = () => {
         {/* Payment Failed Alert */}
         {order.payment_status === "pending" && order.payment_method === "card" && (
           <Card className="mb-8 border-none shadow-lg hover:shadow-xl transition-all duration-500 overflow-hidden relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-[#b8860b] to-[#7a2828] opacity-10"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-[#b8860b] to-[#023d12]  opacity-10"></div>
             <CardContent className="p-8 relative z-10">
               <div className="flex items-start gap-4">
                 <div className="bg-amber-100 p-3 rounded-full shadow-md">
@@ -2671,7 +2671,7 @@ const ViewOrderDetails = () => {
           <TabsList className="grid grid-cols-2 w-full max-w-md mx-auto bg-[#f3e9e9] p-1 rounded-lg">
             <TabsTrigger
               value="items"
-              className="data-[state=active]:bg-white data-[state=active]:text-[#7a2828] data-[state=active]:shadow-sm rounded-md transition-all duration-200"
+              className="data-[state=active]:bg-white data-[state=active]:text-[#023d12]  data-[state=active]:shadow-sm rounded-md transition-all duration-200"
             >
               <div className="flex items-center gap-2">
                 <ShoppingBag className="h-4 w-4" />
@@ -2680,7 +2680,7 @@ const ViewOrderDetails = () => {
             </TabsTrigger>
             <TabsTrigger
               value="details"
-              className="data-[state=active]:bg-white data-[state=active]:text-[#7a2828] data-[state=active]:shadow-sm rounded-md transition-all duration-200"
+              className="data-[state=active]:bg-white data-[state=active]:text-[#023d12]  data-[state=active]:shadow-sm rounded-md transition-all duration-200"
             >
               <div className="flex items-center gap-2">
                 <CreditCard className="h-4 w-4" />
@@ -2694,10 +2694,10 @@ const ViewOrderDetails = () => {
               <div className="absolute inset-0 bg-gradient-to-br from-[#f8f3f3] to-[#f7f2e9] opacity-50"></div>
               <CardContent className="p-8 relative z-10">
                 <div className="flex items-center gap-3 mb-6">
-                  <div className="bg-gradient-to-r from-[#7a2828] to-[#b8860b] p-2 rounded-lg shadow-md">
+                  <div className="bg-gradient-to-r from-[#023d12]  to-[#b8860b] p-2 rounded-lg shadow-md">
                     <Package className="h-6 w-6 text-white" />
                   </div>
-                  <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#7a2828] to-[#b8860b]">
+                  <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#023d12]  to-[#b8860b]">
                     Order Items
                   </h2>
                 </div>
@@ -2718,11 +2718,11 @@ const ViewOrderDetails = () => {
                     </div>
                     <div className="flex-1">
                       <div className="flex justify-between items-center">
-                        <h3 className="font-semibold text-lg group-hover:text-[#7a2828] transition-colors duration-200">
+                        <h3 className="font-semibold text-lg group-hover:text-[#023d12]  transition-colors duration-200">
                           {item.product.name}
                         </h3>
-                        <span className="font-semibold text-[#7a2828] group-hover:scale-110 transition-transform duration-200">
-                          ₹{item.final_price}
+                        <span className="font-semibold text-[#023d12]  group-hover:scale-110 transition-transform duration-200">
+                          £{item.final_price}
                         </span>
                       </div>
                       <p className="text-sm text-gray-600 mt-2 line-clamp-2 group-hover:text-gray-800 transition-colors duration-200">
@@ -2731,7 +2731,7 @@ const ViewOrderDetails = () => {
                       <div className="flex flex-wrap justify-between mt-3 text-sm text-gray-600 items-center gap-2">
                         <div className="flex flex-wrap items-center gap-3">
                           <span className="bg-gray-100 px-2 py-1 rounded-md group-hover:bg-white transition-colors duration-200">
-                            Price: ₹{item.final_price}
+                            Price: £{item.final_price}
                           </span>
                           <span className="text-[#d9b3b3]">•</span>
                           <span className="bg-gray-100 px-2 py-1 rounded-md group-hover:bg-white transition-colors duration-200">
@@ -2763,7 +2763,7 @@ const ViewOrderDetails = () => {
                               <Button
                                 variant="destructive"
                                 size="sm"
-                                className="bg-gradient-to-r from-[#7a2828] to-[#5e1f1f] hover:from-[#5e1f1f] hover:to-[#441717] text-white font-semibold px-4 py-2 transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-md hover:shadow-lg"
+                                className="bg-gradient-to-r from-[#023d12]  to-[#5e1f1f] hover:from-[#5e1f1f] hover:to-[#441717] text-white font-semibold px-4 py-2 transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-md hover:shadow-lg"
                                 disabled={isCancellingItem || isReturningItem}
                               >
                                 {isCancellingItem && selectedItem?.id === item.id ? (
@@ -2802,7 +2802,7 @@ const ViewOrderDetails = () => {
                                     value={itemCancelReasonType}
                                     className="col-span-3"
                                   >
-                                    <SelectTrigger className="bg-white border-red-200 focus:ring-[#7a2828]">
+                                    <SelectTrigger className="bg-white border-red-200 focus:ring-[#023d12] ">
                                       <SelectValue placeholder="Select a reason" />
                                     </SelectTrigger>
                                     <SelectContent className="bg-white border-red-200">
@@ -2825,7 +2825,7 @@ const ViewOrderDetails = () => {
                                       id="item-reason-details"
                                       value={itemCancelReason}
                                       onChange={(e) => setItemCancelReason(e.target.value)}
-                                      className="col-span-3 border-red-200 focus:ring-[#7a2828]"
+                                      className="col-span-3 border-red-200 focus:ring-[#023d12] "
                                       placeholder="Provide more details"
                                     />
                                   </div>
@@ -2846,7 +2846,7 @@ const ViewOrderDetails = () => {
                                 </Button>
                                 <Button
                                   onClick={handleCancelItem}
-                                  className="bg-gradient-to-r from-[#7a2828] to-[#5e1f1f] hover:from-[#5e1f1f] hover:to-[#441717] text-white"
+                                  className="bg-gradient-to-r from-[#023d12]  to-[#5e1f1f] hover:from-[#5e1f1f] hover:to-[#441717] text-white"
                                   disabled={isCancellingItem || isReturningItem}
                                 >
                                   Submit
@@ -2872,7 +2872,7 @@ const ViewOrderDetails = () => {
                               <Button
                                 variant="outline"
                                 size="sm"
-                                className="border-[#7a2828] text-[#7a2828] hover:bg-[#7a2828] hover:text-white font-semibold px-4 py-2 transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-md hover:shadow-lg"
+                                className="border-[#023d12]  text-[#023d12]  hover:bg-[#023d12]  hover:text-white font-semibold px-4 py-2 transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-md hover:shadow-lg"
                                 disabled={isCancellingItem || isReturningItem}
                               >
                                 <RotateCcw className="h-5 w-5 mr-2" />
@@ -2881,7 +2881,7 @@ const ViewOrderDetails = () => {
                             </DialogTrigger>
                             <DialogContent className="sm:max-w-md bg-white rounded-xl shadow-2xl border-none">
                               <DialogHeader>
-                                <DialogTitle className="text-2xl font-bold text-[#7a2828]">
+                                <DialogTitle className="text-2xl font-bold text-[#023d12] ">
                                   Request Item Return
                                 </DialogTitle>
                                 <DialogDescription className="text-gray-600">
@@ -2907,7 +2907,7 @@ const ViewOrderDetails = () => {
                                     value={itemReturnReasonType}
                                     className="col-span-3"
                                   >
-                                    <SelectTrigger className="bg-white border-[#e5d1d1] focus:ring-[#7a2828]">
+                                    <SelectTrigger className="bg-white border-[#e5d1d1] focus:ring-[#023d12] ">
                                       <SelectValue placeholder="Select a reason" />
                                     </SelectTrigger>
                                     <SelectContent className="bg-white border-[#e5d1d1]">
@@ -2930,7 +2930,7 @@ const ViewOrderDetails = () => {
                                       id="item-return-reason-details"
                                       value={itemReturnReason}
                                       onChange={(e) => setItemReturnReason(e.target.value)}
-                                      className="col-span-3 border-[#e5d1d1] focus:ring-[#7a2828]"
+                                      className="col-span-3 border-[#e5d1d1] focus:ring-[#023d12] "
                                       placeholder="Provide more details"
                                     />
                                   </div>
@@ -2945,13 +2945,13 @@ const ViewOrderDetails = () => {
                                     setItemReturnReasonType("");
                                     setSelectedItem(null);
                                   }}
-                                  className="border-[#e5d1d1] text-[#7a2828] hover:bg-[#f8f3f3]"
+                                  className="border-[#e5d1d1] text-[#023d12]  hover:bg-[#f8f3f3]"
                                 >
                                   Cancel
                                 </Button>
                                 <Button
                                   onClick={handleReturnItem}
-                                  className="bg-gradient-to-r from-[#7a2828] to-[#5e1f1f] hover:from-[#5e1f1f] hover:to-[#441717] text-white"
+                                  className="bg-gradient-to-r from-[#023d12]  to-[#5e1f1f] hover:from-[#5e1f1f] hover:to-[#441717] text-white"
                                   disabled={isCancellingItem || isReturningItem}
                                 >
                                   Submit
@@ -3003,10 +3003,10 @@ const ViewOrderDetails = () => {
                 <div className="absolute inset-0 bg-gradient-to-br from-[#f8f3f3] to-[#f7f2e9] opacity-50"></div>
                 <CardContent className="p-8 relative z-10">
                   <div className="flex items-center gap-3 mb-6">
-                    <div className="bg-gradient-to-r from-[#7a2828] to-[#b8860b] p-2 rounded-lg shadow-md">
+                    <div className="bg-gradient-to-r from-[#023d12]  to-[#b8860b] p-2 rounded-lg shadow-md">
                       <CreditCard className="h-6 w-6 text-white" />
                     </div>
-                    <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#7a2828] to-[#b8860b]">
+                    <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#023d12]  to-[#b8860b]">
                       Order Summary
                     </h2>
                   </div>
@@ -3014,28 +3014,28 @@ const ViewOrderDetails = () => {
                   <div className="space-y-4">
                     <div className="flex justify-between">
                       <span className="text-gray-600">Item Prices</span>
-                      <span className="font-semibold">₹{order.total_amount}</span>
+                      <span className="font-semibold">£{order.total_amount}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600">Product Discount</span>
-                      <span className="text-red-600">− ₹{order.total_discount}</span>
+                      <span className="text-red-600">− £{order.total_discount}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600">Tax</span>
-                      <span className="font-semibold">₹{order.total_tax}</span>
+                      <span className="font-semibold">£{order.total_tax}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600">Coupon Discount</span>
-                      <span className="text-red-600">− ₹{order.coupon_discount}</span>
+                      <span className="text-red-600">− £{order.coupon_discount}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600">Shipping</span>
-                      <span className="font-semibold">₹{order.shipping}</span>
+                      <span className="font-semibold">£{order.shipping}</span>
                     </div>
                     <Separator className="my-4 bg-gradient-to-r from-[#e5d1d1] to-[#f0e6c9] h-0.5 rounded-full" />
                     <div className="flex justify-between">
-                      <span className="font-semibold text-[#7a2828]">Grand Total</span>
-                      <span className="font-semibold text-[#7a2828]">₹{order.final_total}</span>
+                      <span className="font-semibold text-[#023d12] ">Grand Total</span>
+                      <span className="font-semibold text-[#023d12] ">£{order.final_total}</span>
                     </div>
                     <div className="flex justify-between mt-4">
                       <span className="text-gray-600">Payment Method</span>
@@ -3044,7 +3044,7 @@ const ViewOrderDetails = () => {
                   </div>
                   <Button
                     variant="outline"
-                    className="w-full mt-8 flex items-center justify-center gap-3 border-[#7a2828] text-[#7a2828] hover:bg-gradient-to-r hover:from-[#7a2828] hover:to-[#b8860b] hover:text-white font-semibold py-3 transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg"
+                    className="w-full mt-8 flex items-center justify-center gap-3 border-[#023d12]  text-[#023d12]  hover:bg-gradient-to-r hover:from-[#023d12]  hover:to-[#b8860b] hover:text-white font-semibold py-3 transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg"
                     onClick={() => navigate(`/invoice/${order.id}/`)}
                     disabled={order.status !== "delivered" || isCancellingItem || isReturningItem}
                   >
@@ -3058,23 +3058,23 @@ const ViewOrderDetails = () => {
                 <div className="absolute inset-0 bg-gradient-to-br from-[#f3e9e9] to-[#f7f2e9] opacity-50"></div>
                 <CardContent className="p-8 relative z-10">
                   <div className="flex items-center gap-3 mb-6">
-                    <div className="bg-gradient-to-r from-[#7a2828] to-[#b8860b] p-2 rounded-lg shadow-md">
+                    <div className="bg-gradient-to-r from-[#023d12]  to-[#b8860b] p-2 rounded-lg shadow-md">
                       <MapPin className="h-6 w-6 text-white" />
                     </div>
-                    <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#7a2828] to-[#b8860b]">
+                    <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#023d12]  to-[#b8860b]">
                       Shipping Information
                     </h2>
                   </div>
                   <Separator className="mb-8 bg-gradient-to-r from-[#e5d1d1] to-[#f0e6c9] h-0.5 rounded-full" />
                   <div className="space-y-4">
                     <div className="flex items-start gap-3">
-                      <User className="h-5 w-5 text-[#7a2828] mt-1" />
+                      <User className="h-5 w-5 text-[#023d12]  mt-1" />
                       <div>
                         <p className="font-semibold">{order.order_address.name}</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
-                      <MapPin className="h-5 w-5 text-[#7a2828] mt-1" />
+                      <MapPin className="h-5 w-5 text-[#023d12]  mt-1" />
                       <div>
                         <p className="text-gray-600">
                           {order.order_address.house_no}, {order.order_address.landmark}
@@ -3085,15 +3085,15 @@ const ViewOrderDetails = () => {
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
-                      <Phone className="h-5 w-5 text-[#7a2828] mt-1" />
+                      <Phone className="h-5 w-5 text-[#023d12]  mt-1" />
                       <p className="text-gray-600">{order.order_address.phone || "+91 9876543210"}</p>
                     </div>
                     <div className="flex items-start gap-3">
-                      <Mail className="h-5 w-5 text-[#7a2828] mt-1" />
+                      <Mail className="h-5 w-5 text-[#023d12]  mt-1" />
                       <p className="text-gray-600">{order.user.email}</p>
                     </div>
                     <div className="flex items-start gap-3">
-                      <Calendar className="h-5 w-5 text-[#7a2828] mt-1" />
+                      <Calendar className="h-5 w-5 text-[#023d12]  mt-1" />
                       <p className="text-gray-600">Expected Delivery: {estDeliveryDate}</p>
                     </div>
                   </div>

@@ -477,9 +477,9 @@ function UserHome() {
 
     {/* <div id="product-collection" className="mx-auto px-2 bg-[#fcf9f9]">
       <div className="text-sm mb-6 flex items-center">
-        <span className="text-gray-500 hover:text-[#7a2828] transition-colors cursor-pointer">Home</span>
+        <span className="text-gray-500 hover:text-[#023d12]  transition-colors cursor-pointer">Home</span>
         <ChevronRight className="h-4 w-4 mx-2 text-gray-400" />
-            <span className="text-[#7a2828] font-medium">Products</span>
+            <span className="text-[#023d12]  font-medium">Products</span>
       </div>
 
       {/* Title, Search, and Sort */}
@@ -494,7 +494,7 @@ function UserHome() {
           {hasActiveFilters() && (
             <Button
               variant="link"
-              className="p-0 text-[#7a2828] hover:text-[#5a1d1d] transition-colors mt-1 font-medium"
+              className="p-0 text-[#023d12]  hover:text-[#5a1d1d] transition-colors mt-1 font-medium"
               onClick={clearFilters}
             >
               Clear all filters
@@ -509,7 +509,7 @@ function UserHome() {
               placeholder="Search by name or category..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 border-gray-300 focus:ring-[#7a2828] focus:border-[#7a2828] w-full md:w-[200px]"
+              className="pl-10 border-gray-300 focus:ring-[#023d12]  focus:border-[#023d12]  w-full md:w-[200px]"
             />
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
           </div>
@@ -518,12 +518,12 @@ function UserHome() {
             <SheetTrigger asChild>
               <Button
                 variant="outline"
-                className="md:hidden flex items-center gap-2 border-[#7a2828] text-[#7a2828]"
+                className="md:hidden flex items-center gap-2 border-[#023d12]  text-[#023d12] "
                 onClick={() => setShowMobileFilters(true)}
               >
                 <Filter className="h-4 w-4" />
                 Filters
-                {getActiveFilterCount() > 0 && <Badge className="ml-1 bg-[#7a2828]">{getActiveFilterCount()}</Badge>}
+                {getActiveFilterCount() > 0 && <Badge className="ml-1 bg-[#023d12] ">{getActiveFilterCount()}</Badge>}
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="w-[300px] sm:w-[350px]">
@@ -533,7 +533,7 @@ function UserHome() {
                   {hasActiveFilters() && (
                     <Button
                       variant="link"
-                      className="text-[#7a2828] hover:text-[#5a1d1d] text-sm font-medium"
+                      className="text-[#023d12]  hover:text-[#5a1d1d] text-sm font-medium"
                       onClick={clearFilters}
                     >
                       Clear all
@@ -557,11 +557,11 @@ function UserHome() {
                                   id={`mobile-${category}-${option}`}
                                   checked={isFilterActive(category, option)}
                                   onCheckedChange={() => handleFilterChange(category, option)}
-                                  className="text-[#7a2828] border-gray-300 data-[state=checked]:bg-[#7a2828] data-[state=checked]:border-[#7a2828]"
+                                  className="text-[#023d12]  border-gray-300 data-[state=checked]:bg-[#023d12]  data-[state=checked]:border-[#023d12] "
                                 />
                                 <Label
                                   htmlFor={`mobile-${category}-${option}`}
-                                  className="cursor-pointer text-gray-700 hover:text-[#7a2828] transition-colors"
+                                  className="cursor-pointer text-gray-700 hover:text-[#023d12]  transition-colors"
                                 >
                                   {option}
                                 </Label>
@@ -578,7 +578,7 @@ function UserHome() {
           </Sheet>
 
           <Select value={sortBy} onValueChange={setSortBy}>
-            <SelectTrigger className="w-[180px] border-gray-300 focus:ring-[#7a2828] focus:border-[#7a2828]">
+            <SelectTrigger className="w-[180px] border-gray-300 focus:ring-[#023d12]  focus:border-[#023d12] ">
               <SelectValue placeholder="Sort By" />
             </SelectTrigger>
             <SelectContent className="bg-white">
@@ -601,7 +601,7 @@ function UserHome() {
               {hasActiveFilters() && (
                 <Button
                   variant="link"
-                  className="p-0 text-[#7a2828] hover:text-[#5a1d1d] text-sm font-medium"
+                  className="p-0 text-[#023d12]  hover:text-[#5a1d1d] text-sm font-medium"
                   onClick={clearFilters}
                 >
                   Clear all
@@ -612,7 +612,7 @@ function UserHome() {
               {Object.entries(filterCategories).map(([category, options]) =>
                 options.length > 0 ? (
                   <AccordionItem key={category} value={category} className="border-b border-gray-200">
-                    <AccordionTrigger className="text-base capitalize py-3 hover:text-[#7a2828] hover:no-underline">
+                    <AccordionTrigger className="text-base capitalize py-3 hover:text-[#023d12]  hover:no-underline">
                       {category.replace(/([A-Z])/g, " $1").trim()}
                     </AccordionTrigger>
                     <AccordionContent>
@@ -623,11 +623,11 @@ function UserHome() {
                               id={`${category}-${option}`}
                               checked={isFilterActive(category, option)}
                               onCheckedChange={() => handleFilterChange(category, option)}
-                              className="text-[#7a2828] border-gray-300 data-[state=checked]:bg-[#7a2828] data-[state=checked]:border-[#7a2828]"
+                              className="text-[#023d12]  border-gray-300 data-[state=checked]:bg-[#023d12]  data-[state=checked]:border-[#023d12] "
                             />
                             <Label
                               htmlFor={`${category}-${option}`}
-                              className="cursor-pointer text-gray-700 group-hover:text-[#7a2828] transition-colors"
+                              className="cursor-pointer text-gray-700 group-hover:text-[#023d12]  transition-colors"
                             >
                               {option}
                             </Label>
@@ -646,17 +646,17 @@ function UserHome() {
         <div className="flex-1">
           {loading || searchLoading ? (
             <div className="flex justify-center items-center h-64">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#7a2828]"></div>
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#023d12] "></div>
             </div>
           ) : currentProducts.length === 0 ? (
             <div className="flex flex-col justify-center items-center h-64 bg-white rounded-lg shadow-sm p-8">
-              <div className="text-[#7a2828] mb-4">
+              <div className="text-[#023d12]  mb-4">
                 <X className="h-12 w-12 mx-auto" />
               </div>
               <p className="text-lg text-gray-700 text-center">No products match your filters or search.</p>
               <Button
                 variant="outline"
-                className="mt-4 border-[#7a2828] text-[#7a2828] hover:bg-[#7a2828] hover:text-white transition-all duration-300"
+                className="mt-4 border-[#023d12]  text-[#023d12]  hover:bg-[#023d12]  hover:text-white transition-all duration-300"
                 onClick={clearFilters}
               >
                 Clear all filters
@@ -700,13 +700,13 @@ function UserHome() {
                           <Heart
                             className={`w-5 h-5 transition-colors duration-300 ${
                               wishlistIds.includes(product.id)
-                                ? "fill-[#7a2828] stroke-[#7a2828]"
-                                : "stroke-gray-500 group-hover:stroke-[#7a2828]"
+                                ? "fill-[#023d12]  stroke-[#023d12] "
+                                : "stroke-gray-500 group-hover:stroke-[#023d12] "
                             }`}
                           />
                         </button>
                       <div className="absolute top-3 left-3">
-                        <Badge className="bg-white text-[#7a2828] hover:bg-white">
+                        <Badge className="bg-white text-[#023d12]  hover:bg-white">
                           {product.productCategory || product.category_name}
                         </Badge>
                       </div>
@@ -718,7 +718,7 @@ function UserHome() {
                           <p className="text-sm text-gray-500 mb-1">
                             {product.gender} • {product.occasion}
                           </p>
-                          <h3 className="font-semibold text-lg group-hover:text-[#7a2828] transition-colors line-clamp-1">
+                          <h3 className="font-semibold text-lg group-hover:text-[#023d12]  transition-colors line-clamp-1">
                             {product.name}
                           </h3>
                         </div>
@@ -728,7 +728,7 @@ function UserHome() {
                       <div className="mt-2 flex justify-between items-end">
                         <div>
                           <div className="flex items-center gap-2">
-                            <p className="text-lg font-bold text-[#7a2828]">{priceDisplay}</p>
+                            <p className="text-lg font-bold text-[#023d12] ">{priceDisplay}</p>
                             {offerPercentage > 0 && (
                               <Badge variant="secondary" className="bg-green-100 text-green-700">
                                 {offerPercentage}% OFF
@@ -745,7 +745,7 @@ function UserHome() {
                         </div>
                         <button
                             onClick={(e) => handleAddToCart(product.id, quantity, e)}
-                            className={`p-2 rounded-full bg-[#7a2828] text-white shadow-md transition-all duration-300 ${
+                            className={`p-2 rounded-full bg-[#023d12]  text-white shadow-md transition-all duration-300 ${
                               isHovered ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
                             }`}
                             disabled={!product.available || stock === 0}
@@ -754,7 +754,7 @@ function UserHome() {
                           </button>
                       </div>
                       <Button
-                        className="w-full mt-4 bg-[#7a2828] hover:bg-[#5a1d1d] text-white transition-all duration-300 group-hover:shadow-md flex items-center justify-center gap-2 transform group-hover:translate-y-0 translate-y-0"
+                        className="w-full mt-4 bg-[#023d12]  hover:bg-[#5a1d1d] text-white transition-all duration-300 group-hover:shadow-md flex items-center justify-center gap-2 transform group-hover:translate-y-0 translate-y-0"
                         disabled={!product.available || stock === 0}
                         onClick={(e) => handleAddToCart(product.id, quantity, e)}
                       >
@@ -762,7 +762,7 @@ function UserHome() {
                         {product.available && stock > 0 ? "Add to Cart" : "Out of Stock"}
                       </Button>
                     </div>
-                    <div className="absolute inset-0 border-2 border-[#7a2828] rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                    <div className="absolute inset-0 border-2 border-[#023d12]  rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                   </div>
                 )
               })}
@@ -776,7 +776,7 @@ function UserHome() {
                 <Button
                   variant="outline"
                   size="icon"
-                  className="border-gray-300 hover:border-[#7a2828] hover:text-[#7a2828]"
+                  className="border-gray-300 hover:border-[#023d12]  hover:text-[#023d12] "
                   onClick={handlePrevPage}
                   disabled={currentPage === 1}
                 >
@@ -793,8 +793,8 @@ function UserHome() {
                       variant={currentPage === page ? "default" : "outline"}
                       className={
                         currentPage === page
-                          ? "border-gray-300 bg-[#7a2828] text-white hover:bg-[#5a1d1d]"
-                          : "border-gray-300 hover:border-[#7a2828] hover:text-[#7a2828]"
+                          ? "border-gray-300 bg-[#023d12]  text-white hover:bg-[#5a1d1d]"
+                          : "border-gray-300 hover:border-[#023d12]  hover:text-[#023d12] "
                       }
                       onClick={() => handlePageChange(page)}
                     >
@@ -805,7 +805,7 @@ function UserHome() {
                 <Button
                   variant="outline"
                   size="icon"
-                  className="border-gray-300 hover:border-[#7a2828] hover:text-[#7a2828]"
+                  className="border-gray-300 hover:border-[#023d12]  hover:text-[#023d12] "
                   onClick={handleNextPage}
                   disabled={currentPage === totalPages}
                 >
@@ -818,11 +818,11 @@ function UserHome() {
                   placeholder="Page"
                   value={goToPageInput}
                   onChange={(e) => setGoToPageInput(e.target.value)}
-                  className="w-20 border-gray-300 focus:ring-[#7a2828] focus:border-[#7a2828]"
+                  className="w-20 border-gray-300 focus:ring-[#023d12]  focus:border-[#023d12] "
                 />
                 <Button
                   variant="outline"
-                  className="border-[#7a2828] text-[#7a2828] hover:bg-[#7a2828] hover:text-white"
+                  className="border-[#023d12]  text-[#023d12]  hover:bg-[#023d12]  hover:text-white"
                   onClick={handleGoToPage}
                 >
                   Go

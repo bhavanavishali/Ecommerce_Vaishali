@@ -28,13 +28,19 @@ import { useWishlist } from "@/Context/WishlistContext"
 
 const BASE_URL = import.meta.env.VITE_BASE_URL
 
+// const formatPrice = (price) =>
+//   new Intl.NumberFormat("en-IN", {
+//     style: "currency",
+//     currency: "INR",
+//     maximumFractionDigits: 0,
+//   }).format(price || 0)
 const formatPrice = (price) =>
-  new Intl.NumberFormat("en-IN", {
+  new Intl.NumberFormat("en-GB", {
     style: "currency",
-    currency: "INR",
+    currency: "GBP",
+    minimumFractionDigits: 0,
     maximumFractionDigits: 0,
-  }).format(price || 0)
-
+  }).format(price || 0);
 const getImageUrl = (image) => {
   if (!image) return ""
   if (typeof image === "string") return image.startsWith("http") ? image : `${BASE_URL}${image}`
@@ -156,7 +162,7 @@ const ProductDetails = () => {
       .join("\n")
 
     const encoded = encodeURIComponent(lines)
-    window.open(`https://wa.me/918943801278?text=${encoded}`, "_blank", "noopener,noreferrer")
+    window.open(`https://wa.me/447553387651?text=${encoded}`, "_blank", "noopener,noreferrer")
   }
 
   const handleAddToWishlist = async (event) => {
@@ -205,7 +211,7 @@ const ProductDetails = () => {
     return (
       <div className="container mx-auto px-4 py-16 flex justify-center items-center min-h-[60vh]">
         <div className="flex flex-col items-center">
-          <div className="w-16 h-16 border-4 border-[#7a2828] border-t-transparent rounded-full animate-spin mb-4"></div>
+          <div className="w-16 h-16 border-4 border-[#023d12]  border-t-transparent rounded-full animate-spin mb-4"></div>
           <div className="text-lg font-medium text-gray-700">Loading product details...</div>
         </div>
       </div>
@@ -215,21 +221,21 @@ const ProductDetails = () => {
   const productImages = Array.isArray(product.image) && product.image.length > 0 ? product.image : ["/placeholder.svg"]
 
   return (
-    <div className="bg-gradient-to-b from-[#fff8f0] to-white min-h-screen">
+    <div className="bg-gradient-to-b from-[#FCF8F1] to-white min-h-screen">
       <div className="container mx-auto px-4 py-4 max-w-7xl">
-        <div className="flex items-center text-sm text-gray-500 mb-6">
-          <span className="hover:text-[#7a2828] cursor-pointer transition-colors" onClick={() => navigate("/user/home")}>Home</span>
+        <div className="flex items-center text-sm text-[#4B4B4B] mb-6">
+          <span className="hover:text-[#0B3D2E] cursor-pointer transition-colors" onClick={() => navigate("/user/home")}>Home</span>
           <ChevronRight className="h-4 w-4 mx-2" />
           <span>{product.category_name}</span>
           <ChevronRight className="h-4 w-4 mx-2" />
-          <span className="text-[#7a2828] font-medium">{product.name}</span>
+          <span className="text-[#0B3D2E] font-medium">{product.name}</span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
           <div className="space-y-4">
             <div
               ref={imageContainerRef}
-              className={`aspect-square overflow-hidden rounded-lg border bg-white relative ${
+              className={`aspect-square overflow-hidden rounded-lg border border-[#E8DFC6] bg-white relative ${
                 isZoomed ? "cursor-zoom-out" : "cursor-zoom-in"
               } shadow-md hover:shadow-lg transition-shadow duration-300`}
               onClick={() => setIsZoomed((prev) => !prev)}
@@ -253,7 +259,7 @@ const ProductDetails = () => {
                     className="h-full w-full object-cover object-center transition-transform duration-500"
                   />
                   <div className="absolute top-3 right-3 bg-white/90 p-2 rounded-full shadow-md opacity-70 hover:opacity-100 transition-opacity duration-300">
-                    <ZoomIn className="h-5 w-5 text-[#7a2828]" />
+                    <ZoomIn className="h-5 w-5 text-[#0B3D2E]" />
                   </div>
                 </>
               )}
@@ -263,10 +269,10 @@ const ProductDetails = () => {
               {productImages.map((image, index) => (
                 <button
                   key={`${image}-${index}`}
-                  className={`relative h-20 w-20 overflow-hidden rounded-md border transition-all duration-300 ${
+                  className={`relative h-20 w-20 overflow-hidden rounded-md border border-[#E8DFC6] transition-all duration-300 ${
                     activeImage === index
-                      ? "ring-2 ring-[#7a2828] shadow-md scale-105"
-                      : "hover:ring-1 hover:ring-[#7a2828]/50 hover:shadow-sm"
+                      ? "ring-2 ring-[#0B3D2E] shadow-md scale-105"
+                      : "hover:ring-1 hover:ring-[#0B3D2E]/50 hover:shadow-sm"
                   }`}
                   onClick={() => setActiveImage(index)}
                 >
@@ -276,16 +282,16 @@ const ProductDetails = () => {
             </div>
 
             <div className="grid grid-cols-3 gap-3 mt-6">
-              <div className="flex flex-col items-center bg-[#fff8f0] p-3 rounded-lg border border-[#f0e6d6]">
-                <Truck className="h-6 w-6 text-[#7a2828] mb-2" />
+              <div className="flex flex-col items-center bg-[#F7F3EB] p-3 rounded-lg border border-[#E8DFC6]">
+                <Truck className="h-6 w-6 text-[#0B3D2E] mb-2" />
                 <span className="text-xs text-center font-medium">Free Shipping Above 1000/-</span>
               </div>
-              <div className="flex flex-col items-center bg-[#fff8f0] p-3 rounded-lg border border-[#f0e6d6]">
-                <RefreshCcw className="h-6 w-6 text-[#7a2828] mb-2" />
+              <div className="flex flex-col items-center bg-[#F7F3EB] p-3 rounded-lg border border-[#E8DFC6]">
+                <RefreshCcw className="h-6 w-6 text-[#0B3D2E] mb-2" />
                 <span className="text-xs text-center font-medium">14-Day Returns</span>
               </div>
-              <div className="flex flex-col items-center bg-[#fff8f0] p-3 rounded-lg border border-[#f0e6d6]">
-                <Shield className="h-6 w-6 text-[#7a2828] mb-2" />
+              <div className="flex flex-col items-center bg-[#F7F3EB] p-3 rounded-lg border border-[#E8DFC6]">
+                <Shield className="h-6 w-6 text-[#0B3D2E] mb-2" />
                 <span className="text-xs text-center font-medium">Quality Assured</span>
               </div>
             </div>
@@ -296,16 +302,16 @@ const ProductDetails = () => {
               <div className="flex items-start justify-between">
                 <div>
                   <div className="flex items-center space-x-2 mb-2">
-                    <Badge variant="outline" className="bg-[#7a2828]/10 text-[#7a2828] border-[#7a2828]/20">
+                    <Badge variant="outline" className="bg-[#0B3D2E]/10 text-[#0B3D2E] border-[#0B3D2E]/20">
                       {product.product_type === "clothing" ? "Clothing" : "Imitation Jewelry"}
                     </Badge>
                     {product.color && (
-                      <Badge variant="outline" className="bg-[#7a2828]/10 text-[#7a2828] border-[#7a2828]/20">
+                      <Badge variant="outline" className="bg-[#0B3D2E]/10 text-[#0B3D2E] border-[#0B3D2E]/20">
                         {product.color}
                       </Badge>
                     )}
                   </div>
-                  <h1 className="text-3xl font-bold text-gray-900 mb-1">{product.name}</h1>
+                  <h1 className="text-3xl font-bold text-[#1E2C24] mb-1">{product.name}</h1>
                 </div>
 
                 <button
@@ -317,17 +323,17 @@ const ProductDetails = () => {
                     showToast("Link copied to clipboard!")
                   }}
                 >
-                  <Share2 className="h-5 w-5 text-gray-500 group-hover:text-[#7a2828] transition-colors" />
+                  <Share2 className="h-5 w-5 text-[#4B4B4B] group-hover:text-[#0B3D2E] transition-colors" />
                 </button>
               </div>
 
               <div className="mt-4">
-                <p className="text-3xl font-bold text-[#7a2828]">
+                <p className="text-3xl font-bold text-[#0B3D2E]">
                   {formatPrice(product.price || selectedVariant?.total_price || product.fixed_price)}
                 </p>
-                <p className="mt-1 text-sm text-gray-500 flex items-center">
+                <p className="mt-1 text-sm text-[#4B4B4B] flex items-center">
                   Including all taxes
-                  <span className="inline-flex items-center ml-3 px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+                  <span className="inline-flex items-center ml-3 px-2 py-0.5 rounded text-xs font-medium bg-[#14532D]/10 text-[#14532D]">
                     <Check className="h-3 w-3 mr-1" />
                     Free shipping Above 1000/-
                   </span>
@@ -335,52 +341,52 @@ const ProductDetails = () => {
               </div>
             </div>
 
-            <Separator className="bg-[#e6d2b3]" />
+            <Separator className="bg-[#E8DFC6]" />
 
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div className="space-y-1">
-                <p className="font-medium text-gray-500">Type</p>
+                <p className="font-medium text-[#4B4B4B]">Type</p>
                 <p>{product.product_type === "clothing" ? "Clothing" : "Imitation Jewelry"}</p>
               </div>
               {product.size && (
                 <div className="space-y-1">
-                  <p className="font-medium text-gray-500">Size</p>
+                  <p className="font-medium text-[#4B4B4B]">Size</p>
                   <p>{product.size}</p>
                 </div>
               )}
               {product.color && (
                 <div className="space-y-1">
-                  <p className="font-medium text-gray-500">Color</p>
+                  <p className="font-medium text-[#4B4B4B]">Color</p>
                   <p>{product.color}</p>
                 </div>
               )}
               {product.fabric && (
                 <div className="space-y-1">
-                  <p className="font-medium text-gray-500">Fabric</p>
+                  <p className="font-medium text-[#4B4B4B]">Fabric</p>
                   <p>{product.fabric}</p>
                 </div>
               )}
               {product.material && (
                 <div className="space-y-1">
-                  <p className="font-medium text-gray-500">Material</p>
+                  <p className="font-medium text-[#4B4B4B]">Material</p>
                   <p>{product.material}</p>
                 </div>
               )}
               {product.occasion && (
                 <div className="space-y-1">
-                  <p className="font-medium text-gray-500">Occasion</p>
+                  <p className="font-medium text-[#4B4B4B]">Occasion</p>
                   <p>{product.occasion}</p>
                 </div>
               )}
               {product.gender && (
                 <div className="space-y-1">
-                  <p className="font-medium text-gray-500">Gender</p>
+                  <p className="font-medium text-[#4B4B4B]">Gender</p>
                   <p>{product.gender}</p>
                 </div>
               )}
             </div>
 
-            <Separator className="bg-[#e6d2b3]" />
+            <Separator className="bg-[#E8DFC6]" />
 
             <div className="space-y-4">
               <div>
@@ -401,7 +407,7 @@ const ProductDetails = () => {
                 )}
               </div>
 
-              <div className="flex items-center border rounded-md w-fit">
+              <div className="flex items-center border border-[#E8DFC6] rounded-md w-fit">
                 <Button variant="ghost" size="sm" onClick={decrementQuantity} disabled={quantity <= 1}>
                   <Minus className="h-4 w-4" />
                 </Button>
@@ -414,7 +420,7 @@ const ProductDetails = () => {
 
             <div className="flex flex-col sm:flex-row gap-3 pt-2">
               <Button
-                className={`flex-1 bg-[#7a2828] hover:bg-[#5a1d1d] text-white transition-all duration-300 ${
+                className={`flex-1 bg-gradient-to-r from-[#0B3D2E] to-[#14532D] hover:from-[#14532D] hover:to-[#0B3D2E] text-white transition-all duration-300 ${
                   isAddingToCart ? "opacity-90" : "hover:shadow-md"
                 }`}
                 size="lg"
@@ -436,12 +442,12 @@ const ProductDetails = () => {
               <Button
                 variant="outline"
                 size="lg"
-                className={`border-[#7a2828] text-[#7a2828] hover:bg-[#7a2828]/10 transition-all duration-300 ${
-                  isWishlisted ? "bg-[#7a2828]/10" : ""
+                className={`border-[#E8DFC6] text-[#0B3D2E] hover:bg-[#D4AF37] hover:border-[#D4AF37] hover:text-white transition-all duration-300 ${
+                  isWishlisted ? "bg-[#D4AF37]/10" : ""
                 }`}
                 onClick={handleAddToWishlist}
               >
-                <Heart className={`mr-2 h-5 w-5 ${isWishlisted ? "fill-[#7a2828]" : ""}`} />
+                <Heart className={`mr-2 h-5 w-5 ${isWishlisted ? "fill-[#D4AF37]" : ""}`} />
                 {isWishlisted ? "Wishlisted" : "Add to Wishlist"}
               </Button>
             </div>
@@ -450,7 +456,7 @@ const ProductDetails = () => {
             <button
               type="button"
               onClick={handleWhatsAppOrder}
-              className="w-full flex items-center justify-center gap-3 rounded-lg bg-[#25D366] hover:bg-[#1ebe5d] active:bg-[#19a852] text-white font-semibold text-base py-3.5 px-6 transition-all duration-200 shadow-sm hover:shadow-md"
+              className="w-full flex items-center justify-center gap-3 rounded-lg bg-[#087d33] hover:bg-[#1ebe5d] active:bg-[#19a852] text-white font-semibold text-base py-3.5 px-6 transition-all duration-200 shadow-sm hover:shadow-md"
             >
               {/* WhatsApp SVG icon */}
               <svg
@@ -466,26 +472,26 @@ const ProductDetails = () => {
           </div>
         </div>
 
-        <div className="mt-12 bg-white rounded-lg shadow-sm p-6 border border-[#e6d2b3]">
+        <div className="mt-12 bg-white rounded-lg shadow-sm p-6 border border-[#E8DFC6]">
           <Tabs defaultValue="description">
-            <TabsList className="w-full justify-start bg-[#fff8f0] p-1">
-              <TabsTrigger value="description" className="data-[state=active]:bg-white data-[state=active]:text-[#7a2828] data-[state=active]:shadow-sm">
+            <TabsList className="w-full justify-start bg-[#F7F3EB] p-1">
+              <TabsTrigger value="description" className="data-[state=active]:bg-white data-[state=active]:text-[#0B3D2E] data-[state=active]:shadow-sm">
                 Description
               </TabsTrigger>
-              <TabsTrigger value="details" className="data-[state=active]:bg-white data-[state=active]:text-[#7a2828] data-[state=active]:shadow-sm">
+              <TabsTrigger value="details" className="data-[state=active]:bg-white data-[state=active]:text-[#0B3D2E] data-[state=active]:shadow-sm">
                 Product Details
               </TabsTrigger>
-              <TabsTrigger value="shipping" className="data-[state=active]:bg-white data-[state=active]:text-[#7a2828] data-[state=active]:shadow-sm">
+              <TabsTrigger value="shipping" className="data-[state=active]:bg-white data-[state=active]:text-[#0B3D2E] data-[state=active]:shadow-sm">
                 Shipping & Returns
               </TabsTrigger>
             </TabsList>
 
             <TabsContent value="description" className="mt-6">
               <div className="prose max-w-none">
-                <p className="leading-relaxed text-gray-700">{product.description || "No description available."}</p>
-                <div className="mt-6 p-4 bg-[#fff8f0] rounded-lg border border-[#e6d2b3]">
-                  <h4 className="font-medium text-[#7a2828] mb-2">Care Instructions</h4>
-                  <ul className="list-disc pl-5 space-y-1 text-sm text-gray-700">
+                <p className="leading-relaxed text-[#4B4B4B]">{product.description || "No description available."}</p>
+                <div className="mt-6 p-4 bg-[#F7F3EB] rounded-lg border border-[#E8DFC6]">
+                  <h4 className="font-medium text-[#0B3D2E] mb-2">Care Instructions</h4>
+                  <ul className="list-disc pl-5 space-y-1 text-sm text-[#4B4B4B]">
                     <li>Store in a cool, dry place away from direct sunlight</li>
                     <li>Clean with a soft, lint-free cloth</li>
                     <li>Avoid contact with perfumes, lotions, and chemicals</li>
@@ -520,18 +526,18 @@ const ProductDetails = () => {
             <TabsContent value="shipping" className="mt-6">
               <div className="space-y-8">
                 <div>
-                  <h3 className="font-medium text-lg text-[#7a2828] mb-3 flex items-center">
+                  <h3 className="font-medium text-lg text-[#023d12]  mb-3 flex items-center">
                     <Truck className="h-5 w-5 mr-2" />
                     Shipping Information
                   </h3>
                   <div className="bg-[#fff8f0] rounded-lg p-4 border border-[#e6d2b3]">
                     <p className="mb-4 text-gray-700">
-                      We offer free shipping on all orders above ₹1,000. Standard delivery takes 3-5 business days.
+                      We offer free shipping on all orders above £1,000. Standard delivery takes 3-5 business days.
                     </p>
                   </div>
                 </div>
                 <div>
-                  <h3 className="font-medium text-lg text-[#7a2828] mb-3 flex items-center">
+                  <h3 className="font-medium text-lg text-[#023d12]  mb-3 flex items-center">
                     <RefreshCcw className="h-5 w-5 mr-2" />
                     Returns & Exchanges
                   </h3>

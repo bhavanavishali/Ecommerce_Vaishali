@@ -50,14 +50,14 @@ const Header = () => {
         <nav className="mt-6">
           <ul className="flex justify-center space-x-10">
             <li>
-              <a href="/all-jewellery" className="text-[#8B2131] hover:text-[#701A28] font-medium transition-colors">
+              <a href="/all-jewellery" className="text-[#045515] hover:text-[#701A28] font-medium transition-colors">
                 All Jewellery
               </a>
             </li>
             {loading ? (
               <li className="text-gray-500">Loading categories...</li>
             ) : error ? (
-              <li className="text-red-500">{error}</li>
+              <li className="text-green-500">{error}</li>
             ) : (
               categories.map((item, index) => (
                 <li key={index}>

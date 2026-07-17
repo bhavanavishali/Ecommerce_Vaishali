@@ -311,7 +311,7 @@ const AddProductForm = () => {
 
         <div className="grid grid-cols-3 gap-6">
           <div>
-            <label className="block text-sm font-medium mb-1">Fixed Price (₹) *</label>
+            <label className="block text-sm font-medium mb-1">Fixed Price (£) *</label>
             <Input name="fixed_price" type="number" min="1" step="0.01" value={productData.fixed_price} onChange={handleChange} required />
           </div>
           <div>

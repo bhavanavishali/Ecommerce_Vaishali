@@ -57,7 +57,7 @@ const HomeBanner = () => {
   };
 
   return (
-    <section className="w-full bg-white">
+    <section className="w-full bg-[#FFFDF8]">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 pt-4 pb-2">
         <div className="relative overflow-hidden rounded-sm">
           <div
@@ -109,8 +109,8 @@ const HomeBanner = () => {
                 aria-label={`Go to banner ${index + 1}`}
                 className={`w-2.5 h-2.5 rotate-45 transition-all duration-300 ${
                   current === index
-                    ? "bg-[#832729] scale-110"
-                    : "bg-gray-300 hover:bg-gray-400"
+                    ? "bg-[#0B3D2E] scale-110"
+                    : "bg-[#E8DFC6] hover:bg-[#D4AF37]"
                 }`}
               />
             ))}

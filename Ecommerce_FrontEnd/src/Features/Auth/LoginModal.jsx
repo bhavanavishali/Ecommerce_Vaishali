@@ -69,7 +69,7 @@ function LoginModal({ isOpen, onClose }) {
       <DialogContent className="max-w-md w-full p-0 overflow-hidden rounded-2xl">
         <div className="bg-gradient-to-br from-amber-50 via-white to-amber-100">
           {/* Header */}
-          <div className="bg-gradient-to-r from-[#7a2828] to-[#8b3333] p-6 text-white relative">
+          <div className="bg-gradient-to-r from-[#023d12]  to-[#8b3333] p-6 text-white relative">
             <button
               onClick={onClose}
               className="absolute right-4 top-4 text-white/80 hover:text-white transition-colors"
@@ -95,10 +95,10 @@ function LoginModal({ isOpen, onClose }) {
                     placeholder="Enter your email"
                     value={formData.email}
                     onChange={handleChange}
-                    className="h-12 rounded-xl bg-gradient-to-r from-amber-50 to-white px-4 border-2 border-amber-200 focus:border-[#7a2828] transition-all duration-300 text-gray-800 placeholder:text-gray-500"
+                    className="h-12 rounded-xl bg-gradient-to-r from-amber-50 to-white px-4 border-2 border-amber-200 focus:border-[#023d12]  transition-all duration-300 text-gray-800 placeholder:text-gray-500"
                   />
                   <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                    <Sparkles className="w-5 h-5 text-[#7a2828] opacity-50" />
+                    <Sparkles className="w-5 h-5 text-[#023d12]  opacity-50" />
                   </div>
                 </div>
               </div>
@@ -112,12 +112,12 @@ function LoginModal({ isOpen, onClose }) {
                     placeholder="Enter your password"
                     value={formData.password}
                     onChange={handleChange}
-                    className="h-12 rounded-xl bg-gradient-to-r from-amber-50 to-white px-4 pr-12 border-2 border-amber-200 focus:border-[#7a2828] transition-all duration-300 text-gray-800 placeholder:text-gray-500"
+                    className="h-12 rounded-xl bg-gradient-to-r from-amber-50 to-white px-4 pr-12 border-2 border-amber-200 focus:border-[#023d12]  transition-all duration-300 text-gray-800 placeholder:text-gray-500"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-[#7a2828] transition-colors"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-[#023d12]  transition-colors"
                   >
                     {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                   </button>
@@ -133,7 +133,7 @@ function LoginModal({ isOpen, onClose }) {
               <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="h-12 w-full rounded-xl bg-gradient-to-r from-[#7a2828] to-[#8b3333] text-white hover:from-[#6a2323] hover:to-[#7a2828] transition-all duration-300 shadow-lg hover:shadow-xl font-semibold disabled:opacity-50"
+                className="h-12 w-full rounded-xl bg-gradient-to-r from-[#023d12]  to-[#8b3333] text-white hover:from-[#6a2323] hover:to-[#023d12]  transition-all duration-300 shadow-lg hover:shadow-xl font-semibold disabled:opacity-50"
               >
                 {isSubmitting ? (
                   <div className="flex items-center justify-center gap-2">
@@ -169,7 +169,7 @@ function LoginModal({ isOpen, onClose }) {
               <Link
                 to="/forgot-password"
                 onClick={onClose}
-                className="block text-[#7a2828] hover:text-[#6a2323] font-medium hover:underline transition-colors duration-200 text-sm"
+                className="block text-[#023d12]  hover:text-[#6a2323] font-medium hover:underline transition-colors duration-200 text-sm"
               >
                 Forgot Password?
               </Link>
@@ -179,7 +179,7 @@ function LoginModal({ isOpen, onClose }) {
                 <Link
                   to="/signup"
                   onClick={onClose}
-                  className="text-[#7a2828] hover:text-[#6a2323] font-semibold hover:underline transition-colors duration-200 text-sm"
+                  className="text-[#023d12]  hover:text-[#6a2323] font-semibold hover:underline transition-colors duration-200 text-sm"
                 >
                   Create Account
                 </Link>

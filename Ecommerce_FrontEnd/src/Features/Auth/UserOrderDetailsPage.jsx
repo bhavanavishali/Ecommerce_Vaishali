@@ -54,13 +54,13 @@ const MyOrders = () => {
  
 
   // Format price in Indian Rupees
-  const formatPrice = (price) => {
-    return new Intl.NumberFormat("en-IN", {
-      style: "currency",
-      currency: "INR",
-      maximumFractionDigits: 0,
-    }).format(price)
-  }
+const formatPrice = (price) =>
+  new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(price || 0);
 
   // Format date
   const formatDate = (dateString) => {
@@ -78,7 +78,7 @@ const MyOrders = () => {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center">
-          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-[#7a2828] border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"></div>
+          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-[#023d12]  border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"></div>
           <p className="mt-4 text-gray-600">Loading your order...</p>
         </div>
       </div>
@@ -108,14 +108,14 @@ const MyOrders = () => {
     >
       <motion.div className="bg-white rounded-xl shadow-lg border overflow-hidden" variants={itemVariants}>
         {/* Success Header */}
-        <div className="bg-gradient-to-r from-[#7a2828] to-[#8B2131] text-white p-8 text-center">
+        <div className="bg-gradient-to-r from-[#023d12]  to-[#8B2131] text-white p-8 text-center">
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ duration: 0.5, type: "spring" }}
             className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white mb-4"
           >
-            <CheckCircle className="h-10 w-10 text-[#7a2828]" />
+            <CheckCircle className="h-10 w-10 text-[#023d12] " />
           </motion.div>
           <h1 className="text-3xl font-bold mb-2">Order Details</h1>
           <p className="text-lg opacity-90">Your latest order details</p>
@@ -217,12 +217,12 @@ const MyOrders = () => {
           <motion.div variants={itemVariants} className="mt-8 flex flex-col sm:flex-row gap-4">
             
             <Link to="/user/home" className="flex-1">
-              <button className="w-full bg-[#7a2828] text-white px-6 py-3 rounded-md hover:bg-[#8B2131] transition-colors font-medium">
+              <button className="w-full bg-[#023d12]  text-white px-6 py-3 rounded-md hover:bg-[#8B2131] transition-colors font-medium">
                 Continue Shopping
               </button>
             </Link>
             <Link to="/myorders" className="flex-1">
-              <button className="w-full border border-[#7a2828] text-[#7a2828] px-6 py-3 rounded-md hover:bg-[#7a2828] hover:text-white transition-colors font-medium">
+              <button className="w-full border border-[#023d12]  text-[#023d12]  px-6 py-3 rounded-md hover:bg-[#023d12]  hover:text-white transition-colors font-medium">
                 View All Orders
               </button>
             </Link>

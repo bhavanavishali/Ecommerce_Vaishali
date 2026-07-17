@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef, useCallback } from "react"
-import { Heart, ShoppingCart, ChevronLeft, ChevronRight, Filter, X, Search } from "lucide-react"
+import { Heart, ShoppingCart, ChevronLeft, ChevronRight, Filter, X, Search, Shield, Gem, Truck } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Button } from "@/components/ui/button"
@@ -26,14 +26,13 @@ const sortOptions = [
 ]
 
 const BASE_URL = import.meta.env.VITE_BASE_URL
-const formatPrice = (price) => {
-  if (price === null || price === undefined) return "Price unavailable"
-  return new Intl.NumberFormat("en-IN", {
+const formatPrice = (price) =>
+  new Intl.NumberFormat("en-GB", {
     style: "currency",
-    currency: "INR",
+    currency: "GBP",
+    minimumFractionDigits: 0,
     maximumFractionDigits: 0,
-  }).format(price)
-}
+  }).format(price || 0);
 
 const showToast = (message, type = "success") => {
   const toast = document.createElement("div")
@@ -57,6 +56,7 @@ function CategoryBasedProducts() {
   const { categoryName } = useParams()
   const [searchParams] = useSearchParams()
   const decodedCategoryName = decodeURIComponent(categoryName || "")
+  const productTypeFromUrl = searchParams.get("product_type") || ""
   const user = useSelector((state) => state.auth.user)
   const isAuthenticated = user && (user.username || user.email)
 
@@ -70,6 +70,7 @@ function CategoryBasedProducts() {
     gender: [],
     occasion: [],
     category_name: decodedCategoryName ? [decodedCategoryName] : [],
+    product_type: productTypeFromUrl,
   })
   const [sortBy, setSortBy] = useState("")
   const [wishlistIds, setWishlistIds] = useState([])
@@ -193,8 +194,9 @@ function CategoryBasedProducts() {
     setFilters((prev) => ({
       ...prev,
       category_name: decodedCategoryName ? [decodedCategoryName] : [],
+      product_type: productTypeFromUrl,
     }))
-  }, [decodedCategoryName])
+  }, [decodedCategoryName, productTypeFromUrl])
 
   const fetchProducts = async () => {
     setLoading(true)
@@ -221,11 +223,16 @@ function CategoryBasedProducts() {
       setSearchLoading(true)
       let filteredProducts = [...allProducts]
 
-      // Apply category filter (always filter by the selected category)
-      if (decodedCategoryName) {
+      // Apply category filter (only if not "all")
+      if (decodedCategoryName && decodedCategoryName !== "all") {
         filteredProducts = filteredProducts.filter((p) =>
           (p.productCategory || p.category_name) === decodedCategoryName
         )
+      }
+
+      // Apply product_type filter
+      if (filters.product_type) {
+        filteredProducts = filteredProducts.filter((p) => p.product_type === filters.product_type)
       }
 
       // Apply search filter
@@ -271,7 +278,7 @@ function CategoryBasedProducts() {
       setCurrentPage(1)
       setSearchLoading(false)
     }, 300),
-    [allProducts, filters, sortBy, searchQuery, decodedCategoryName]
+    [allProducts, filters, sortBy, searchQuery, decodedCategoryName, productTypeFromUrl]
   )
 
   useEffect(() => {
@@ -290,7 +297,12 @@ function CategoryBasedProducts() {
   }
 
   const clearFilters = () => {
-    setFilters({ gender: [], occasion: [], category_name: decodedCategoryName ? [decodedCategoryName] : [] })
+    setFilters({
+      gender: [],
+      occasion: [],
+      category_name: decodedCategoryName ? [decodedCategoryName] : [],
+      product_type: productTypeFromUrl,
+    })
     setSortBy("")
     setSearchQuery("")
     setCurrentPage(1)
@@ -391,24 +403,36 @@ function CategoryBasedProducts() {
   }
 
   return (
-    <div className="mx-auto px-2 bg-[#fcf9f9]">
+    <div className="mx-auto px-4 sm:px-6 lg:px-10 max-w-[1400px] bg-[#fcf9f9]">
       {/* Breadcrumb */}
-      <div className="text-sm mb-6 flex items-center">
-        <span 
-          className="text-gray-500 hover:text-[#7a2828] transition-colors cursor-pointer"
+      <div className="text-sm pt-6 mb-4 flex items-center">
+        <span
+          className="text-gray-500 hover:text-[#023d12]  transition-colors cursor-pointer"
           onClick={() => navigate("/user/home")}
         >
           Home
         </span>
         <ChevronRight className="h-4 w-4 mx-2 text-gray-400" />
-        <span className="text-[#7a2828] font-medium">{decodedCategoryName}</span>
+        <span className="text-[#023d12]  font-medium">
+          {decodedCategoryName === "all" ? "All Products" : decodedCategoryName}
+          {productTypeFromUrl && (
+            <span className="ml-2 text-gray-500">
+              - {productTypeFromUrl === "clothing" ? "Clothing" : "Jewelry"}
+            </span>
+          )}
+        </span>
       </div>
 
       {/* Title, Search, and Sort */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div>
           <h1 className="text-2xl md:text-3xl font-semibold text-gray-900 flex items-center">
-            {decodedCategoryName}
+            {decodedCategoryName === "all" ? "All Products" : decodedCategoryName}
+            {productTypeFromUrl && (
+              <span className="ml-2 text-gray-500 text-lg">
+                ({productTypeFromUrl === "clothing" ? "Clothing" : "Jewelry"})
+              </span>
+            )}
             <span className="text-sm text-gray-500 ml-3 font-normal">
               ({displayedProducts.length} items)
             </span>
@@ -416,7 +440,7 @@ function CategoryBasedProducts() {
           {hasActiveFilters() && (
             <Button
               variant="link"
-              className="p-0 text-[#7a2828] hover:text-[#5a1d1d] transition-colors mt-1 font-medium"
+              className="p-0 text-[#023d12]  hover:text-[#5a1d1d] transition-colors mt-1 font-medium"
               onClick={clearFilters}
             >
               Clear all filters
@@ -431,7 +455,7 @@ function CategoryBasedProducts() {
               placeholder="Search by name..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 border-gray-300 focus:ring-[#7a2828] focus:border-[#7a2828] w-full md:w-[200px]"
+              className="pl-10 border-gray-300 focus:ring-[#023d12]  focus:border-[#023d12]  w-full md:w-[200px]"
             />
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
           </div>
@@ -440,12 +464,12 @@ function CategoryBasedProducts() {
             <SheetTrigger asChild>
               <Button
                 variant="outline"
-                className="md:hidden flex items-center gap-2 border-[#7a2828] text-[#7a2828]"
+                className="md:hidden flex items-center gap-2 border-[#023d12]  text-[#023d12] "
                 onClick={() => setShowMobileFilters(true)}
               >
                 <Filter className="h-4 w-4" />
                 Filters
-                {getActiveFilterCount() > 0 && <Badge className="ml-1 bg-[#7a2828]">{getActiveFilterCount()}</Badge>}
+                {getActiveFilterCount() > 0 && <Badge className="ml-1 bg-[#023d12] ">{getActiveFilterCount()}</Badge>}
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="w-[300px] sm:w-[350px]">
@@ -455,7 +479,7 @@ function CategoryBasedProducts() {
                   {hasActiveFilters() && (
                     <Button
                       variant="link"
-                      className="text-[#7a2828] hover:text-[#5a1d1d] text-sm font-medium"
+                      className="text-[#023d12]  hover:text-[#5a1d1d] text-sm font-medium"
                       onClick={clearFilters}
                     >
                       Clear all
@@ -479,11 +503,11 @@ function CategoryBasedProducts() {
                                   id={`mobile-${category}-${option}`}
                                   checked={isFilterActive(category, option)}
                                   onCheckedChange={() => handleFilterChange(category, option)}
-                                  className="text-[#7a2828] border-gray-300 data-[state=checked]:bg-[#7a2828] data-[state=checked]:border-[#7a2828]"
+                                  className="text-[#023d12]  border-gray-300 data-[state=checked]:bg-[#023d12]  data-[state=checked]:border-[#023d12] "
                                 />
                                 <Label
                                   htmlFor={`mobile-${category}-${option}`}
-                                  className="cursor-pointer text-gray-700 hover:text-[#7a2828] transition-colors"
+                                  className="cursor-pointer text-gray-700 hover:text-[#023d12]  transition-colors"
                                 >
                                   {option}
                                 </Label>
@@ -500,7 +524,7 @@ function CategoryBasedProducts() {
           </Sheet>
 
           <Select value={sortBy} onValueChange={setSortBy}>
-            <SelectTrigger className="w-[180px] border-gray-300 focus:ring-[#7a2828] focus:border-[#7a2828]">
+            <SelectTrigger className="w-[180px] border-gray-300 focus:ring-[#023d12]  focus:border-[#023d12] ">
               <SelectValue placeholder="Sort By" />
             </SelectTrigger>
             <SelectContent className="bg-white">
@@ -523,7 +547,7 @@ function CategoryBasedProducts() {
               {hasActiveFilters() && (
                 <Button
                   variant="link"
-                  className="p-0 text-[#7a2828] hover:text-[#5a1d1d] text-sm font-medium"
+                  className="p-0 text-[#023d12]  hover:text-[#5a1d1d] text-sm font-medium"
                   onClick={clearFilters}
                 >
                   Clear all
@@ -534,7 +558,7 @@ function CategoryBasedProducts() {
               {Object.entries(filterCategories).map(([category, options]) =>
                 options.length > 0 ? (
                   <AccordionItem key={category} value={category} className="border-b border-gray-200">
-                    <AccordionTrigger className="text-base capitalize py-3 hover:text-[#7a2828] hover:no-underline">
+                    <AccordionTrigger className="text-base capitalize py-3 hover:text-[#023d12]  hover:no-underline">
                       {category.replace(/([A-Z])/g, " $1").trim()}
                     </AccordionTrigger>
                     <AccordionContent>
@@ -545,11 +569,11 @@ function CategoryBasedProducts() {
                               id={`${category}-${option}`}
                               checked={isFilterActive(category, option)}
                               onCheckedChange={() => handleFilterChange(category, option)}
-                              className="text-[#7a2828] border-gray-300 data-[state=checked]:bg-[#7a2828] data-[state=checked]:border-[#7a2828]"
+                              className="text-[#023d12]  border-gray-300 data-[state=checked]:bg-[#023d12]  data-[state=checked]:border-[#023d12] "
                             />
                             <Label
                               htmlFor={`${category}-${option}`}
-                              className="cursor-pointer text-gray-700 group-hover:text-[#7a2828] transition-colors"
+                              className="cursor-pointer text-gray-700 group-hover:text-[#023d12]  transition-colors"
                             >
                               {option}
                             </Label>
@@ -568,24 +592,24 @@ function CategoryBasedProducts() {
         <div className="flex-1">
           {loading || searchLoading ? (
             <div className="flex justify-center items-center h-64">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#7a2828]"></div>
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#023d12] "></div>
             </div>
           ) : currentProducts.length === 0 ? (
             <div className="flex flex-col justify-center items-center h-64 bg-white rounded-lg shadow-sm p-8">
-              <div className="text-[#7a2828] mb-4">
+              <div className="text-[#023d12]  mb-4">
                 <X className="h-12 w-12 mx-auto" />
               </div>
               <p className="text-lg text-gray-700 text-center">No products found in this category.</p>
               <Button
                 variant="outline"
-                className="mt-4 border-[#7a2828] text-[#7a2828] hover:bg-[#7a2828] hover:text-white transition-all duration-300"
+                className="mt-4 border-[#023d12]  text-[#023d12]  hover:bg-[#023d12]  hover:text-white transition-all duration-300"
                 onClick={() => navigate("/user/home")}
               >
                 Browse All Products
               </Button>
             </div>
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5 lg:gap-6">
               {currentProducts.map((product) => {
                 const { priceDisplay, basePrice, offerPercentage, variant, stock } = getPriceDisplay(product)
                 const isHovered = hoveredProduct === product.id
@@ -593,95 +617,110 @@ function CategoryBasedProducts() {
                 return (
                   <div
                     key={product.id}
-                    className="bg-white rounded-lg shadow-sm overflow-hidden transition-all duration-300 hover:shadow-xl group relative"
+                    className="w-full bg-white rounded-3xl shadow-lg border border-[#E8DFC6] overflow-hidden transition-all duration-500 hover:scale-[1.03] hover:shadow-2xl group relative"
                     onMouseEnter={() => setHoveredProduct(product.id)}
                     onMouseLeave={() => setHoveredProduct(null)}
                     onClick={() => navigate(`/productdetails/${product.id}`)}
                   >
-                    <div className="relative overflow-hidden">
-                      <div className="cursor-pointer aspect-square">
-                        <img
-                          src={
-                            product.image && product.image.length > 0
-                              ? `${BASE_URL}${product.image[0].image}`
-                              : "/placeholder.svg"
-                          }
-                          alt={product.name}
-                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    <div className="relative overflow-hidden aspect-[3/4] bg-[#FCF8F1]">
+                      <img
+                        src={
+                          product.image && product.image.length > 0
+                            ? `${BASE_URL}${product.image[0].image}`
+                            : "/placeholder.svg"
+                        }
+                        alt={product.name}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      />
+                      
+                      {/* Wishlist Button */}
+                      <button
+                        onClick={(e) => handleAddToWishlist(product.id, e)}
+                        className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/80 backdrop-blur-sm border border-[#E8DFC6] flex items-center justify-center transition-all duration-300 hover:bg-[#D4AF37] hover:border-[#D4AF37] hover:text-white z-10"
+                      >
+                        <Heart
+                          className={`w-5 h-5 transition-colors ${
+                            wishlistIds.includes(product.id)
+                              ? "fill-[#D4AF37] text-[#D4AF37]"
+                              : "text-gray-600"
+                          }`}
                         />
-                        <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                          <span className="text-white font-medium px-4 py-2 rounded-md bg-black/50 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                            Quick View
-                          </span>
-                        </div>
-                      </div>
-                        <button
-                          onClick={(e) => handleAddToWishlist(product.id, e)}
-                          className="absolute top-3 right-3 p-2 rounded-full bg-white shadow-md transition-all duration-300 hover:scale-110 hover:shadow-lg z-10"
-                        >
-                          <Heart
-                            className={`w-5 h-5 transition-colors duration-300 ${
-                              wishlistIds.includes(product.id)
-                                ? "fill-[#7a2828] stroke-[#7a2828]"
-                                : "stroke-gray-500 group-hover:stroke-[#7a2828]"
-                            }`}
-                          />
-                        </button>
-                      <div className="absolute top-3 left-3">
-                        <Badge className="bg-white text-[#7a2828] hover:bg-white">
+                      </button>
+
+                      {/* Category Badge */}
+                      <div className="absolute top-4 left-4">
+                        <Badge className="bg-[#0B3D2E] text-[#D4AF37] hover:bg-[#0B3D2E]">
                           {product.productCategory || product.category_name}
                         </Badge>
                       </div>
-                    </div>
 
-                    <div className="p-4">
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <p className="text-sm text-gray-500 mb-1">
-                            {product.gender} • {product.occasion}
-                          </p>
-                          <h3 className="font-semibold text-lg group-hover:text-[#7a2828] transition-colors line-clamp-1">
-                            {product.name}
-                          </h3>
-                        </div>
-                        
-                      </div>
-
-                      <div className="mt-2 flex justify-between items-end">
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <p className="text-lg font-bold text-[#7a2828]">{priceDisplay}</p>
-                            {offerPercentage > 0 && (
-                              <Badge variant="secondary" className="bg-green-100 text-green-700">
-                                {offerPercentage}% OFF
-                              </Badge>
-                            )}
-                          </div>
-
-                          {variant && basePrice > 0 && Number(variant.total_price) < basePrice && (
-                            <p className="text-sm text-gray-500 line-through">{formatPrice(Math.round(basePrice))}</p>
-                          )}
-                        </div>
+                      {/* Quick View Overlay */}
+                      <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                         <button
-                            onClick={(e) => handleAddToCart(product.id, quantity, e)}
-                            className={`p-2 rounded-full bg-[#7a2828] text-white shadow-md transition-all duration-300 ${
-                              isHovered ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-                            }`}
-                            disabled={!product.available || stock === 0}
-                          >
-                            <ShoppingCart className="w-5 h-5" />
-                          </button>
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            navigate(`/productdetails/${product.id}`)
+                          }}
+                          className="px-6 py-3 bg-white/90 backdrop-blur-sm border border-[#E8DFC6] rounded-full flex items-center gap-2 text-[#0B3D2E] font-medium hover:bg-[#0B3D2E] hover:text-white hover:border-[#0B3D2E] transition-all duration-300"
+                        >
+                          Quick View
+                        </button>
                       </div>
-                      <Button
-                        className="w-full mt-4 bg-[#7a2828] hover:bg-[#5a1d1d] text-white transition-all duration-300 group-hover:shadow-md flex items-center justify-center gap-2 transform group-hover:translate-y-0 translate-y-0"
-                        disabled={!product.available || stock === 0}
-                        onClick={(e) => handleAddToCart(product.id, quantity, e)}
-                      >
-                        <ShoppingCart className="w-4 h-4" />
-                        {product.available && stock > 0 ? "Add to Cart" : "Out of Stock"}
-                      </Button>
                     </div>
-                    <div className="absolute inset-0 border-2 border-[#7a2828] rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+
+                    <div className="p-3 sm:p-4 space-y-2 sm:space-y-3">
+                      <h3 className="font-serif text-sm sm:text-base font-semibold text-[#1E2C24] line-clamp-1">
+                        {product.name}
+                      </h3>
+
+                      <p className="text-[10px] sm:text-xs text-[#4B4B4B]">
+                        {product.gender} • {product.occasion}
+                      </p>
+
+                      <div className="flex items-baseline gap-1 sm:gap-2 flex-wrap">
+                        <span className="text-base sm:text-lg font-bold text-[#0B3D2E]">{priceDisplay}</span>
+                        {variant && basePrice > 0 && Number(variant.total_price) < basePrice && (
+                          <span className="text-xs sm:text-sm text-gray-400 line-through">{formatPrice(Math.round(basePrice))}</span>
+                        )}
+                        {offerPercentage > 0 && (
+                          <span className="px-2 py-0.5 bg-[#14532D] text-white text-[10px] font-semibold rounded-full whitespace-nowrap">
+                            {offerPercentage}% OFF
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Feature Icons */}
+                      <div className="flex items-center justify-between pt-2 border-t border-[#E8DFC6]">
+                        {/* <div className="flex items-center gap-0.5 text-[#4B4B4B]">
+                          <Shield className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-[#0B3D2E]" />
+                          <span className="text-[8px] sm:text-[10px]">Pure Handloom</span>
+                        </div> */}
+                        {/* <div className="flex items-center gap-0.5 text-[#4B4B4B]">
+                          <Gem className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-[#0B3D2E]" />
+                          <span className="text-[8px] sm:text-[10px]">Premium</span>
+                        </div> */}
+                        {/* <div className="flex items-center gap-0.5 text-[#4B4B4B]">
+                          <Truck className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-[#0B3D2E]" />
+                          <span className="text-[8px] sm:text-[10px]">Fast Delivery</span>
+                        </div> */}
+                      </div>
+
+                      <div className="flex gap-2 pt-2">
+                        <button
+                          onClick={(e) => handleAddToWishlist(product.id, e)}
+                          className="flex-1 py-1.5 sm:py-2 border-2 border-[#E8DFC6] rounded-xl flex items-center justify-center gap-1 text-[#0B3D2E] font-medium text-[10px] sm:text-xs hover:bg-[#D4AF37] hover:border-[#D4AF37] hover:text-white transition-all duration-300"
+                        >
+                          <Heart className={`w-3 h-3 sm:w-4 sm:h-4 ${wishlistIds.includes(product.id) ? "fill-current" : ""}`} />
+                        </button>
+                        <button
+                          onClick={(e) => handleAddToCart(product.id, quantity, e)}
+                          className="flex-1 py-1.5 sm:py-2 bg-gradient-to-r from-[#0B3D2E] to-[#14532D] rounded-xl flex items-center justify-center gap-1 text-white font-medium text-[10px] sm:text-xs hover:from-[#14532D] hover:to-[#0B3D2E] transition-all duration-300"
+                          disabled={!product.available || stock === 0}
+                        >
+                          <ShoppingCart className="w-3 h-3 sm:w-4 sm:h-4" />
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 )
               })}
@@ -695,7 +734,7 @@ function CategoryBasedProducts() {
                 <Button
                   variant="outline"
                   size="icon"
-                  className="border-gray-300 hover:border-[#7a2828] hover:text-[#7a2828]"
+                  className="border-gray-300 hover:border-[#023d12]  hover:text-[#023d12] "
                   onClick={handlePrevPage}
                   disabled={currentPage === 1}
                 >
@@ -712,8 +751,8 @@ function CategoryBasedProducts() {
                       variant={currentPage === page ? "default" : "outline"}
                       className={`${
                         currentPage === page
-                          ? "bg-[#7a2828] hover:bg-[#5a1d1d] text-white border-[#7a2828]"
-                          : "border-gray-300 hover:border-[#7a2828] hover:text-[#7a2828]"
+                          ? "bg-[#023d12]  hover:bg-[#5a1d1d] text-white border-[#023d12] "
+                          : "border-gray-300 hover:border-[#023d12]  hover:text-[#023d12] "
                       }`}
                       onClick={() => handlePageChange(page)}
                     >
@@ -724,7 +763,7 @@ function CategoryBasedProducts() {
                 <Button
                   variant="outline"
                   size="icon"
-                  className="border-gray-300 hover:border-[#7a2828] hover:text-[#7a2828]"
+                  className="border-gray-300 hover:border-[#023d12]  hover:text-[#023d12] "
                   onClick={handleNextPage}
                   disabled={currentPage === totalPages}
                 >
@@ -740,9 +779,9 @@ function CategoryBasedProducts() {
                   max={totalPages}
                   value={goToPageInput}
                   onChange={(e) => setGoToPageInput(e.target.value)}
-                  className="w-16 h-8 text-center border-gray-300 focus:ring-[#7a2828] focus:border-[#7a2828]"
+                  className="w-16 h-8 text-center border-gray-300 focus:ring-[#023d12]  focus:border-[#023d12] "
                 />
-                <Button type="submit" size="sm" className="bg-[#7a2828] hover:bg-[#5a1d1d]">
+                <Button type="submit" size="sm" className="bg-[#023d12]  hover:bg-[#5a1d1d]">
                   Go
                 </Button>
               </form>

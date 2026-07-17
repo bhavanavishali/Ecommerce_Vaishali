@@ -65,7 +65,7 @@ const Report = () => {
               alt="WordBloom Logo" 
               className="w-20 h-18 object-contain"
             />
-            <h1 className="text-xl font-bold text-[#7a2828]">VaishaliGold Sales Report</h1>
+            <h1 className="text-xl font-bold text-[#023d12] ">VaishaliGold Sales Report</h1>
           </div>
           <div className="flex gap-2">
             <Button 

@@ -4,7 +4,7 @@ import { Separator } from "@/components/ui/separator"
 
 export default function Footer() {
   return (
-    <footer className="bg-[#f8ece9] text-[#7a2828] py-6 px-4 md:px-8 lg:px-16">
+    <footer className="bg-[#FFF8E7] text-[#023d12]  py-6 px-4 md:px-8 lg:px-16">
       <div className="container mx-auto">
         <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
           {/* Useful Links */}
@@ -61,17 +61,17 @@ export default function Footer() {
           <div className="col-span-2 md:col-span-1 lg:col-span-1">
             <h3 className="text-lg font-bold mb-3 md:mb-6">Follow Us</h3>
             <div className="flex space-x-3 md:space-x-4">
-              <a href="#" className="bg-white p-1.5 md:p-2 rounded-full hover:bg-gray-100 transition-colors">
-                <Facebook className="h-5 w-5 md:h-6 md:w-6 text-[#7a2828]" />
+              <a href="https://www.instagram.com/info.keralaloom/" className="bg-white p-1.5 md:p-2 rounded-full hover:bg-gray-100 transition-colors">
+                <Facebook className="h-5 w-5 md:h-6 md:w-6 text-[#023d12] " />
                 <span className="sr-only">Facebook</span>
               </a>
-              <a href="#" className="bg-white p-1.5 md:p-2 rounded-full hover:bg-gray-100 transition-colors">
-                <Instagram className="h-5 w-5 md:h-6 md:w-6 text-[#7a2828]" />
+              <a href="https://www.instagram.com/info.keralaloom/" className="bg-white p-1.5 md:p-2 rounded-full hover:bg-gray-100 transition-colors">
+                <Instagram className="h-5 w-5 md:h-6 md:w-6 text-[#023d12] " />
                 <span className="sr-only">Instagram</span>
               </a>
             
-              <a href="#" className="bg-white p-1.5 md:p-2 rounded-full hover:bg-gray-100 transition-colors">
-                <MessageCircle className="h-5 w-5 md:h-6 md:w-6 text-[#7a2828]" />
+              <a href="https://l.instagram.com/?u=https%3A%2F%2Fchat.whatsapp.com%2FJDWmspfkwUOBTPOkD0ASVm%3Fs%3Dcl%26p%3Di%26mlu%3D0%26ilr%3D0%26amv%3D2%26utm_source%3Dig%26utm_medium%3Dsocial%26utm_content%3Dlink_in_bio%26fbclid%3DPAZXh0bgNhZW0CMTEAc3J0YwZhcHBfaWQQMTIxNzk4MTY0NDg3OTYyOAABp5g6BpPwG7jAFP5KCr0CY4lchjB6x7RToEi3oJnBYmIRZnoNJ399PFB3iVoz_aem_HJ9NDIY-x_-5nqVSP93zFA&e=AUAdDhLOpIs6RWsPNR8hNsJiL5fxMkf2k4VElQoB1wRdz88LjGtpcK7XVlRR1p2sRjQAeaujxGfGe31h3tDkjW1Rc7wecScD5flA_7ZjA0yv1ZtNbtv74rFlA0NEPjQpjg" className="bg-white p-1.5 md:p-2 rounded-full hover:bg-gray-100 transition-colors">
+                <MessageCircle className="h-5 w-5 md:h-6 md:w-6 text-[#023d12] " />
                 <span className="sr-only">WhatsApp</span>
               </a>
             </div>

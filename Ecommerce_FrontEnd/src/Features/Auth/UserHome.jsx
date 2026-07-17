@@ -35,14 +35,13 @@ const sortOptions = [
 ]
 
 const BASE_URL =import.meta.env.VITE_BASE_URL
-const formatPrice = (price) => {
-  if (price === null || price === undefined) return "Price unavailable"
-  return new Intl.NumberFormat("en-IN", {
+const formatPrice = (price) =>
+  new Intl.NumberFormat("en-IN", {
     style: "currency",
     currency: "INR",
+    minimumFractionDigits: 0,
     maximumFractionDigits: 0,
-  }).format(price)
-}
+  }).format(price || 0);
 
 const showToast = (message, type = "success") => {
   const toast = document.createElement("div")
@@ -472,8 +471,7 @@ function UserHome() {
         products={latestArrivals}
         onProductClick={(id) => navigate(`/productdetails/${id}`)}
         onViewAll={() => {
-          setSortBy("new")
-          document.getElementById("product-collection")?.scrollIntoView({ behavior: "smooth" })
+          navigate("/category")
         }}
       />
 

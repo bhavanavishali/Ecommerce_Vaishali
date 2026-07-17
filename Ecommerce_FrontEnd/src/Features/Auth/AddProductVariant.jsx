@@ -337,7 +337,7 @@ const AddProductVariantForm = () => {
         <Button
           variant="outline"
           onClick={() => navigate("/dashboard")}
-          className="flex items-center gap-2 border-[#7a2828] text-[#7a2828] hover:bg-[#7a2828] hover:text-white"
+          className="flex items-center gap-2 border-[#023d12]  text-[#023d12]  hover:bg-[#023d12]  hover:text-white"
         >
           <ArrowLeft className="h-4 w-4" />
           Back
@@ -365,9 +365,9 @@ const AddProductVariantForm = () => {
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Gross Weight (g)</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Gold Price (₹)</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stone Rate (₹)</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Making Charge (₹)</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Gold Price (£)</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stone Rate (£)</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Making Charge (£)</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tax</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Available</th>
@@ -473,7 +473,7 @@ const AddProductVariantForm = () => {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700">
-                    Gold Price (₹)
+                    Gold Price (£)
                   </label>
                   <Input
                     name="gold_price"
@@ -489,7 +489,7 @@ const AddProductVariantForm = () => {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700">
-                    Stone Rate (₹)
+                    Stone Rate (£)
                   </label>
                   <Input
                     name="stone_rate"
@@ -504,7 +504,7 @@ const AddProductVariantForm = () => {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700">
-                    Making Charge (₹)
+                    Making Charge (£)
                   </label>
                   <Input
                     name="making_charge"
@@ -646,7 +646,7 @@ const AddProductVariantForm = () => {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700">
-                    Gold Price (₹)
+                    Gold Price (£)
                   </label>
                   <Input
                     name="gold_price"
@@ -660,7 +660,7 @@ const AddProductVariantForm = () => {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700">
-                    Stone Rate (₹)
+                    Stone Rate (£)
                   </label>
                   <Input
                     name="stone_rate"
@@ -673,7 +673,7 @@ const AddProductVariantForm = () => {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700">
-                    Making Charge (₹)
+                    Making Charge (£)
                   </label>
                   <Input
                     name="making_charge"

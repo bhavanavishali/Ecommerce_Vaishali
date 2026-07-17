@@ -4,23 +4,25 @@ import { useEffect, useRef, useCallback } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import useEmblaCarousel from "embla-carousel-react";
 import { Button } from "@/components/ui/button";
-
+import { useNavigate } from "react-router-dom";
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 const formatPrice = (price) =>
   new Intl.NumberFormat("en-IN", {
     style: "currency",
     currency: "INR",
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
   }).format(price || 0);
+  
+
 
 const SectionTitle = ({ title }) => (
   <div className="text-center mb-8 md:mb-10">
-    <h2 className="font-serif text-2xl md:text-[28px] text-gray-900 tracking-wide">{title}</h2>
+    <h2 className="font-serif text-2xl md:text-[28px] text-[#1E2C24] tracking-wide">{title}</h2>
     <div className="flex justify-center mt-3">
-      <div className="relative w-24 h-px bg-gray-300">
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-0.5 bg-gray-900" />
+      <div className="relative w-24 h-px bg-[#E8DFC6]">
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-0.5 bg-[#0B3D2E]" />
       </div>
     </div>
   </div>
@@ -48,13 +50,13 @@ const ArrivalCard = ({ product, onClick }) => {
 
   return (
     <div
-      className="group cursor-pointer bg-white border border-gray-200 rounded-sm overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
+      className="group cursor-pointer bg-[#FFFFFF] border border-[#E8DFC6] rounded-sm overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
       onClick={onClick}
       role="button"
       tabIndex={0}
       onKeyDown={(e) => e.key === "Enter" && onClick()}
     >
-      <div className="relative aspect-square bg-[#f8f6f3] overflow-hidden">
+      <div className="relative aspect-square bg-[#F7F3EB] overflow-hidden">
         <img
           src={imageUrl}
           alt={product.name}
@@ -63,12 +65,12 @@ const ArrivalCard = ({ product, onClick }) => {
 
         <div className="absolute top-3 left-3 flex flex-col gap-2">
           {offerPercentage > 0 && (
-            <span className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-white border border-gray-300 text-[10px] font-semibold text-gray-800 text-center leading-tight shadow-sm">
+            <span className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-white border border-[#E8DFC6] text-[10px] font-semibold text-[#4B4B4B] text-center leading-tight shadow-sm">
               {Math.round(offerPercentage)}% OFF
             </span>
           )}
           {isSoldOut && (
-            <span className="inline-flex items-center justify-center px-2.5 py-1 rounded-full bg-white border border-gray-300 text-[10px] font-semibold text-gray-700 uppercase tracking-wide">
+            <span className="inline-flex items-center justify-center px-2.5 py-1 rounded-full bg-white border border-[#E8DFC6] text-[10px] font-semibold text-[#4B4B4B] uppercase tracking-wide">
               Sold Out
             </span>
           )}
@@ -76,12 +78,12 @@ const ArrivalCard = ({ product, onClick }) => {
 
         <div className="absolute top-3 right-3 flex flex-col gap-1.5 items-end">
           {showSale && !isSoldOut && (
-            <span className="px-2 py-0.5 text-[10px] font-semibold text-white bg-emerald-600 rounded-sm uppercase tracking-wide">
+            <span className="px-2 py-0.5 text-[10px] font-semibold text-white bg-[#14532D] rounded-sm uppercase tracking-wide">
               Sale
             </span>
           )}
           {product?.product_offer_Isactive && !isSoldOut && (
-            <span className="px-2 py-0.5 text-[10px] font-semibold text-white bg-pink-500 rounded-sm uppercase tracking-wide">
+            <span className="px-2 py-0.5 text-[10px] font-semibold text-white bg-[#D4AF37] rounded-sm uppercase tracking-wide">
               Top Selling
             </span>
           )}
@@ -89,14 +91,14 @@ const ArrivalCard = ({ product, onClick }) => {
       </div>
 
       <div className="px-3 py-3 md:px-4 md:py-4">
-        <h3 className="font-serif text-sm md:text-base text-gray-900 line-clamp-2 mb-2 min-h-[2.5rem] group-hover:text-[#832729] transition-colors">
+        <h3 className="font-serif text-sm md:text-base text-[#1E2C24] line-clamp-2 mb-2 min-h-[2.5rem] group-hover:text-[#0B3D2E] transition-colors">
           {product.name}
         </h3>
         <div className="flex items-baseline gap-2 flex-wrap">
           {hasDiscount && (
             <span className="text-sm text-gray-400 line-through">{formatPrice(basePrice)}</span>
           )}
-          <span className="text-sm md:text-base font-semibold text-gray-900">
+          <span className="text-sm md:text-base font-semibold text-[#1E2C24]">
             {isSoldOut ? "Out of stock" : formatPrice(finalPrice)}
           </span>
         </div>
@@ -106,7 +108,9 @@ const ArrivalCard = ({ product, onClick }) => {
 };
 
 const LatestArrivals = ({ products = [], onProductClick, onViewAll }) => {
+  const navigate = useNavigate();
   const autoplayRef = useRef(null);
+
   const [emblaRef, emblaApi] = useEmblaCarousel({
     align: "start",
     loop: true,
@@ -142,7 +146,7 @@ const LatestArrivals = ({ products = [], onProductClick, onViewAll }) => {
   if (products.length === 0) return null;
 
   return (
-    <section className="w-full bg-white py-10 md:py-14 border-t border-gray-100">
+    <section className="w-full bg-[#FFFDF8] py-10 md:py-14 border-t border-[#E8DFC6]">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10">
         <SectionTitle title="Latest Arrivals" />
 
@@ -154,10 +158,10 @@ const LatestArrivals = ({ products = [], onProductClick, onViewAll }) => {
           <button
             type="button"
             onClick={scrollPrev}
-            className="absolute -left-2 md:-left-5 top-[38%] -translate-y-1/2 z-10 w-9 h-9 md:w-10 md:h-10 rounded-full bg-white border border-gray-200 shadow-sm flex items-center justify-center hover:bg-gray-50 transition-colors"
+            className="absolute -left-2 md:-left-5 top-[38%] -translate-y-1/2 z-10 w-9 h-9 md:w-10 md:h-10 rounded-full bg-white border border-[#E8DFC6] shadow-sm flex items-center justify-center hover:bg-[#F7F3EB] transition-colors"
             aria-label="Previous products"
           >
-            <ChevronLeft className="h-5 w-5 text-gray-600" />
+            <ChevronLeft className="h-5 w-5 text-[#4B4B4B]" />
           </button>
 
           <div className="overflow-hidden px-6 md:px-8" ref={emblaRef}>
@@ -179,17 +183,17 @@ const LatestArrivals = ({ products = [], onProductClick, onViewAll }) => {
           <button
             type="button"
             onClick={scrollNext}
-            className="absolute -right-2 md:-right-5 top-[38%] -translate-y-1/2 z-10 w-9 h-9 md:w-10 md:h-10 rounded-full bg-white border border-gray-200 shadow-sm flex items-center justify-center hover:bg-gray-50 transition-colors"
+            className="absolute -right-2 md:-right-5 top-[38%] -translate-y-1/2 z-10 w-9 h-9 md:w-10 md:h-10 rounded-full bg-white border border-[#E8DFC6] shadow-sm flex items-center justify-center hover:bg-[#F7F3EB] transition-colors"
             aria-label="Next products"
           >
-            <ChevronRight className="h-5 w-5 text-gray-600" />
+            <ChevronRight className="h-5 w-5 text-[#4B4B4B]" />
           </button>
         </div>
 
         <div className="flex justify-center mt-10">
           <Button
-            onClick={onViewAll}
-            className="rounded-full bg-gray-900 hover:bg-gray-800 text-white px-8 py-2.5 text-sm font-medium tracking-wide"
+            onClick={() => navigate("/category/all") }
+            className="rounded-full bg-[#0B3D2E] hover:bg-[#14532D] text-white px-8 py-2.5 text-sm font-medium tracking-wide"
           >
             View all
           </Button>

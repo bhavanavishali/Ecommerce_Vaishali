@@ -135,7 +135,7 @@
 //   if (isLoading)
 //     return (
 //       <div className="flex justify-center items-center h-screen">
-//         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#7a2828]"></div>
+//         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#023d12] "></div>
 //       </div>
 //     )
 
@@ -145,7 +145,7 @@
 //         <AlertCircle className="h-4 w-4" />
 //         <AlertTitle>Error</AlertTitle>
 //         <AlertDescription>{error}</AlertDescription>
-//         <Button onClick={() => window.location.reload()} className="mt-4 bg-[#7a2828] hover:bg-[#7a2828]">
+//         <Button onClick={() => window.location.reload()} className="mt-4 bg-[#023d12]  hover:bg-[#023d12] ">
 //           <RefreshCcw className="mr-2 h-4 w-4" /> Retry
 //         </Button>
 //       </Alert>
@@ -164,14 +164,14 @@
 //     <div className="container mx-auto p-4 bg-gradient-to-b from-white to-red-50">
 //       <div className="max-w-5xl mx-auto">
 //         <div className="flex items-center mb-6">
-//           <div className="w-1 h-8 bg-[#7a2828] mr-3"></div>
+//           <div className="w-1 h-8 bg-[#023d12]  mr-3"></div>
 //           <h1 className="text-3xl font-bold text-gray-900">Order Details</h1>
           
 //         </div>
 //         <Button
 //             variant="outline"
 //             onClick={() => navigate("/dashboard")}
-//             className="flex items-center gap-2 border-[#7a2828] text-[#7a2828] hover:bg-[#7a2828] hover:text-white"
+//             className="flex items-center gap-2 border-[#023d12]  text-[#023d12]  hover:bg-[#023d12]  hover:text-white"
 //           >
 //             <ArrowLeft className="h-4 w-4" />
 //             Back
@@ -185,13 +185,13 @@
 //           </Alert>
 //         )}
 
-//         <Card className="mb-6 border-[#7a2828] shadow-sm overflow-hidden">
-//           <div className="bg-gradient-to-r from-[#7a2828] to-red-50 h-2"></div>
+//         <Card className="mb-6 border-[#023d12]  shadow-sm overflow-hidden">
+//           <div className="bg-gradient-to-r from-[#023d12]  to-red-50 h-2"></div>
 //           <CardContent className="p-6">
 //             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 //               <div>
 //                 <div className="flex items-center mb-4">
-//                   <ShoppingCart className="text-[#7a2828] mr-2 h-5 w-5" />
+//                   <ShoppingCart className="text-[#023d12]  mr-2 h-5 w-5" />
 //                   <h2 className="text-lg font-semibold text-gray-900">Order Information</h2>
 //                 </div>
 //                 <div className="space-y-2">
@@ -218,7 +218,7 @@
 
 //               <div>
 //                 <div className="flex items-center mb-4">
-//                   <User className="text-[#7a2828] mr-2 h-5 w-5" />
+//                   <User className="text-[#023d12]  mr-2 h-5 w-5" />
 //                   <h2 className="text-lg font-semibold text-gray-900">Customer Information</h2>
 //                 </div>
 //                 <div className="space-y-2">
@@ -243,10 +243,10 @@
 //         </Card>
 
 //         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-//           <Card className="border-[#7a2828] shadow-sm">
+//           <Card className="border-[#023d12]  shadow-sm">
 //             <CardHeader className="pb-2">
 //               <CardTitle className="text-lg flex items-center">
-//                 <Truck className="text-[#7a2828] mr-2 h-5 w-5" />
+//                 <Truck className="text-[#023d12]  mr-2 h-5 w-5" />
 //                 Shipping Information
 //               </CardTitle>
 //             </CardHeader>
@@ -269,7 +269,7 @@
 //           <Card className="border-purple-200 shadow-sm">
 //             <CardHeader className="pb-2">
 //               <CardTitle className="text-lg flex items-center">
-//                 <Package className="text-[#7a2828] mr-2 h-5 w-5" />
+//                 <Package className="text-[#023d12]  mr-2 h-5 w-5" />
 //                 Order Status
 //               </CardTitle>
 //             </CardHeader>
@@ -292,7 +292,7 @@
 //                 </Select>
 //                 <Button
 //                   onClick={handleStatusUpdate}
-//                   className="bg-[#7a2828] hover:bg-[#7a2828] text-white"
+//                   className="bg-[#023d12]  hover:bg-[#023d12]  text-white"
 //                   aria-label="Update order status"
 //                 >
 //                   Update Status
@@ -330,7 +330,7 @@
 //                         </Button>
 //                         <Button
 //                           onClick={handleReturnAction}
-//                           className="bg-[#7a2828] hover:bg-[#7a2828] text-white"
+//                           className="bg-[#023d12]  hover:bg-[#023d12]  text-white"
 //                           disabled={!returnAction}
 //                         >
 //                           Submit
@@ -343,10 +343,10 @@
 //             </CardContent>
 //           </Card>
 
-//           <Card className="border-[#7a2828] shadow-sm">
+//           <Card className="border-[#023d12]  shadow-sm">
 //             <CardHeader className="pb-2">
 //               <CardTitle className="text-lg flex items-center">
-//                 <Calendar className="text-[#7a2828] mr-2 h-5 w-5" />
+//                 <Calendar className="text-[#023d12]  mr-2 h-5 w-5" />
 //                 Payment Details
 //               </CardTitle>
 //             </CardHeader>
@@ -370,7 +370,7 @@
 //                 </div>
 //                 <div className="flex justify-between pt-2 border-t border-gray-200 mt-2">
 //                   <span className="text-gray-900 font-semibold">Grand Total:</span>
-//                   <span className="font-bold text-green-600">₹{order.final_total}</span>
+//                   <span className="font-bold text-green-600">£{order.final_total}</span>
 //                 </div>
 //               </div>
 //             </CardContent>
@@ -450,8 +450,8 @@
 //           </Card>
 //         )}
 
-//         <Card className="mb-8 border-[#7a2828] shadow-sm overflow-hidden">
-//           <div className="bg-gradient-to-r from-red-100 to-[#7a2828] h-2"></div>
+//         <Card className="mb-8 border-[#023d12]  shadow-sm overflow-hidden">
+//           <div className="bg-gradient-to-r from-red-100 to-[#023d12]  h-2"></div>
 //           <CardHeader className="pb-2">
 //             <CardTitle className="text-xl">Order Items</CardTitle>
 //           </CardHeader>
@@ -478,11 +478,11 @@
 //                       <TableCell>{item.variant ? `${item.variant.gross_weight || "N/A"}g` : "N/A"}</TableCell>
 //                       <TableCell>{item.quantity}</TableCell>
 //                       <TableCell>
-//                         <div className="text-gray-500 line-through text-xs">₹{item.price}</div>
-//                         <div>₹{item.final_price || item.price}</div>
+//                         <div className="text-gray-500 line-through text-xs">£{item.price}</div>
+//                         <div>£{item.final_price || item.price}</div>
 //                       </TableCell>
-//                       <TableCell className="text-rose-600">₹{item.discount}</TableCell>
-//                       <TableCell className="font-medium">₹{item.subtotal || item.final_price}</TableCell>
+//                       <TableCell className="text-rose-600">£{item.discount}</TableCell>
+//                       <TableCell className="font-medium">£{item.subtotal || item.final_price}</TableCell>
 //                       <TableCell>
 //                         <Badge className={getStatusColor(item.status)}>{formatStatus(item.status)}</Badge>
 //                       </TableCell>
@@ -600,27 +600,27 @@
 //             <div className="space-y-3">
 //               <div className="flex justify-between items-center">
 //                 <span className="text-gray-600">Original Subtotal:</span>
-//                 <span className="font-medium">₹{order.total_amount}</span>
+//                 <span className="font-medium">£{order.total_amount}</span>
 //               </div>
 //               <div className="flex justify-between items-center">
 //                 <span className="text-gray-600">Total Discounts:</span>
-//                 <span className="font-medium text-rose-600">-₹{order.total_discount}</span>
+//                 <span className="font-medium text-rose-600">-£{order.total_discount}</span>
 //               </div>
 //               <div className="flex justify-between items-center">
 //                 <span className="text-gray-600">Tax:</span>
-//                 <span className="font-medium ">₹{order.total_tax}</span>
+//                 <span className="font-medium ">£{order.total_tax}</span>
 //               </div>
 //                <div className="flex justify-between items-center">
 //                 <span className="text-gray-600">Coupon discount:</span>
-//                 <span className="font-medium text-rose-600">-₹{order.coupon_discount}</span>
+//                 <span className="font-medium text-rose-600">-£{order.coupon_discount}</span>
 //               </div>
 //                <div className="flex justify-between items-center">
 //                 <span className="text-gray-600">Shipping:</span>
-//                 <span className="font-medium">₹{order.shipping}</span>
+//                 <span className="font-medium">£{order.shipping}</span>
 //               </div>
 //               <div className="flex justify-between items-center pt-3 border-t border-gray-200 mt-2">
 //                 <span className="text-gray-900 font-semibold text-lg">Grand Total:</span>
-//                 <span className="font-bold text-lg text-emerald-700">₹{order.final_total}</span>
+//                 <span className="font-bold text-lg text-emerald-700">£{order.final_total}</span>
 //               </div>
 //             </div>
 //           </CardContent>
@@ -768,7 +768,7 @@ export default function OrderHandlePage() {
   if (isLoading)
     return (
       <div className="flex justify-center items-center h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#7a2828]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#023d12] "></div>
       </div>
     )
 
@@ -778,7 +778,7 @@ export default function OrderHandlePage() {
         <AlertCircle className="h-4 w-4" />
         <AlertTitle>Error</AlertTitle>
         <AlertDescription>{error}</AlertDescription>
-        <Button onClick={() => window.location.reload()} className="mt-4 bg-[#7a2828] hover:bg-[#7a2828]">
+        <Button onClick={() => window.location.reload()} className="mt-4 bg-[#023d12]  hover:bg-[#023d12] ">
           <RefreshCcw className="mr-2 h-4 w-4" /> Retry
         </Button>
       </Alert>
@@ -802,14 +802,14 @@ export default function OrderHandlePage() {
     <div className="container mx-auto p-4 bg-gradient-to-b from-white to-red-50">
       <div className="max-w-5xl mx-auto">
         <div className="flex items-center mb-6">
-          <div className="w-1 h-8 bg-[#7a2828] mr-3"></div>
+          <div className="w-1 h-8 bg-[#023d12]  mr-3"></div>
           <h1 className="text-3xl font-bold text-gray-900">Order Details</h1>
           
         </div>
         <Button
             variant="outline"
             onClick={() => navigate("/dashboard")}
-            className="flex items-center gap-2 border-[#7a2828] text-[#7a2828] hover:bg-[#7a2828] hover:text-white"
+            className="flex items-center gap-2 border-[#023d12]  text-[#023d12]  hover:bg-[#023d12]  hover:text-white"
           >
             <ArrowLeft className="h-4 w-4" />
             Back
@@ -823,13 +823,13 @@ export default function OrderHandlePage() {
           </Alert>
         )}
 
-        <Card className="mb-6 border-[#7a2828] shadow-sm overflow-hidden">
-          <div className="bg-gradient-to-r from-[#7a2828] to-red-50 h-2"></div>
+        <Card className="mb-6 border-[#023d12]  shadow-sm overflow-hidden">
+          <div className="bg-gradient-to-r from-[#023d12]  to-red-50 h-2"></div>
           <CardContent className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <div className="flex items-center mb-4">
-                  <ShoppingCart className="text-[#7a2828] mr-2 h-5 w-5" />
+                  <ShoppingCart className="text-[#023d12]  mr-2 h-5 w-5" />
                   <h2 className="text-lg font-semibold text-gray-900">Order Information</h2>
                 </div>
                 <div className="space-y-2">
@@ -856,7 +856,7 @@ export default function OrderHandlePage() {
 
               <div>
                 <div className="flex items-center mb-4">
-                  <User className="text-[#7a2828] mr-2 h-5 w-5" />
+                  <User className="text-[#023d12]  mr-2 h-5 w-5" />
                   <h2 className="text-lg font-semibold text-gray-900">Customer Information</h2>
                 </div>
                 <div className="space-y-2">
@@ -881,10 +881,10 @@ export default function OrderHandlePage() {
         </Card>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Card className="border-[#7a2828] shadow-sm">
+          <Card className="border-[#023d12]  shadow-sm">
             <CardHeader className="pb-2">
               <CardTitle className="text-lg flex items-center">
-                <Truck className="text-[#7a2828] mr-2 h-5 w-5" />
+                <Truck className="text-[#023d12]  mr-2 h-5 w-5" />
                 Shipping Information
               </CardTitle>
             </CardHeader>
@@ -907,7 +907,7 @@ export default function OrderHandlePage() {
           <Card className="border-purple-200 shadow-sm">
             <CardHeader className="pb-2">
               <CardTitle className="text-lg flex items-center">
-                <Package className="text-[#7a2828] mr-2 h-5 w-5" />
+                <Package className="text-[#023d12]  mr-2 h-5 w-5" />
                 Order Status
                  </CardTitle>
               </CardHeader>
@@ -931,7 +931,7 @@ export default function OrderHandlePage() {
                 </Select>
                 <Button
                   onClick={handleStatusUpdate}
-                  className="bg-[#7a2828] hover:bg-[#7a2828] text-white"
+                  className="bg-[#023d12]  hover:bg-[#023d12]  text-white"
                   aria-label="Update order status"
                   disabled={isRestricted}
                 >
@@ -970,7 +970,7 @@ export default function OrderHandlePage() {
                         </Button>
                         <Button
                           onClick={handleReturnAction}
-                          className="bg-[#7a2828] hover:bg-[#7a2828] text-white"
+                          className="bg-[#023d12]  hover:bg-[#023d12]  text-white"
                           disabled={!returnAction}
                         >
                           Submit
@@ -983,10 +983,10 @@ export default function OrderHandlePage() {
             </CardContent>
           </Card>
 
-          <Card className="border-[#7a2828] shadow-sm">
+          <Card className="border-[#023d12]  shadow-sm">
             <CardHeader className="pb-2">
               <CardTitle className="text-lg flex items-center">
-                <Calendar className="text-[#7a2828] mr-2 h-5 w-5" />
+                <Calendar className="text-[#023d12]  mr-2 h-5 w-5" />
                 Payment Details
               </CardTitle>
             </CardHeader>
@@ -1010,7 +1010,7 @@ export default function OrderHandlePage() {
                 </div>
                 <div className="flex justify-between pt-2 border-t border-gray-200 mt-2">
                   <span className="text-gray-900 font-semibold">Grand Total:</span>
-                  <span className="font-bold text-green-600">₹{order.final_total}</span>
+                  <span className="font-bold text-green-600">£{order.final_total}</span>
                 </div>
               </div>
             </CardContent>
@@ -1089,8 +1089,8 @@ export default function OrderHandlePage() {
           </Card>
         )}
 
-        <Card className="mb-8 border-[#7a2828] shadow-sm overflow-hidden">
-          <div className="bg-gradient-to-r from-red-100 to-[#7a2828] h-2"></div>
+        <Card className="mb-8 border-[#023d12]  shadow-sm overflow-hidden">
+          <div className="bg-gradient-to-r from-red-100 to-[#023d12]  h-2"></div>
           <CardHeader className="pb-2">
             <CardTitle className="text-xl">Order Items</CardTitle>
           </CardHeader>
@@ -1117,11 +1117,11 @@ export default function OrderHandlePage() {
                       <TableCell>{item.variant ? `${item.variant.gross_weight || "N/A"}g` : "N/A"}</TableCell>
                       <TableCell>{item.quantity}</TableCell>
                       <TableCell>
-                        <div className="text-gray-500 line-through text-xs">₹{item.price}</div>
-                        <div>₹{item.final_price || item.price}</div>
+                        <div className="text-gray-500 line-through text-xs">£{item.price}</div>
+                        <div>£{item.final_price || item.price}</div>
                       </TableCell>
-                      <TableCell className="text-rose-600">₹{item.discount}</TableCell>
-                      <TableCell className="font-medium">₹{item.subtotal || item.final_priceI}</TableCell>
+                      <TableCell className="text-rose-600">£{item.discount}</TableCell>
+                      <TableCell className="font-medium">£{item.subtotal || item.final_priceI}</TableCell>
                       <TableCell>
                         <Badge className={getStatusColor(item.status)}>{formatStatus(item.status)}</Badge>
                       </TableCell>
@@ -1239,27 +1239,27 @@ export default function OrderHandlePage() {
             <div className="space-y-3">
               <div className="flex justify-between items-center">
                 <span className="text-gray-600">Original Subtotal:</span>
-                <span className="font-medium">₹{order.total_amount}</span>
+                <span className="font-medium">£{order.total_amount}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-gray-600">Total Discounts:</span>
-                <span className="font-medium text-rose-600">-₹{order.total_discount}</span>
+                <span className="font-medium text-rose-600">-£{order.total_discount}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-gray-600">Tax:</span>
-                <span className="font-medium ">₹{order.total_tax}</span>
+                <span className="font-medium ">£{order.total_tax}</span>
               </div>
                <div className="flex justify-between items-center">
                 <span className="text-gray-600">Coupon discount:</span>
-                <span className="font-medium text-rose-600">-₹{order.coupon_discount}</span>
+                <span className="font-medium text-rose-600">-£{order.coupon_discount}</span>
               </div>
                <div className="flex justify-between items-center">
                 <span className="text-gray-600">Shipping:</span>
-                <span className="font-medium">₹{order.shipping}</span>
+                <span className="font-medium">£{order.shipping}</span>
               </div>
               <div className="flex justify-between items-center pt-3 border-t border-gray-200 mt-2">
                 <span className="text-gray-900 font-semibold text-lg">Grand Total:</span>
-                <span className="font-bold text-lg text-emerald-700">₹{order.final_total}</span>
+                <span className="font-bold text-lg text-emerald-700">£{order.final_total}</span>
               </div>
             </div>
           </CardContent>

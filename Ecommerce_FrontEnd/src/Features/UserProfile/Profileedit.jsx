@@ -179,7 +179,7 @@ const handleCopyLink = () => {
   return (
     <div className="min-h-screen py-8 px-4 bg-gradient-to-b from-amber-50 to-amber-100">
       <Card className="max-w-3xl mx-auto overflow-hidden border border-amber-200 shadow-lg">
-        <div className="h-16 bg-gradient-to-r from-[#7a2828] to-[#9a3a3a]"></div>
+        <div className="h-16 bg-gradient-to-r from-[#023d12]  to-[#9a3a3a]"></div>
 
         <CardHeader className="relative pb-2">
           <div className="absolute -top-12 left-6 w-20 h-20 rounded-full bg-gradient-to-r from-amber-200 to-amber-300 border-4 border-white flex items-center justify-center shadow-md">
@@ -190,7 +190,7 @@ const handleCopyLink = () => {
                 className="w-full h-full rounded-full object-cover"
               />
             ) : (
-              <span className="text-[#7a2828] text-3xl font-semibold">
+              <span className="text-[#023d12]  text-3xl font-semibold">
                 {user.firstName.charAt(0)}
                 {user.lastName.charAt(0)}
               </span>
@@ -198,7 +198,7 @@ const handleCopyLink = () => {
           </div>
 
           <div className="ml-28">
-            <CardTitle className="text-2xl font-bold text-[#7a2828]">Your Profile</CardTitle>
+            <CardTitle className="text-2xl font-bold text-[#023d12] ">Your Profile</CardTitle>
             <CardDescription className="text-amber-800">Manage your personal information, referrals, and coupons</CardDescription>
           </div>
 
@@ -215,7 +215,7 @@ const handleCopyLink = () => {
         <CardContent className="pt-6">
           {loading ? (
             <div className="flex flex-col items-center justify-center py-12">
-              <Loader2 className="h-8 w-8 text-[#7a2828] animate-spin mb-2" />
+              <Loader2 className="h-8 w-8 text-[#023d12]  animate-spin mb-2" />
               <p className="text-amber-800">Loading your profile...</p>
             </div>
           ) : (
@@ -228,7 +228,7 @@ const handleCopyLink = () => {
                     onMouseLeave={() => setHoverField(null)}
                   >
                     <Label htmlFor="profilePicture" className="text-amber-900 flex items-center gap-2">
-                      <ImageIcon className="h-4 w-4 text-[#7a2828]" />
+                      <ImageIcon className="h-4 w-4 text-[#023d12] " />
                       Profile Picture
                     </Label>
                     <Input
@@ -236,7 +236,7 @@ const handleCopyLink = () => {
                       type="file"
                       accept="image/jpeg,image/png,image/gif"
                       onChange={handleChange}
-                      className="w-full border-amber-300 focus:border-[#7a2828] focus:ring-[#7a2828]/20 bg-amber-50 transition-all duration-300 hover:border-[#7a2828]/70"
+                      className="w-full border-amber-300 focus:border-[#023d12]  focus:ring-[#023d12] /20 bg-amber-50 transition-all duration-300 hover:border-[#023d12] /70"
                     />
                   </div>
 
@@ -246,14 +246,14 @@ const handleCopyLink = () => {
                     onMouseLeave={() => setHoverField(null)}
                   >
                     <Label htmlFor="firstName" className="text-amber-900 flex items-center gap-2">
-                      <User className="h-4 w-4 text-[#7a2828]" />
+                      <User className="h-4 w-4 text-[#023d12] " />
                       First Name
                     </Label>
                     <Input
                       id="firstName"
                       value={user.firstName}
                       onChange={handleChange}
-                      className="w-full border-amber-300 focus:border-[#7a2828] focus:ring-[#7a2828]/20 bg-amber-50 transition-all duration-300 hover:border-[#7a2828]/70"
+                      className="w-full border-amber-300 focus:border-[#023d12]  focus:ring-[#023d12] /20 bg-amber-50 transition-all duration-300 hover:border-[#023d12] /70"
                     />
                   </div>
 
@@ -263,14 +263,14 @@ const handleCopyLink = () => {
                     onMouseLeave={() => setHoverField(null)}
                   >
                     <Label htmlFor="lastName" className="text-amber-900 flex items-center gap-2">
-                      <User className="h-4 w-4 text-[#7a2828]" />
+                      <User className="h-4 w-4 text-[#023d12] " />
                       Last Name
                     </Label>
                     <Input
                       id="lastName"
                       value={user.lastName}
                       onChange={handleChange}
-                      className="w-full border-amber-300 focus:border-[#7a2828] focus:ring-[#7a2828]/20 bg-amber-50 transition-all duration-300 hover:border-[#7a2828]/70"
+                      className="w-full border-amber-300 focus:border-[#023d12]  focus:ring-[#023d12] /20 bg-amber-50 transition-all duration-300 hover:border-[#023d12] /70"
                     />
                   </div>
 
@@ -280,14 +280,14 @@ const handleCopyLink = () => {
                     onMouseLeave={() => setHoverField(null)}
                   >
                     <Label htmlFor="mobile" className="text-amber-900 flex items-center gap-2">
-                      <Phone className="h-4 w-4 text-[#7a2828]" />
+                      <Phone className="h-4 w-4 text-[#023d12] " />
                       Mobile Number
                     </Label>
                     <Input
                       id="mobile"
                       value={user.mobile}
                       onChange={handleChange}
-                      className="w-full border-amber-300 focus:border-[#7a2828] focus:ring-[#7a2828]/20 bg-amber-50 transition-all duration-300 hover:border-[#7a2828]/70"
+                      className="w-full border-amber-300 focus:border-[#023d12]  focus:ring-[#023d12] /20 bg-amber-50 transition-all duration-300 hover:border-[#023d12] /70"
                     />
                   </div>
 
@@ -297,7 +297,7 @@ const handleCopyLink = () => {
                 <div className="flex flex-col sm:flex-row justify-between items-center pt-4 border-t border-amber-200">
                   <Button
                     type="button"
-                    className="bg-[#7a2828] hover:bg-[#9a3a3a] text-amber-100 shadow-md transition-all duration-300 hover:shadow-lg transform hover:-translate-y-1 flex items-center gap-2 px-6"
+                    className="bg-[#023d12]  hover:bg-[#9a3a3a] text-amber-100 shadow-md transition-all duration-300 hover:shadow-lg transform hover:-translate-y-1 flex items-center gap-2 px-6"
                     onClick={handleUpdate}
                     disabled={saving}
                   >
@@ -319,12 +319,12 @@ const handleCopyLink = () => {
               <Separator className="bg-amber-200 my-6" />
 
               <div className="space-y-4">
-                <h3 className="text-xl font-semibold text-[#7a2828]">Refer a Friend</h3>
-                <p className="text-amber-800">Invite friends and earn a ₹10 coupon when they sign up and verify their account!</p>
+                <h3 className="text-xl font-semibold text-[#023d12] ">Refer a Friend</h3>
+                <p className="text-amber-800">Invite friends and earn a £10 coupon when they sign up and verify their account!</p>
                 
                 <div className="space-y-2">
                   <Label className="text-amber-900 flex items-center gap-2">
-                    <Share2 className="h-4 w-4 text-[#7a2828]" />
+                    <Share2 className="h-4 w-4 text-[#023d12] " />
                     Your Referral Code
                   </Label>
                   <div className="flex items-center gap-2">
@@ -335,7 +335,7 @@ const handleCopyLink = () => {
                     />
                     <Button
                       onClick={handleCopyLink}
-                      className="bg-[#7a2828] hover:bg-[#9a3a3a] text-amber-100"
+                      className="bg-[#023d12]  hover:bg-[#9a3a3a] text-amber-100"
                       disabled={!referralData.referralLink}
                     >
                       <Copy className="h-4 w-4 mr-2" />
@@ -351,7 +351,7 @@ const handleCopyLink = () => {
               <Separator className="bg-amber-200 my-6" />
 
               <div className="space-y-4">
-                <h3 className="text-xl font-semibold text-[#7a2828]">Your Coupons</h3>
+                <h3 className="text-xl font-semibold text-[#023d12] ">Your Coupons</h3>
                 {coupons.length === 0 ? (
                   <p className="text-amber-800">No coupons available.</p>
                 ) : (
@@ -361,10 +361,10 @@ const handleCopyLink = () => {
                         <CardContent className="p-4 space-y-4">
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-4">
-                              <Ticket className="h-6 w-6 text-[#7a2828]" />
+                              <Ticket className="h-6 w-6 text-[#023d12] " />
                               <div>
                                 <p className="font-semibold text-amber-900">
-                                 ₹  {coupon.discount} Off
+                                 £  {coupon.discount} Off
                                 </p>
                                 <p className="text-sm text-amber-700">
                                   Valid until {new Date(coupon.valid_to).toLocaleDateString()}
@@ -372,7 +372,7 @@ const handleCopyLink = () => {
                               </div>
                             </div>
                             <Button
-                              className="bg-[#7a2828] hover:bg-[#9a3a3a] text-amber-100"
+                              className="bg-[#023d12]  hover:bg-[#9a3a3a] text-amber-100"
                               onClick={() => navigate("/shop")}
                             >
                               Use Now
@@ -386,7 +386,7 @@ const handleCopyLink = () => {
                             />
                             <Button
                               onClick={() => handleCopyCoupon(coupon.coupon_code)}
-                              className="bg-[#7a2828] hover:bg-[#9a3a3a] text-amber-100"
+                              className="bg-[#023d12]  hover:bg-[#9a3a3a] text-amber-100"
                             >
                               <Copy className="h-4 w-4 mr-2" />
                               {copiedCoupon === coupon.coupon_code ? "Copied!" : "Copy Code"}

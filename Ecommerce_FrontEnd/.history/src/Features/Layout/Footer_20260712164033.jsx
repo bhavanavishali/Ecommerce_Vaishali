@@ -4,7 +4,7 @@
 
 // export default function Footer() {
 //   return (
-//     <footer className="bg-[#f8ece9] text-[#7a2828] py-12 px-4 md:px-8 lg:px-16">
+//     <footer className="bg-[#f8ece9] text-[#023d12]  py-12 px-4 md:px-8 lg:px-16">
 //       <div className="container mx-auto">
 //         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
 //           {/* Useful Links */}
@@ -62,19 +62,19 @@
 //             <h3 className="text-2xl font-bold mb-6">Follow Us</h3>
 //             <div className="flex space-x-4">
 //               <a href="#" className="bg-white p-2 rounded-full hover:bg-gray-100 transition-colors">
-//                 <Facebook className="h-6 w-6 text-[#7a2828]" />
+//                 <Facebook className="h-6 w-6 text-[#023d12] " />
 //                 <span className="sr-only">Facebook</span>
 //               </a>
 //               <a href="#" className="bg-white p-2 rounded-full hover:bg-gray-100 transition-colors">
-//                 <Instagram className="h-6 w-6 text-[#7a2828]" />
+//                 <Instagram className="h-6 w-6 text-[#023d12] " />
 //                 <span className="sr-only">Instagram</span>
 //               </a>
 //               <a href="#" className="bg-white p-2 rounded-full hover:bg-gray-100 transition-colors">
-//                 <Linkedin className="h-6 w-6 text-[#7a2828]" />
+//                 <Linkedin className="h-6 w-6 text-[#023d12] " />
 //                 <span className="sr-only">LinkedIn</span>
 //               </a>
 //               <a href="#" className="bg-white p-2 rounded-full hover:bg-gray-100 transition-colors">
-//                 <MessageCircle className="h-6 w-6 text-[#7a2828]" />
+//                 <MessageCircle className="h-6 w-6 text-[#023d12] " />
 //                 <span className="sr-only">WhatsApp</span>
 //               </a>
 //             </div>
