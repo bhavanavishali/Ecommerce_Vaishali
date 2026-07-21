@@ -417,7 +417,7 @@ export default function ShoppingCartComponent() {
                 <p className="text-xs text-gray-500 text-center">(Inclusive of all taxes)</p>
 
                 <Button
-                  className="w-full mt-6 bg-[#8c2a2a] hover:bg-[#7a2424] text-white font-medium py-3 rounded-xl transition-all duration-200 transform hover:scale-105 disabled:opacity-50"
+                  className="w-full mt-6 bg-[#0B3D2E] hover:bg-[#0B3D2E] text-white font-medium py-3 rounded-xl transition-all duration-200 transform hover:scale-105 disabled:opacity-50"
                   onClick={() => navigate("/checkoutpage")}
                   disabled={loading || cart.items.length === 0 || isAnyItemUnavailable}
                 >

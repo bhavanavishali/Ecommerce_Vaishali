@@ -1,6 +1,7 @@
 "use client"
 import { Facebook, Instagram, Linkedin, MessageCircle } from "lucide-react"
 import { Separator } from "@/components/ui/separator"
+import { Link } from "react-router-dom"
 
 export default function Footer() {
   return (
@@ -12,24 +13,24 @@ export default function Footer() {
             <h3 className="text-lg font-bold mb-3 md:mb-6">Useful Links</h3>
             <ul className="space-y-2 md:space-y-3">
               <li>
-                <a href="#" className="hover:underline text-sm md:text-base">
+                <Link to="/terms-and-conditions" className="hover:underline text-sm md:text-base">
                   Delivery Information
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="hover:underline text-sm md:text-base">
+                <Link to="/terms-and-conditions"className="hover:underline text-sm md:text-base">
                   International Shipping
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="hover:underline text-sm md:text-base">
+                <Link to="/terms-and-conditions" className="hover:underline text-sm md:text-base">
                   Payment Options
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="hover:underline text-sm md:text-base">
+                <Link to="/terms-and-conditions" className="hover:underline text-sm md:text-base">
                   Returns
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -40,17 +41,17 @@ export default function Footer() {
             <h3 className="text-lg font-bold mb-3 md:mb-6">Contact Us</h3>
             <ul className="space-y-2 md:space-y-3">
               <li>
-                <a href="#" className="hover:underline text-sm md:text-base">
+                <a href="https://chat.whatsapp.com/JDWmspfkwUOBTPOkD0ASVm?s=sh&p=i&ilr=1" className="hover:underline text-sm md:text-base">
                   Write to Us
                 </a>
               </li>
               <li>
-                <a href="tel:18002660123" className="hover:underline text-sm md:text-base">
-                  1800-266-0123
+                <a href="tel:+44 7553 387651" className="hover:underline text-sm md:text-base">
+                  +44 7553 387651
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:underline text-sm md:text-base">
+                <a href="https://chat.whatsapp.com/JDWmspfkwUOBTPOkD0ASVm?s=sh&p=i&ilr=1" className="hover:underline text-sm md:text-base">
                   Chat with Us
                 </a>
               </li>
@@ -61,16 +62,16 @@ export default function Footer() {
           <div className="col-span-2 md:col-span-1 lg:col-span-1">
             <h3 className="text-lg font-bold mb-3 md:mb-6">Follow Us</h3>
             <div className="flex space-x-3 md:space-x-4">
-              <a href="https://www.instagram.com/info.keralaloom/" className="bg-white p-1.5 md:p-2 rounded-full hover:bg-gray-100 transition-colors">
+              <a href="https://www.instagram.com/info.keralaloom?utm_source=qr" className="bg-white p-1.5 md:p-2 rounded-full hover:bg-gray-100 transition-colors">
                 <Facebook className="h-5 w-5 md:h-6 md:w-6 text-[#023d12] " />
                 <span className="sr-only">Facebook</span>
               </a>
-              <a href="https://www.instagram.com/info.keralaloom/" className="bg-white p-1.5 md:p-2 rounded-full hover:bg-gray-100 transition-colors">
+              <a href="https://www.instagram.com/info.keralaloom?utm_source=qr" className="bg-white p-1.5 md:p-2 rounded-full hover:bg-gray-100 transition-colors">
                 <Instagram className="h-5 w-5 md:h-6 md:w-6 text-[#023d12] " />
                 <span className="sr-only">Instagram</span>
               </a>
             
-              <a href="https://l.instagram.com/?u=https%3A%2F%2Fchat.whatsapp.com%2FJDWmspfkwUOBTPOkD0ASVm%3Fs%3Dcl%26p%3Di%26mlu%3D0%26ilr%3D0%26amv%3D2%26utm_source%3Dig%26utm_medium%3Dsocial%26utm_content%3Dlink_in_bio%26fbclid%3DPAZXh0bgNhZW0CMTEAc3J0YwZhcHBfaWQQMTIxNzk4MTY0NDg3OTYyOAABp5g6BpPwG7jAFP5KCr0CY4lchjB6x7RToEi3oJnBYmIRZnoNJ399PFB3iVoz_aem_HJ9NDIY-x_-5nqVSP93zFA&e=AUAdDhLOpIs6RWsPNR8hNsJiL5fxMkf2k4VElQoB1wRdz88LjGtpcK7XVlRR1p2sRjQAeaujxGfGe31h3tDkjW1Rc7wecScD5flA_7ZjA0yv1ZtNbtv74rFlA0NEPjQpjg" className="bg-white p-1.5 md:p-2 rounded-full hover:bg-gray-100 transition-colors">
+              <a href="https://chat.whatsapp.com/JDWmspfkwUOBTPOkD0ASVm?s=sh&p=i&ilr=1">
                 <MessageCircle className="h-5 w-5 md:h-6 md:w-6 text-[#023d12] " />
                 <span className="sr-only">WhatsApp</span>
               </a>
@@ -81,11 +82,12 @@ export default function Footer() {
         <Separator className="my-4 md:my-8 bg-gray-300" />
 
         <div className="text-center text-xs md:text-sm">
-          <p className="mb-1 md:mb-2">2026 Vaishali Company Limited. All Rights Reserved.</p>
+          <p className="mb-1 md:mb-2">© 2026, KeralaLooms
+Powered by <a href="https://www.linkedin.com/in/bhavanavshali/">BV soluctions.</a></p>
           <div className="flex justify-center space-x-2 md:space-x-4 flex-wrap">
-            <a href="#" className="hover:underline">
+            <Link to="/terms-and-conditions" className="hover:underline">
               Terms & Conditions
-            </a>
+            </Link>
             <span className="hidden md:inline">|</span>
             <a href="#" className="hover:underline">
               Privacy Policy

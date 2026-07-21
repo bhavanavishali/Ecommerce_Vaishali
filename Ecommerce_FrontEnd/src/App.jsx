@@ -39,6 +39,7 @@ import AdminProtectedRoute from './protected_route/protected_admin';
 import BannerManagement from './Features/Banner/Banner';
 import Report from './Features/SalesReport/Report';
 import CategoryBasedProducts from './Features/Products/CategoryBasedProducts';
+import TermsAndConditions from './Features/Layout/TermsAndConditions';
 
 function App() {
 
@@ -69,6 +70,7 @@ function App() {
       <Route path='/wishlist' element={<ProtectedRoute><Wishlist/></ProtectedRoute>}/>
       <Route path='/invoice/:id' element={<ProtectedRoute><Invoice/></ProtectedRoute>}/>
       <Route path="/contact" element ={<ContactPage/>}/>
+      <Route path="/terms-and-conditions" element={<TermsAndConditions/>}/>
       </Route>
 
 

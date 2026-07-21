@@ -532,7 +532,7 @@ const ProductDetails = () => {
                   </h3>
                   <div className="bg-[#fff8f0] rounded-lg p-4 border border-[#e6d2b3]">
                     <p className="mb-4 text-gray-700">
-                      We offer free shipping on all orders above £1,000. Standard delivery takes 3-5 business days.
+                      We offer free shipping on all orders . Standard delivery takes 3-5 business days.
                     </p>
                   </div>
                 </div>
@@ -543,7 +543,7 @@ const ProductDetails = () => {
                   </h3>
                   <div className="bg-[#fff8f0] rounded-lg p-4 border border-[#e6d2b3]">
                     <p className="text-gray-700">
-                      We accept returns within 14 days of delivery for eligible items in original condition.
+                      Note: An unboxing video is required for all return or damage claims. Claims without an unboxing video will not be accepted.
                     </p>
                   </div>
                 </div>

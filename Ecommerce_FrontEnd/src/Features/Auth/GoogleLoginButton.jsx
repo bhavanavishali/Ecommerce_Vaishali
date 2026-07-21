@@ -3,6 +3,7 @@ import api from '../../api'
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { setAuthData } from "@/Redux/authslice";
+import Swal from "sweetalert2";
  
 function GoogleLoginButton() {
   const dispatch = useDispatch();
@@ -21,6 +22,17 @@ function GoogleLoginButton() {
         })
       );
       console.log("dispatched to redux",response.data.user)
+      
+      // Show welcome popup
+      await Swal.fire({
+        icon: "success",
+        title: "Welcome!",
+        text: `Welcome back, ${response.data.user.username || response.data.user.email}!`,
+        confirmButtonColor: "#0B3D2E",
+        timer: 3000,
+        timerProgressBar: true,
+      });
+      
       navigate("/user/home");
       
     } catch (error) {

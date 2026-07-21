@@ -3,6 +3,7 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import useEmblaCarousel from "embla-carousel-react";
 import { Button } from "@/components/ui/button";
+import { useEffect, useCallback } from "react";
 
 const formatPrice = (price) =>
   new Intl.NumberFormat("en-IN", {
@@ -93,33 +94,45 @@ const TrendingNow = ({ onProductClick }) => {
     align: "start",
     loop: true,
     skipSnaps: false,
-    dragFree: true,
+    dragFree: false,
+    containScroll: "trimSnaps",
   });
 
-  const scrollPrev = () => emblaApi?.scrollPrev();
-  const scrollNext = () => emblaApi?.scrollNext();
+  const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
+  const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
+
+  // Auto-scroll every 3 seconds
+  useEffect(() => {
+    if (!emblaApi) return;
+
+    const interval = setInterval(() => {
+      emblaApi.scrollNext();
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [emblaApi]);
 
   return (
     <section className="w-full bg-[#FFFDF8] py-10 md:py-14 border-t border-[#E8DFC6]">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10">
         <SectionTitle title="Trending Now" />
 
-        <div className="relative">
+        <div className="relative px-6 md:px-8">
           <button
             type="button"
             onClick={scrollPrev}
-            className="absolute -left-2 md:-left-5 top-[38%] -translate-y-1/2 z-10 w-9 h-9 md:w-10 md:h-10 rounded-full bg-white border border-[#E8DFC6] shadow-sm flex items-center justify-center hover:bg-[#F7F3EB] transition-colors"
+            className="absolute left-0 md:-left-5 top-[38%] -translate-y-1/2 z-10 w-9 h-9 md:w-10 md:h-10 rounded-full bg-white border border-[#E8DFC6] shadow-sm flex items-center justify-center hover:bg-[#F7F3EB] transition-colors"
             aria-label="Previous products"
           >
             <ChevronLeft className="h-5 w-5 text-[#4B4B4B]" />
           </button>
 
-          <div className="overflow-hidden px-6 md:px-8" ref={emblaRef}>
-            <div className="flex gap-4 md:gap-6 justify-center">
+          <div className="overflow-hidden" ref={emblaRef}>
+            <div className="flex">
               {trendingProducts.map((product) => (
                 <div
                   key={product.id}
-                  className="min-w-0 shrink-0 basis-[85%] sm:basis-[60%] md:basis-[40%] lg:basis-[30%] xl:basis-[25%]"
+                  className="min-w-0 shrink-0 w-full sm:w-[60%] md:w-[40%] lg:w-[30%] xl:w-[25%] px-2"
                 >
                   <TrendingCard
                     product={product}

@@ -63,6 +63,17 @@ function Login() {
         }),
       )
       setError("")
+      
+      // Show welcome popup
+      await Swal.fire({
+        icon: "success",
+        title: "Welcome!",
+        text: `Welcome back, ${user.username || user.email}!`,
+        confirmButtonColor: "#0B3D2E",
+        timer: 3000,
+        timerProgressBar: true,
+      })
+      
       navigate("/user/home")
     } catch (error) {
       if (error.response) {

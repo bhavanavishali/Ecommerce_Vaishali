@@ -24,9 +24,12 @@ import {
   Coins,
   Layers,
   Grid3X3,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { useRef } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -68,13 +71,16 @@ const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [categories, setCategories] = useState([]);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+  const categoryScrollRef = useRef(null);
 
   const totalItems = isAuthenticated && cart?.items?.length ? cart.items.length : 0;
 
   const typeButtonClass = (type) =>
     activeType === type
-      ? "text-[#023d12]  font-semibold"
-      : "text-gray-600 font-medium hover:text-[#023d12]  transition-colors";
+      ? "bg-[#D4AF37]/20 text-[#023d12] font-semibold"
+      : "bg-transparent text-[#023d12] font-medium hover:bg-[#D4AF37]/10";
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 4);
@@ -132,23 +138,70 @@ const Header = () => {
     "p-1 text-[#023d12]  hover:opacity-70 transition-opacity relative";
 
   const renderTypeButtons = (className = "") => (
-    <div className={`flex items-center justify-center gap-10 ${className}`}>
-      <button
-        type="button"
-        onClick={() => navigate("/category/all?product_type=clothing")}
-        className={`text-sm tracking-wide ${typeButtonClass("clothing")}`}
+    <div className={`flex items-center justify-center ${className}`}>
+      <div 
+        className="flex items-center px-2 py-2 rounded-full shadow-lg"
+        style={{ 
+          backgroundColor: '#FFFDF8',
+          border: '2px solid #D4AF37',
+          boxShadow: '0 4px 12px rgba(212, 175, 55, 0.15)'
+        }}
       >
-        Clothing
-      </button>
-      <button
-        type="button"
-        onClick={() => navigate("/category/all?product_type=imitation_jewelry")}
-        className={`text-sm tracking-wide ${typeButtonClass("imitation_jewelry")}`}
-      >
-        Jewellery
-      </button>
+        {/* Clothing Button */}
+        <button
+          type="button"
+          onClick={() => navigate("/category/all?product_type=clothing")}
+          className={`flex items-center gap-2 px-6 py-2.5 rounded-full transition-all duration-300 ${typeButtonClass("clothing")}`}
+        >
+          <Shirt className="h-4 w-4" strokeWidth={1.5} style={{ color: '#D4AF37' }} />
+          <span className="text-xs tracking-widest uppercase">Clothing</span>
+        </button>
+
+        {/* Center Divider with Decorative Element */}
+        <div className="flex items-center justify-center px-3">
+          {/* <div className="h-8 w-px" style={{ backgroundColor: '#D4AF37' }}></div> */}
+          <div className="mx-2 text-[#D4AF37]">
+            <Sparkles className="h-4 w-4" strokeWidth={1.5} />
+          </div>
+          {/* <div className="h-8 w-px" style={{ backgroundColor: '#D4AF37' }}></div> */}
+        </div>
+
+        {/* Jewelry Button */}
+        <button
+          type="button"
+          onClick={() => navigate("/category/all?product_type=imitation_jewelry")}
+          className={`flex items-center gap-2 px-6 py-2.5 rounded-full transition-all duration-300 ${typeButtonClass("imitation_jewelry")}`}
+        >
+          <Gem className="h-4 w-4" strokeWidth={1.5} style={{ color: '#D4AF37' }} />
+          <span className="text-xs tracking-widest uppercase">Jewellery</span>
+        </button>
+      </div>
     </div>
   );
+
+  const checkScroll = () => {
+    if (categoryScrollRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = categoryScrollRef.current;
+      setCanScrollLeft(scrollLeft > 0);
+      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 1);
+    }
+  };
+
+  const scrollCategories = (direction) => {
+    if (categoryScrollRef.current) {
+      const scrollAmount = 200;
+      categoryScrollRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  useEffect(() => {
+    checkScroll();
+    window.addEventListener('resize', checkScroll);
+    return () => window.removeEventListener('resize', checkScroll);
+  }, [categories]);
 
   return (
     <>
@@ -169,15 +222,13 @@ const Header = () => {
               <img
                 src="/logo 1.png"
                 alt="KeralaLooms Logo"
-                className="h-12 lg:h-14 w-auto object-contain"
+                className="h-16 lg:h-20 w-auto object-contain"
               />
             </a>
 
-            {/* Center — replaces search bar */}
+            {/* Center — Navigation Buttons */}
             <div className="hidden md:flex flex-1 justify-center px-6">
-              <div className="flex items-center justify-center w-full max-w-xl border border-gray-300 rounded-full px-10 py-2.5">
-                {renderTypeButtons()}
-              </div>
+              {renderTypeButtons()}
             </div>
 
             {/* Right icons — Tanishq-style minimal line icons */}
@@ -212,35 +263,40 @@ const Header = () => {
               {/* Account */}
               <div className="hidden md:block">
                 {isAuthenticated ? (
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <button type="button" className={iconBtnClass} aria-label="My account">
-                        <User className="h-[22px] w-[22px]" strokeWidth={1.5} />
-                      </button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-52">
-                      <DropdownMenuLabel className="text-[#023d12]">
-                        {capitalizeFirstLetter(user.username || user.email)}
-                      </DropdownMenuLabel>
-                      {/* <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={() => navigate("/userprofile")}>
-                        <User className="h-4 w-4 mr-2" />
-                        Profile
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => navigate("/myorders")}>
-                        <ShoppingBag className="h-4 w-4 mr-2" />
-                        My Orders
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator /> */}
-                      <DropdownMenuItem
-                        className="text-red-600 focus:text-red-600"
-                        onClick={handleLogout}
-                      >
-                        <LogOut className="h-4 w-4 mr-2" />
-                        Logout
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm font-medium" style={{ color: '#0B3D2E' }}>
+                      Welcome, {capitalizeFirstLetter(user.username || user.email)}
+                    </span>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <button type="button" className={iconBtnClass} aria-label="My account">
+                          <User className="h-[22px] w-[22px]" strokeWidth={1.5} />
+                        </button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-52">
+                        <DropdownMenuLabel className="text-[#023d12]">
+                          {capitalizeFirstLetter(user.username || user.email)}
+                        </DropdownMenuLabel>
+                        {/* <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => navigate("/userprofile")}>
+                          <User className="h-4 w-4 mr-2" />
+                          Profile
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => navigate("/myorders")}>
+                          <ShoppingBag className="h-4 w-4 mr-2" />
+                          My Orders
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator /> */}
+                        <DropdownMenuItem
+                          className="text-red-600 focus:text-red-600"
+                          onClick={handleLogout}
+                        >
+                          <LogOut className="h-4 w-4 mr-2" />
+                          Logout
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
                 ) : (
                   <button
                     type="button"
@@ -413,9 +469,7 @@ const Header = () => {
 
         {/* Mobile — Clothing / Jewellery below logo row */}
         <div className="md:hidden flex justify-center pb-3 -mt-1">
-          <div className="flex items-center justify-center w-full max-w-sm border border-gray-300 rounded-full px-8 py-2">
-            {renderTypeButtons("gap-8")}
-          </div>
+          {renderTypeButtons()}
         </div>
 
         {/* Tier 2 — Category navigation */}
@@ -457,34 +511,57 @@ const Header = () => {
             </nav>
 
             {/* Mobile category scroll */}
-            <nav className="md:hidden flex items-center gap-6 py-3 overflow-x-auto scrollbar-hide">
-              <button
-                type="button"
-                onClick={() => navigate("/category/all")}
-                className="flex items-center gap-2 flex-shrink-0"
-              >
-                <Grid3X3 className="h-4 w-4 text-[#023d12]" strokeWidth={1.5} />
-                <span className="text-xs font-medium text-[#023d12] whitespace-nowrap">
-                  All Products
-                </span>
-              </button>
-              {categories.map((category) => {
-                const Icon = getCategoryIcon(category);
-                return (
-                  <button
-                    key={category}
-                    type="button"
-                    onClick={() => navigate(`/category/${encodeURIComponent(category)}`)}
-                    className="flex items-center gap-1.5 flex-shrink-0"
-                  >
-                    <Icon className="h-4 w-4 text-[#023d12]" strokeWidth={1.5} />
-                    <span className="text-xs font-medium text-[#056022] whitespace-nowrap capitalize">
-                      {category}
-                    </span>
-                  </button>
-                );
-              })}
-            </nav>
+            <div className="md:hidden relative">
+              <div className="flex items-center gap-6 py-3 overflow-x-auto scrollbar-hide" ref={categoryScrollRef} onScroll={checkScroll}>
+                <button
+                  type="button"
+                  onClick={() => navigate("/category/all")}
+                  className="flex items-center gap-2 flex-shrink-0"
+                >
+                  <Grid3X3 className="h-4 w-4 text-[#023d12]" strokeWidth={1.5} />
+                  <span className="text-xs font-medium text-[#023d12] whitespace-nowrap">
+                    All Products
+                  </span>
+                </button>
+                {categories.map((category) => {
+                  const Icon = getCategoryIcon(category);
+                  return (
+                    <button
+                      key={category}
+                      type="button"
+                      onClick={() => navigate(`/category/${encodeURIComponent(category)}`)}
+                      className="flex items-center gap-1.5 flex-shrink-0"
+                    >
+                      <Icon className="h-4 w-4 text-[#023d12]" strokeWidth={1.5} />
+                      <span className="text-xs font-medium text-[#056022] whitespace-nowrap capitalize">
+                        {category}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+              {/* Scroll indicators */}
+              {canScrollLeft && (
+                <button
+                  type="button"
+                  onClick={() => scrollCategories('left')}
+                  className="absolute left-0 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white shadow-md flex items-center justify-center z-10"
+                  style={{ border: '1px solid #ECE6DA' }}
+                >
+                  <ChevronLeft className="h-4 w-4 text-[#2E2E2E]" />
+                </button>
+              )}
+              {canScrollRight && (
+                <button
+                  type="button"
+                  onClick={() => scrollCategories('right')}
+                  className="absolute right-0 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white shadow-md flex items-center justify-center z-10"
+                  style={{ border: '1px solid #ECE6DA' }}
+                >
+                  <ChevronRight className="h-4 w-4 text-[#2E2E2E]" />
+                </button>
+              )}
+            </div>
           </div>
         </div>
     </header>
